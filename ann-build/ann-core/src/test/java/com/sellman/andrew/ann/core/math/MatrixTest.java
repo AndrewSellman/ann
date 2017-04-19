@@ -1,4 +1,4 @@
-package com.sellman.andrew.ann.core;
+package com.sellman.andrew.ann.core.math;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,9 +7,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.sellman.andrew.ann.core.math.Matrix;
+
 public class MatrixTest {
-	private static final int COLUMN_COUNT = 10;
 	private static final int ROW_COUNT = 5;
+	private static final int COLUMN_COUNT = 10;
 	private double newValue;
 
 	@Before

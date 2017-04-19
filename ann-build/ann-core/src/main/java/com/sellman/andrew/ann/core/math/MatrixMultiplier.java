@@ -3,31 +3,35 @@ package com.sellman.andrew.ann.core.math;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sellman.andrew.ann.core.Matrix;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-public class MatrixMath {
+public class MatrixMultiplier {
 	private TaskService taskService;
 
-	public MatrixMath(TaskService taskService) {
+	public MatrixMultiplier(TaskService taskService) {
 		this.taskService = taskService;
 	}
 
 	public Matrix multiply(final Matrix left, final Matrix right) {
 		int rowCount = left.getRowCount();
 		int columnCount = right.getColumnCount();
-		Matrix result = new Matrix(rowCount, columnCount);
+		Matrix target = new Matrix(rowCount, columnCount);
 
 		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount * columnCount);
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-				tasks.add(new MultiplicationTask(left, rowIndex, right, columnIndex, result));
+				tasks.add(new MatrixMultiplicationTask(left, rowIndex, right, columnIndex, target));
 			}
 		}
 
 		taskService.runTasks(tasks);
-		return result;
+		return target;
+	}
+
+	public Vector multiply(final Vector left, final Matrix right) {
+		Matrix result = multiply(left.getMatrix(), right);
+		return new Vector(result);
 	}
 
 }

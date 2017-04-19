@@ -6,23 +6,24 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sellman.andrew.ann.core.Matrix;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 
-public class MatrixMathTest {
-	private static final Matrix m1x2 = new Matrix(new double[][] { { 1, 2 } });
-	private static final Matrix m2x1 = new Matrix(new double[][] { { 3 }, { 4 } });
-	private static final Matrix m2x3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
-	private static final Matrix m3x2 = new Matrix(new double[][] { { 7, 8 }, { 9, 10 }, { 11, 12 } });
+public class MatrixMultiplierTest {
+	private static final Matrix M1X2 = new Matrix(new double[][] { { 1, 2 } });
+	private static final Matrix M2X1 = new Matrix(new double[][] { { 3 }, { 4 } });
+	private static final Matrix M2X3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
+	private static final Matrix M3X2 = new Matrix(new double[][] { { 7, 8 }, { 9, 10 }, { 11, 12 } });
+	private static final Vector V2 = new Vector(new double[] { 1, 2 });
+	private static final Vector V3 = new Vector(new double[] { 1, 2, 3 });
 
-	private MatrixMath math;
+	private MatrixMultiplier multiplier;
 	private TaskService taskService;
 
 	@Before
 	public void prepareTest() {
 		taskService = new TaskServiceBuilder().highPriority().build();
-		math = new MatrixMath(taskService);
+		multiplier = new MatrixMultiplier(taskService);
 	}
 
 	@After
@@ -31,16 +32,31 @@ public class MatrixMathTest {
 	}
 
 	@Test
-	public void multiply1by2with2by1() {
-		Matrix result = math.multiply(m1x2, m2x1);
+	public void multiply1by3VectorWith3by2Matrix() {
+		Vector result = multiplier.multiply(V3, M3X2);
+		assertEquals(2, result.getColumnCount());
+		assertEquals(58.0, result.getValue(0), 0.0);
+		assertEquals(64.0, result.getValue(1), 0.0);
+	}
+
+	@Test
+	public void multiply1by2VectorWith2by1Matrix() {
+		Vector result = multiplier.multiply(V2, M2X1);
+		assertEquals(1, result.getColumnCount());
+		assertEquals(11.0, result.getValue(0), 0.0);
+	}
+
+	@Test
+	public void multiply1by2MatrixWith2by1Matrix() {
+		Matrix result = multiplier.multiply(M1X2, M2X1);
 		assertEquals(1, result.getRowCount());
 		assertEquals(1, result.getColumnCount());
 		assertEquals(11.0, result.getValue(0, 0), 0.0);
 	}
 
 	@Test
-	public void multiply1by2with2by3() {
-		Matrix result = math.multiply(m1x2, m2x3);
+	public void multiply1by2MatrixWith2by3Matrix() {
+		Matrix result = multiplier.multiply(M1X2, M2X3);
 		assertEquals(1, result.getRowCount());
 		assertEquals(3, result.getColumnCount());
 		assertEquals(9.0, result.getValue(0, 0), 0.0);
@@ -49,8 +65,8 @@ public class MatrixMathTest {
 	}
 
 	@Test
-	public void multiply2by1with1by2() {
-		Matrix result = math.multiply(m2x1, m1x2);
+	public void multiply2byMatrix1With1by2Matrix() {
+		Matrix result = multiplier.multiply(M2X1, M1X2);
 		assertEquals(2, result.getRowCount());
 		assertEquals(2, result.getColumnCount());
 		assertEquals(3.0, result.getValue(0, 0), 0.0);
@@ -60,8 +76,8 @@ public class MatrixMathTest {
 	}
 
 	@Test
-	public void multiply2by3with3by2() {
-		Matrix result = math.multiply(m2x3, m3x2);
+	public void multiply2by3MatrixWith3by2Matrix() {
+		Matrix result = multiplier.multiply(M2X3, M3X2);
 		assertEquals(2, result.getRowCount());
 		assertEquals(2, result.getColumnCount());
 		assertEquals(58.0, result.getValue(0, 0), 0.0);
@@ -71,8 +87,8 @@ public class MatrixMathTest {
 	}
 
 	@Test
-	public void multiply3by2with2by3() {
-		Matrix result = math.multiply(m3x2, m2x3);
+	public void multiply3by2MatrixWith2by3Matrix() {
+		Matrix result = multiplier.multiply(M3X2, M2X3);
 		assertEquals(3, result.getRowCount());
 		assertEquals(3, result.getColumnCount());
 		assertEquals(39.0, result.getValue(0, 0), 0.0);

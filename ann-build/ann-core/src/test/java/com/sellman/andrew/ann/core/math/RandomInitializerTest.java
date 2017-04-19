@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sellman.andrew.ann.core.Matrix;
-
 public class RandomInitializerTest {
 	private static final double MAXIMUM_VALUE = 1.0;
 	private static final double MININUM_VALUE = -1.0;

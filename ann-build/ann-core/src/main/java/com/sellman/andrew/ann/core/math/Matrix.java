@@ -1,4 +1,4 @@
-package com.sellman.andrew.ann.core;
+package com.sellman.andrew.ann.core.math;
 
 public class Matrix {
 	private final double[][] data;
@@ -25,6 +25,18 @@ public class Matrix {
 	
 	public void setValue(int rowIndex, int columnIndex, double value) {
 		data[rowIndex][columnIndex] = value;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int r = 0; r < getRowCount(); r++) {
+			for (int c = 0; c < getColumnCount(); c++) {
+				sb.append(getValue(r, c));
+				sb.append(" ");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 	
 }

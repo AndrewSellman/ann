@@ -111,7 +111,7 @@ public class TaskServiceBuilderTest {
 	}
 
 	private void assertThreadFactory(PrioritizedThreadFactory threadFactory, Priority exepctedPriority) {
-		assertEquals(exepctedPriority.getThreadPriority(), Whitebox.getInternalState(threadFactory, "threadPriority"));
+		assertTrue(exepctedPriority.getThreadPriority() == (int)Whitebox.getInternalState(threadFactory, "threadPriority"));
 		assertTrue(Whitebox.getInternalState(threadFactory, "threadNamePrefix").toString().contains(exepctedPriority.getDescription()));
 	}
 

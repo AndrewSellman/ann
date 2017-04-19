@@ -1,16 +1,15 @@
 package com.sellman.andrew.ann.core.math;
 
-import com.sellman.andrew.ann.core.Matrix;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 
-class MultiplicationTask extends AbstractTask {
+class MatrixMultiplicationTask extends AbstractTask {
 	private final Matrix left;
 	private final Matrix right;
 	private final Matrix target;
 	private final int rowIndex;
 	private final int columnIndex;
 
-	public MultiplicationTask(final Matrix left, final int rowIndex, final Matrix right, final int columnIndex, final Matrix target) {
+	public MatrixMultiplicationTask(final Matrix left, final int rowIndex, final Matrix right, final int columnIndex, final Matrix target) {
 		this.left = left;
 		this.right = right;
 		this.target = target;

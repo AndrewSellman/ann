@@ -2,10 +2,8 @@ package com.sellman.andrew.ann.core.math;
 
 import java.util.Random;
 
-import com.sellman.andrew.ann.core.Matrix;
-
 public class RandomInitializer {
-	private static final Random random = new Random();
+	private static final Random RANDOM = new Random();
 
 	public void init(Matrix m, double mininumValue, double maximumValue) {
 		init(m, mininumValue, maximumValue, false);
@@ -21,7 +19,7 @@ public class RandomInitializer {
 
 	private double getNextValue(double mininumValue, double maximumValue, boolean is0Allowed) {
 		while (true) {
-			double value = mininumValue + (maximumValue - mininumValue) * random.nextDouble();					
+			double value = mininumValue + (maximumValue - mininumValue) * RANDOM.nextDouble();					
 			if (is0Allowed || value != 0.0) {
 				return value;
 			}
