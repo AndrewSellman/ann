@@ -11,13 +11,20 @@ import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 
 public class MatrixScalerTest {
 	private static final double SCALAR_VALUE = 123.45;
-	private static final Matrix m2x3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
+	private static final Matrix M2X3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
 	private MatrixScaler scaler;
 	private TaskService taskService;
 
+	private Function function = new Function() {
+		@Override
+		public double evaluate(double input) {
+			return input + SCALAR_VALUE;
+		}
+	};
+
 	@Before
 	public void prepareTest() {
-		taskService = new TaskServiceBuilder().highPriority().build();
+		taskService = new TaskServiceBuilder().normalPriority().build();
 		scaler = new MatrixScaler(taskService);
 	}
 
@@ -28,11 +35,11 @@ public class MatrixScalerTest {
 
 	@Test
 	public void scale2x3() {
-		Matrix result = scaler.scale(m2x3, (double input) -> input + SCALAR_VALUE);
+		Matrix result = scaler.scale(M2X3, function);
 
 		for (int r = 0; r < 2; r++) {
 			for (int c = 0; c < 3; c++) {
-				assertEquals(m2x3.getValue(r, c) + SCALAR_VALUE, result.getValue(r, c), 0.0);
+				assertEquals(M2X3.getValue(r, c) + SCALAR_VALUE, result.getValue(r, c), 0.0);
 			}
 		}
 	}

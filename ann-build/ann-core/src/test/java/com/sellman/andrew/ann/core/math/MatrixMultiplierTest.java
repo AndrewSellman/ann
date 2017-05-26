@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
@@ -22,7 +23,7 @@ public class MatrixMultiplierTest {
 
 	@Before
 	public void prepareTest() {
-		taskService = new TaskServiceBuilder().highPriority().build();
+		taskService = new TaskServiceBuilder().normalPriority().build();
 		multiplier = new MatrixMultiplier(taskService);
 	}
 
@@ -100,6 +101,39 @@ public class MatrixMultiplierTest {
 		assertEquals(59.0, result.getValue(2, 0), 0.0);
 		assertEquals(82.0, result.getValue(2, 1), 0.0);
 		assertEquals(105.0, result.getValue(2, 2), 0.0);
+	}
+
+	@Ignore
+	@Test
+	public void roughComparisonBetweenMultiThreadedAndSingleThreadedMultiplicationOfLargerMatrices() {
+		System.out.print("Initializing...");
+		RandomInitializer initializer = new RandomInitializer();
+		Matrix a = new Matrix(25, 1000);
+		initializer.init(a, 1, 2);
+		Matrix b = new Matrix(1000, 5000);
+		initializer.init(b, 0, 1);
+		System.out.println("complete.");
+
+		System.out.println("Starting multi-threaded multiplication...");
+		long start = System.currentTimeMillis();
+		Matrix c = multiplier.multiply(a, b);
+		long end = System.currentTimeMillis();
+		System.out.println("Multi-threaded took: " + (end - start) + " ms");
+
+		c = new Matrix(a.getRowCount(), b.getColumnCount());
+		System.out.println("Starting single-threaded multiplication...");
+		start = System.currentTimeMillis();
+		for (int rowIndex = 0; rowIndex < a.getRowCount(); rowIndex++) {
+			for (int columnIndex = 0; columnIndex < b.getColumnCount(); columnIndex++) {
+				double result = 0.0;
+				for (int k = 0; k < a.getColumnCount(); k++) {
+					result += a.getValue(rowIndex, k) * b.getValue(k, columnIndex);
+				}
+				c.setValue(rowIndex, columnIndex, result);
+			}
+		}
+		end = System.currentTimeMillis();
+		System.out.println("Single thread took: " + (end - start) + " ms");
 	}
 
 }

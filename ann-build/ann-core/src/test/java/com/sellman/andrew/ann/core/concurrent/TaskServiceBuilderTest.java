@@ -1,6 +1,5 @@
 package com.sellman.andrew.ann.core.concurrent;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ExecutorService;

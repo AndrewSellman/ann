@@ -8,30 +8,31 @@ import org.junit.Test;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
-import com.sellman.andrew.ann.core.math.MatrixAdder;
+import com.sellman.andrew.ann.core.math.ConstantAdderFunction;
+import com.sellman.andrew.ann.core.math.FunctionGroup;
+import com.sellman.andrew.ann.core.math.FunctionGroupHelper;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.MatrixMultiplier;
-import com.sellman.andrew.ann.core.math.MatrixScaler;
+import com.sellman.andrew.ann.core.math.MatrixOperations;
+import com.sellman.andrew.ann.core.math.MatrixOperationsFactory;
 import com.sellman.andrew.ann.core.math.Vector;
 
 public class FeedForwardLayerTest {
 	private static final Vector BIAS = new Vector(new double[] { 1000, 2000, 3000, 4000 });
 	private static final Vector V2 = new Vector(new double[] { 1, 2 });
 	private static final Matrix M2X4 = new Matrix(new double[][] { { 3, 4, 5, 6 }, { 7, 8, 9, 10 } });
+	private static final MatrixOperationsFactory OPERATIONS_FACTORY = new MatrixOperationsFactory();
 
-	private FeedForwardLayer layer;
-	private MatrixMultiplier multiplier;
-	private MatrixAdder adder;
-	private MatrixScaler scaler;
 	private TaskService taskService;
+	private MatrixOperations matrixOperations;
+	private FunctionGroup functionGroup;
+	private FeedForwardLayer layer;
 
 	@Before
 	public void prepareTest() {
+		functionGroup = new FunctionGroupHelper(new ConstantAdderFunction(100), null);
 		taskService = new TaskServiceBuilder().highPriority().build();
-		multiplier = new MatrixMultiplier(taskService);
-		scaler = new MatrixScaler(taskService);
-		adder = new MatrixAdder(taskService);
-		layer = new FeedForwardLayer("test", multiplier, adder, scaler, M2X4, BIAS, (double input) -> input + 100);
+		matrixOperations = OPERATIONS_FACTORY.getMatrixOperations(taskService);
+		layer = new FeedForwardLayer("test", matrixOperations, M2X4, BIAS, functionGroup);
 	}
 
 	@After

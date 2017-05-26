@@ -1,9 +1,10 @@
 package com.sellman.andrew.ann.core.math;
 
-public class LogisticFunction implements Function {
+class LogisticFunction implements Function {
 
-	public double evaluate(double input) {
-		return 1 / (1 + Math.pow(Math.E, -input));
+	@Override
+	public double evaluate(double x) {
+		return 1 / (1 + Math.pow(Math.E, -x));
 	}
 
 }

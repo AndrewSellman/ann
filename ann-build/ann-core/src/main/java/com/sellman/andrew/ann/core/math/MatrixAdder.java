@@ -6,7 +6,7 @@ import java.util.List;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-public class MatrixAdder {
+class MatrixAdder {
 	private TaskService taskService;
 
 	public MatrixAdder(TaskService taskService) {

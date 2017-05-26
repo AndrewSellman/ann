@@ -20,7 +20,7 @@ public class MatrixAdderTest {
 
 	@Before
 	public void prepareTest() {
-		taskService = new TaskServiceBuilder().highPriority().build();
+		taskService = new TaskServiceBuilder().normalPriority().build();
 		adder = new MatrixAdder(taskService);
 	}
 

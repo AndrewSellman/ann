@@ -6,31 +6,29 @@ import java.util.List;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-class MatrixScaler {
+class MatrixSubtractor {
 	private TaskService taskService;
 
-	public MatrixScaler(TaskService taskService) {
+	public MatrixSubtractor(TaskService taskService) {
 		this.taskService = taskService;
 	}
 
-	public Matrix scale(final Matrix source, final Function function) {
-		int rowCount = source.getRowCount();
-		int columnCount = source.getColumnCount();
+	public Matrix subtract(final Matrix left, final Matrix right) {
+		int rowCount = left.getRowCount();
+		int columnCount = right.getColumnCount();
 		Matrix target = new Matrix(rowCount, columnCount);
 
 		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount * columnCount);
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-			for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-				tasks.add(new MatrixScalerTask(source, rowIndex, columnIndex, function, target));
-			}
+			tasks.add(new MatrixSubtractionTask(left, right, rowIndex, target));
 		}
 
 		taskService.runTasks(tasks);
 		return target;
 	}
 
-	public Vector scale(final Vector source, final Function function) {
-		Matrix result = scale(source.getMatrix(), function);
+	public Vector subtract(final Vector a, final Vector b) {
+		Matrix result = subtract(a.getMatrix(), b.getMatrix());
 		return new Vector(result);
 	}
 

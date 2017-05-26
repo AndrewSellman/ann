@@ -1,34 +1,65 @@
 package com.sellman.andrew.ann.core;
 
-import com.sellman.andrew.ann.core.math.MatrixAdder;
 import com.sellman.andrew.ann.core.math.Function;
+import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.MatrixMultiplier;
-import com.sellman.andrew.ann.core.math.MatrixScaler;
+import com.sellman.andrew.ann.core.math.MatrixOperations;
 import com.sellman.andrew.ann.core.math.Vector;
 
 public class FeedForwardLayer {
 	private final String name;
-	private final MatrixMultiplier multiplier;
-	private final MatrixAdder adder;
-	private final MatrixScaler scaler;
-	private final Matrix weight;
+	private final MatrixOperations matrixOperations;
+	private final Matrix weights;
 	private final Vector bias;
-	private final Function activationFunction;
-
-	public FeedForwardLayer(String name, MatrixMultiplier multiplier, MatrixAdder adder, MatrixScaler scaler, Matrix weight, Vector bias, Function activationFunction) {
+	private final FunctionGroup activationFunctionGroup;
+	private Vector weightedInput;
+	private Vector output;
+	private Vector outputError;
+	
+	public FeedForwardLayer(String name, MatrixOperations matrixOperations, Matrix weights, Vector bias, FunctionGroup activationFunctionGroup) {
 		this.name = name;
-		this.multiplier = multiplier;
-		this.adder = adder;
-		this.scaler = scaler;
-		this.weight = weight;
+		this.matrixOperations = matrixOperations;
+		this.weights = weights;
 		this.bias = bias;
-		this.activationFunction = activationFunction;
+		this.activationFunctionGroup = activationFunctionGroup;
 	}
 
 	public Vector evaluate(Vector input) {
-		Vector weightedInput = adder.add(multiplier.multiply(input, weight), bias);
-		return scaler.scale(weightedInput, activationFunction);
+		weightedInput = matrixOperations.add(matrixOperations.multiply(input, weights), bias);
+		output = matrixOperations.scale(weightedInput, activationFunctionGroup.getFunction());
+		return output;
 	}
 	
+	protected Vector getBias() {
+		return bias;
+	}
+
+	protected Vector getOutput() {
+		return output;
+	}
+
+	protected Matrix getWeights() {
+		return weights;
+	}
+
+	protected Vector getWeightedInput() {
+		return weightedInput;
+	}
+	
+	protected Function getActivationFunction() {
+		return activationFunctionGroup.getFunction();
+	}
+
+	protected Function getActivationPrimeFunction() {
+		return activationFunctionGroup.getPrime();
+	}
+
+	protected Vector getOutputError() {
+		return outputError;
+	}
+
+	protected void setOutputError(Vector outputError) {
+		this.outputError = outputError;
+	}
+
 }

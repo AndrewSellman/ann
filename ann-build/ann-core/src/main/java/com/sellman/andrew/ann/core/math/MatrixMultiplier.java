@@ -6,7 +6,7 @@ import java.util.List;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-public class MatrixMultiplier {
+class MatrixMultiplier {
 	private TaskService taskService;
 
 	public MatrixMultiplier(TaskService taskService) {
@@ -32,6 +32,21 @@ public class MatrixMultiplier {
 	public Vector multiply(final Vector left, final Matrix right) {
 		Matrix result = multiply(left.getMatrix(), right);
 		return new Vector(result);
+	}
+	
+	public Matrix multiply(Matrix left, Vector right) {
+		return multiply(left, right.getMatrix());
+	}
+
+	public Vector hadamard(Vector a, Vector b) {
+		int columnCount = a.getColumnCount();
+		Vector target = new Vector(columnCount);
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(columnCount);
+		for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+			tasks.add(new HadamardTask(a, b, columnIndex, target));
+		}
+		taskService.runTasks(tasks);
+		return target;
 	}
 
 }
