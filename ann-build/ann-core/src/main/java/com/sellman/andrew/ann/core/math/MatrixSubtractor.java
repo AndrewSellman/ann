@@ -27,8 +27,8 @@ class MatrixSubtractor {
 		return target;
 	}
 
-	public Vector subtract(final Vector a, final Vector b) {
-		Matrix result = subtract(a.getMatrix(), b.getMatrix());
+	public Vector subtract(final Vector left, final Vector right) {
+		Matrix result = subtract(left.getMatrix(), right.getMatrix());
 		return new Vector(result);
 	}
 

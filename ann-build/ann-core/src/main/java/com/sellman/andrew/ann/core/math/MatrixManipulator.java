@@ -27,4 +27,24 @@ class MatrixManipulator {
 		return transposedTarget;
 	}
 
+	public Matrix transpose(final Vector source) {
+		return transpose(source.getMatrix());
+	}
+
+	public void update(final Matrix source, final Matrix target) {
+		int rowCount = source.getRowCount();
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount);
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			tasks.add(new MatrixUpdateTask(source, target, rowIndex));
+		}
+
+		taskService.runTasks(tasks);
+	}
+
+	public void update(final Vector source, final Vector target) {
+		for (int rowIndex = 0; rowIndex < source.getRowCount(); rowIndex++) {
+			target.setValue(rowIndex, source.getValue(rowIndex));
+		}
+	}
+
 }

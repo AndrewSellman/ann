@@ -29,24 +29,24 @@ class MatrixMultiplier {
 		return target;
 	}
 
-	public Vector multiply(final Vector left, final Matrix right) {
-		Matrix result = multiply(left.getMatrix(), right);
-		return new Vector(result);
-	}
-	
-	public Matrix multiply(Matrix left, Vector right) {
-		return multiply(left, right.getMatrix());
+	public Vector multiply(Matrix m, Vector v) {
+		return new Vector(multiply(m, v.getMatrix()));
 	}
 
-	public Vector hadamard(Vector a, Vector b) {
-		int columnCount = a.getColumnCount();
-		Vector target = new Vector(columnCount);
-		List<AbstractTask> tasks = new ArrayList<AbstractTask>(columnCount);
-		for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-			tasks.add(new HadamardTask(a, b, columnIndex, target));
+	public Matrix hadamard(Matrix a, Matrix b) {
+		int rowCount = a.getRowCount();
+		Matrix target = new Matrix(rowCount, a.getColumnCount());
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount);
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			tasks.add(new HadamardTask(a, b, rowIndex, target));
 		}
 		taskService.runTasks(tasks);
 		return target;
 	}
+
+	public Vector hadamard(Vector a, Vector b) {
+		return new Vector(hadamard(a.getMatrix(), b.getMatrix()));
+	}
+
 
 }

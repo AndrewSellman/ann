@@ -15,8 +15,6 @@ public class MatrixMultiplierTest {
 	private static final Matrix M2X1 = new Matrix(new double[][] { { 3 }, { 4 } });
 	private static final Matrix M2X3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
 	private static final Matrix M3X2 = new Matrix(new double[][] { { 7, 8 }, { 9, 10 }, { 11, 12 } });
-	private static final Vector V2 = new Vector(new double[] { 1, 2 });
-	private static final Vector V3 = new Vector(new double[] { 1, 2, 3 });
 
 	private MatrixMultiplier multiplier;
 	private TaskService taskService;
@@ -30,21 +28,6 @@ public class MatrixMultiplierTest {
 	@After
 	public void completeTest() throws Exception {
 		taskService.close();
-	}
-
-	@Test
-	public void multiply1by3VectorWith3by2Matrix() {
-		Vector result = multiplier.multiply(V3, M3X2);
-		assertEquals(2, result.getColumnCount());
-		assertEquals(58.0, result.getValue(0), 0.0);
-		assertEquals(64.0, result.getValue(1), 0.0);
-	}
-
-	@Test
-	public void multiply1by2VectorWith2by1Matrix() {
-		Vector result = multiplier.multiply(V2, M2X1);
-		assertEquals(1, result.getColumnCount());
-		assertEquals(11.0, result.getValue(0), 0.0);
 	}
 
 	@Test

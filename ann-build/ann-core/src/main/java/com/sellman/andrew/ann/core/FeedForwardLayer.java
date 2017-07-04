@@ -4,19 +4,23 @@ import com.sellman.andrew.ann.core.math.Function;
 import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.MatrixOperations;
-import com.sellman.andrew.ann.core.math.Vector;
 
 public class FeedForwardLayer {
 	private final String name;
 	private final MatrixOperations matrixOperations;
 	private final Matrix weights;
-	private final Vector bias;
+	private final Matrix bias;
 	private final FunctionGroup activationFunctionGroup;
-	private Vector weightedInput;
-	private Vector output;
-	private Vector outputError;
-	
-	public FeedForwardLayer(String name, MatrixOperations matrixOperations, Matrix weights, Vector bias, FunctionGroup activationFunctionGroup) {
+	private Matrix input;
+	private Matrix biasedWeightedInput;
+	private Matrix unbiasedWeightedInput;
+	private Matrix output;
+	private Matrix biasedPrimeOutput;
+	private Matrix transposedOutputError;
+	private Matrix outputDelta;
+	private boolean training;
+
+	public FeedForwardLayer(final String name, final MatrixOperations matrixOperations, final Matrix weights, final Matrix bias, final FunctionGroup activationFunctionGroup) {
 		this.name = name;
 		this.matrixOperations = matrixOperations;
 		this.weights = weights;
@@ -24,28 +28,49 @@ public class FeedForwardLayer {
 		this.activationFunctionGroup = activationFunctionGroup;
 	}
 
-	public Vector evaluate(Vector input) {
-		weightedInput = matrixOperations.add(matrixOperations.multiply(input, weights), bias);
-		output = matrixOperations.scale(weightedInput, activationFunctionGroup.getFunction());
+	public Matrix evaluate(Matrix input) {
+		Matrix unbiasedWeightedInput = matrixOperations.multiply(weights, input);
+		Matrix biasedWeightedInput = matrixOperations.add(unbiasedWeightedInput, bias);
+		Matrix output = matrixOperations.scale(biasedWeightedInput, activationFunctionGroup.getFunction());
+
+		if (isTraining()) {
+			this.input = input;
+			this.biasedWeightedInput = biasedWeightedInput;
+			this.output = output;
+			biasedPrimeOutput = matrixOperations.scale(biasedWeightedInput, activationFunctionGroup.getPrime());
+		}
+
 		return output;
-	}
-	
-	protected Vector getBias() {
-		return bias;
 	}
 
-	protected Vector getOutput() {
+	protected Matrix getOutput() {
 		return output;
+	}
+
+	protected Matrix getBiasedPrimeOutput() {
+		return biasedPrimeOutput;
 	}
 
 	protected Matrix getWeights() {
 		return weights;
 	}
 
-	protected Vector getWeightedInput() {
-		return weightedInput;
+	protected void setWeights(Matrix weights) {
+		matrixOperations.update(weights, this.weights);
 	}
-	
+
+	protected Matrix getInput() {
+		return input;
+	}
+
+	protected Matrix getBiasedWeightedInput() {
+		return biasedWeightedInput;
+	}
+
+	protected Matrix getUnbiasedWeightedInput() {
+		return unbiasedWeightedInput;
+	}
+
 	protected Function getActivationFunction() {
 		return activationFunctionGroup.getFunction();
 	}
@@ -54,12 +79,32 @@ public class FeedForwardLayer {
 		return activationFunctionGroup.getPrime();
 	}
 
-	protected Vector getOutputError() {
-		return outputError;
+	protected Matrix getTransposedOutputError() {
+		return transposedOutputError;
 	}
 
-	protected void setOutputError(Vector outputError) {
-		this.outputError = outputError;
+	protected void setTransposedOutputError(Matrix transposedOutputError) {
+		this.transposedOutputError = transposedOutputError;
+	}
+
+	protected Matrix getOutputDelta() {
+		return outputDelta;
+	}
+
+	protected void setOutputDelta(Matrix outputDelta) {
+		this.outputDelta = outputDelta;
+	}
+
+	protected boolean isTraining() {
+		return training;
+	}
+
+	protected void setTraining(boolean training) {
+		this.training = training;
+	}
+
+	protected Matrix getBias() {
+		return bias;
 	}
 
 }

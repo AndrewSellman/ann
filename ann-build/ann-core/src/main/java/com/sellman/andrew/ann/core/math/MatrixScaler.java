@@ -29,8 +29,8 @@ class MatrixScaler {
 		return target;
 	}
 
-	public Vector scale(final Vector source, final Function function) {
-		Matrix result = scale(source.getMatrix(), function);
+	public Vector scale(Vector v, Function f) {
+		Matrix result = scale(v.getMatrix(), f);
 		return new Vector(result);
 	}
 

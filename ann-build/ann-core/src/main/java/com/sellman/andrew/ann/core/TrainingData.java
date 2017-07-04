@@ -1,21 +1,21 @@
 package com.sellman.andrew.ann.core;
 
-import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.Matrix;
 
 public class TrainingData {
-	private final Vector input;
-	private final Vector expectedOutput;
-	
-	public TrainingData(final Vector input, final Vector expectedOutput) {
+	private final Matrix input;
+	private final Matrix expectedOutput;
+
+	public TrainingData(final Matrix input, final Matrix expectedOutput) {
 		this.input = input;
 		this.expectedOutput = expectedOutput;
 	}
-	
-	public Vector getInput() {
+
+	public Matrix getInput() {
 		return input;
 	}
 
-	public Vector getExpectedOutput() {
+	public Matrix getExpectedOutput() {
 		return expectedOutput;
 	}
 

@@ -18,7 +18,7 @@ class MatrixAdder {
 		int columnCount = b.getColumnCount();
 		Matrix target = new Matrix(rowCount, columnCount);
 
-		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount * columnCount);
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount);
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			tasks.add(new MatrixAdditionTask(a, b, rowIndex, target));
 		}
@@ -27,9 +27,45 @@ class MatrixAdder {
 		return target;
 	}
 
+	public Matrix add(final Matrix a, final Vector b) {
+		int rowCount = a.getRowCount();
+		int columnCount = a.getColumnCount();
+		Matrix target = new Matrix(rowCount, columnCount);
+
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount);
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			tasks.add(new MatrixVectorAdditionTask(a, rowIndex, b, target));
+		}
+
+		taskService.runTasks(tasks);
+		return target;
+	}
+
 	public Vector add(final Vector a, final Vector b) {
-		Matrix result = add(a.getMatrix(), b.getMatrix());
-		return new Vector(result);
+		return new Vector(add(a.getMatrix(), b.getMatrix()));
+	}
+
+	public double sum(final Matrix m) {
+		int rowCount = m.getRowCount();
+		Vector target = new Vector(rowCount);
+		
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount);
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			tasks.add(new MatrixSummationTask(m, rowIndex, target));
+		}
+
+		taskService.runTasks(tasks);		
+		return sum(target);
+		
+	}
+
+	private double sum(Vector v) {
+		double result = 0;
+		for (int rowIndex = 0; rowIndex < v.getRowCount(); rowIndex++) {
+			result += v.getValue(rowIndex);
+		}
+			
+		return result;
 	}
 
 }

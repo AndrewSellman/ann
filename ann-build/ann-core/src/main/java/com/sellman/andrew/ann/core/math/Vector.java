@@ -1,35 +1,35 @@
 package com.sellman.andrew.ann.core.math;
 
 public class Vector {
-	private static final int ROW_COUNT = 1;
-	private static final int ROW_INDEX = 0;
+	private static final int COLUMN_COUNT = 1;
+	private static final int COLUMN_INDEX = 0;
 	private final Matrix matrix;
 
 	public Vector(double[] data) {
 		this(data.length);
-		for (int c = 0; c < data.length; c++) {
-			setValue(c, data[c]);
+		for (int rowIndex = 0; rowIndex < data.length; rowIndex++) {
+			setValue(rowIndex, data[rowIndex]);
 		}
 	}
 
-	public Vector(int columnCount) {
-		matrix = new Matrix(ROW_COUNT, columnCount);
+	public Vector(int rowCount) {
+		matrix = new Matrix(rowCount, COLUMN_COUNT);
 	}
 
 	protected Vector(Matrix matrix) {
 		this.matrix = matrix;
 	}
 
-	public int getColumnCount() {
-		return matrix.getColumnCount();
+	public int getRowCount() {
+		return matrix.getRowCount();
 	}
 
-	public double getValue(int columnIndex) {
-		return matrix.getValue(ROW_INDEX, columnIndex);
+	public double getValue(int rowIndex) {
+		return matrix.getValue(rowIndex, COLUMN_INDEX);
 	}
 
-	public void setValue(int columnIndex, double value) {
-		matrix.setValue(ROW_INDEX, columnIndex, value);
+	public void setValue(int rowIndex, double value) {
+		matrix.setValue(rowIndex, COLUMN_INDEX, value);
 	}
 
 	protected Matrix getMatrix() {

@@ -1,11 +1,11 @@
 package com.sellman.andrew.ann.core.math;
 
-class LogisticPrimeFunction implements Function {
-	private static final Function DELEGATE = new LogisticFunction();
+class LogisticPrimeFunction extends LogisticFunction {
 	
 	@Override
 	public double evaluate(double x) {
-		return DELEGATE.evaluate(-x);
+		double intermediate = super.evaluate(x);
+		return intermediate * (1.0 - intermediate);
 	}
 
 }
