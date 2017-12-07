@@ -1,8 +1,6 @@
 package com.sellman.andrew.ann.core.training.evaluator;
 
-import com.sellman.andrew.ann.core.training.TrainingProgress;
-
-public class MaximumEpochsEvaluator implements TrainingEvaluator {
+public class MaximumEpochsEvaluator extends TrainingEvaluator {
 	int maximumEpochs;
 
 	public MaximumEpochsEvaluator(int maximumEpochs) {
@@ -10,8 +8,8 @@ public class MaximumEpochsEvaluator implements TrainingEvaluator {
 	}
 
 	@Override
-	public boolean isFinishedTraining(TrainingProgress progress) {
-		return maximumEpochs == progress.getStatistics().getEpoch();
+	public boolean isFinishedTraining() {
+		return getTrainingProgress().getEpochIndex() == maximumEpochs;
 	}
 
 }

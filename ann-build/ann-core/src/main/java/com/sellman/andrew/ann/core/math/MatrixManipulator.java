@@ -40,11 +40,9 @@ class MatrixManipulator {
 
 		taskService.runTasks(tasks);
 	}
-
+	
 	public void update(final Vector source, final Vector target) {
-		for (int rowIndex = 0; rowIndex < source.getRowCount(); rowIndex++) {
-			target.setValue(rowIndex, source.getValue(rowIndex));
-		}
+		update(source.getMatrix(), target.getMatrix());
 	}
 
 }

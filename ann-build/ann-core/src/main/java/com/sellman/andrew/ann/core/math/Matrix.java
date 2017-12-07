@@ -8,7 +8,7 @@ public class Matrix {
 	}
 	
 	public Matrix(int rowCount, int columnCount) {
-		this.data = new double[rowCount][columnCount];
+		this(new double[rowCount][columnCount]);
 	}
 
 	public int getRowCount() {
@@ -27,12 +27,6 @@ public class Matrix {
 		data[rowIndex][columnIndex] = value;
 	}
 	
-	public void setValues(int columnIndex, double[] values) {
-		for (int rowIndex = 0; rowIndex < getRowCount(); rowIndex++) {
-			setValue(rowIndex, columnIndex, values[rowIndex]);
-		}
-	}
-
 	public String toString() {
 		StringBuilder sb = new StringBuilder("[");
 		sb.append(getRowCount());

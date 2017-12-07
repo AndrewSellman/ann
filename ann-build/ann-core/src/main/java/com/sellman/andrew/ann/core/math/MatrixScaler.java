@@ -13,15 +13,15 @@ class MatrixScaler {
 		this.taskService = taskService;
 	}
 
-	public Matrix scale(final Matrix source, final Function function) {
-		int rowCount = source.getRowCount();
-		int columnCount = source.getColumnCount();
+	public Matrix scale(final Matrix m, final Function f) {
+		int rowCount = m.getRowCount();
+		int columnCount = m.getColumnCount();
 		Matrix target = new Matrix(rowCount, columnCount);
 
 		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount * columnCount);
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-				tasks.add(new MatrixScalerTask(source, rowIndex, columnIndex, function, target));
+				tasks.add(new MatrixScalerTask(m, rowIndex, columnIndex, f, target));
 			}
 		}
 
@@ -29,9 +29,9 @@ class MatrixScaler {
 		return target;
 	}
 
-	public Vector scale(Vector v, Function f) {
-		Matrix result = scale(v.getMatrix(), f);
-		return new Vector(result);
+	public Vector scale(final Vector v, final Function f) {
+		return new Vector(scale(v.getMatrix(), f));
 	}
+
 
 }

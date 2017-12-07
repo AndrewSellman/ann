@@ -1,8 +1,9 @@
 package com.sellman.andrew.ann.core.training;
 
-import java.util.Iterator;
 import java.util.List;
 
+import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.event.EventManager;
 import com.sellman.andrew.ann.core.math.MatrixOperations;
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
 
@@ -12,18 +13,20 @@ public class FeedForwardNetworkTrainerConfig {
 	private static final double DEFAULT_LEARNING_RATE = 0.5;
 	private final List<TrainingEvaluator> trainingEvaluators;
 	private final MatrixOperations matrixOps;
+	private final EventManager eventManager;
+	private final TaskService taskService;
 	private double learningRate = 0.5;
 	private int batchSize = 1;
-	private boolean trainingDataShuffledEachEpoch;
 	private double percentTrainingDataForValidation;
 
-	public FeedForwardNetworkTrainerConfig(final List<TrainingEvaluator> trainingEvaluators, final MatrixOperations matrixOperations) {
+	public FeedForwardNetworkTrainerConfig(final TaskService taskService, final List<TrainingEvaluator> trainingEvaluators, final MatrixOperations matrixOperations, final EventManager eventManager) {
 		this.trainingEvaluators = trainingEvaluators;
 		this.matrixOps = matrixOperations;
 		this.learningRate = DEFAULT_LEARNING_RATE;
 		this.batchSize = DEFAULT_BATCH_SIZE;
-		this.setTrainingDataShuffledEachEpoch(true);
 		this.setPercentTrainingDataForValidation(DEFAULT_PERCENT_TRAINING_DATA_FOR_VALIDATION);
+		this.eventManager = eventManager;
+		this.taskService = taskService;
 	}
 
 	public double getLearningRate() {
@@ -46,16 +49,8 @@ public class FeedForwardNetworkTrainerConfig {
 		return matrixOps;
 	}
 
-	public Iterator<TrainingEvaluator> getTrainingEvaluators() {
-		return trainingEvaluators.iterator();
-	}
-
-	public boolean isTrainingDataShuffledEachEpoch() {
-		return trainingDataShuffledEachEpoch;
-	}
-
-	public void setTrainingDataShuffledEachEpoch(boolean trainingDataShuffledEachEpoch) {
-		this.trainingDataShuffledEachEpoch = trainingDataShuffledEachEpoch;
+	public List<TrainingEvaluator> getTrainingEvaluators() {
+		return trainingEvaluators;
 	}
 
 	public double getPercentTrainingDataForValidation() {
@@ -64,6 +59,14 @@ public class FeedForwardNetworkTrainerConfig {
 
 	public void setPercentTrainingDataForValidation(double percentTrainingDataForValidation) {
 		this.percentTrainingDataForValidation = percentTrainingDataForValidation;
+	}
+
+	public EventManager getEventManager() {
+		return eventManager;
+	}
+
+	public TaskService getTaskService() {
+		return taskService;
 	}
 
 }

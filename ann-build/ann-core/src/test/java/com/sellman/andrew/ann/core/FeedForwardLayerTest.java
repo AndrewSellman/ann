@@ -27,7 +27,7 @@ public class FeedForwardLayerTest {
 	private TaskService taskService;
 	private MatrixOperations matrixOperations;
 	private FunctionGroup functionGroup;
-	private FeedForwardLayer layer;
+	private FeedForwardNetworkLayer layer;
 
 	@Before
 	public void prepareTest() {

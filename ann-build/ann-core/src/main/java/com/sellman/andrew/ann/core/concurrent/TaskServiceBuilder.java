@@ -5,9 +5,10 @@ import java.util.concurrent.ThreadFactory;
 public class TaskServiceBuilder {
 	private Priority priority;
 	private boolean fireAndForget;
+	private int threadCount;
 
 	public TaskServiceBuilder() {
-		this.normalPriority().waitForCompletion();
+		normalPriority().waitForCompletion();
 	}
 
 	public TaskService build() {
@@ -41,11 +42,16 @@ public class TaskServiceBuilder {
 		return this;
 	}
 
+	public TaskServiceBuilder setThreadCount(int threadCount) {
+		this.threadCount = threadCount;
+		return this;
+	}
+
 	private AbstractTaskExecutor buildTaskExecutor(ThreadFactory threadFactory) {
 		if (fireAndForget) {
-			return new FireAndForgetTaskExecutor(threadFactory);
+			return new FireAndForgetTaskExecutor(threadFactory, threadCount);
 		} else {
-			return new WaitForCompletionTaskExecutor(threadFactory);
+			return new WaitForCompletionTaskExecutor(threadFactory, threadCount);
 		}
 	}
 

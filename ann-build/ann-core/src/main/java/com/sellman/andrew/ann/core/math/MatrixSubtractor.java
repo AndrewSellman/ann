@@ -26,10 +26,9 @@ class MatrixSubtractor {
 		taskService.runTasks(tasks);
 		return target;
 	}
-
+	
 	public Vector subtract(final Vector left, final Vector right) {
-		Matrix result = subtract(left.getMatrix(), right.getMatrix());
-		return new Vector(result);
+		return new Vector(subtract(left.getMatrix(), right.getMatrix()));
 	}
 
 }

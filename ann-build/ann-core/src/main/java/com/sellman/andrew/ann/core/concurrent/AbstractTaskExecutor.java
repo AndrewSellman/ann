@@ -8,11 +8,19 @@ import java.util.concurrent.ThreadFactory;
 abstract class AbstractTaskExecutor {
 	private final ExecutorService executorService;
 
-	public AbstractTaskExecutor(ThreadFactory threadFactory) {
-		this.executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
+	public AbstractTaskExecutor(ThreadFactory threadFactory, int threadCount) {
+		if (threadCount < 0) {
+			throw new IllegalArgumentException("threadCount cannot be less tan zero!");
+		}
+		
+		if (threadCount == 0) {
+			this.executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
+		} else {
+			this.executorService = Executors.newFixedThreadPool(threadCount, threadFactory);
+		}
 	}
 
-	public final void runTasks(Collection<AbstractTask> tasks) {
+	public final void runTasks(Collection<? extends AbstractTask> tasks) {
 		doRunTasks(tasks);
 	}
 
@@ -28,9 +36,9 @@ abstract class AbstractTaskExecutor {
 	protected ExecutorService getExecutorService() {
 		return executorService;
 	}
-	
+
 	protected abstract void doRunTask(AbstractTask task);
 
-	protected abstract void doRunTasks(Collection<AbstractTask> tasks);
+	protected abstract void doRunTasks(Collection<? extends AbstractTask> tasks);
 
 }

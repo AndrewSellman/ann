@@ -28,18 +28,20 @@ public class FeedForwardNetworkTest {
 	private static final Vector BIAS2 = new Vector(new double[] { 1000});
 	private static final MatrixOperationsFactory OPERATIONS_FACTORY = new MatrixOperationsFactory();
 
-	private TaskService taskService;
+	private TaskService highPriorityTaskService;
+	private TaskService lowPriorityTaskService;
 	private MatrixOperations matrixOperations;
 	private FunctionGroup layer1FunctionGroup;
-	private FeedForwardLayer layer1;
+	private FeedForwardNetworkLayer layer1;
 	private FunctionGroup layer2FunctionGroup;
-	private FeedForwardLayer layer2;
+	private FeedForwardNetworkLayer layer2;
 	private FeedForwardNetwork network;
 
 	@Before
 	public void prepareTest() {
-		taskService = new TaskServiceBuilder().highPriority().build();
-		matrixOperations = OPERATIONS_FACTORY.getMatrixOperations(taskService);
+		highPriorityTaskService = new TaskServiceBuilder().highPriority().build();
+		lowPriorityTaskService = new TaskServiceBuilder().lowPriority().fireAndForget().build();
+		matrixOperations = OPERATIONS_FACTORY.getMatrixOperations(highPriorityTaskService);
 
 		layer1FunctionGroup = new FunctionGroupHelper(new ConstantAdderFunction(100), null);
 //		layer1 = new FeedForwardLayer("layer1", matrixOperations, WEIGHT1, BIAS1, layer1FunctionGroup);
@@ -50,7 +52,7 @@ public class FeedForwardNetworkTest {
 
 	@After
 	public void completeTest() throws Exception {
-		taskService.close();
+		highPriorityTaskService.close();
 	}
 
 	@Test

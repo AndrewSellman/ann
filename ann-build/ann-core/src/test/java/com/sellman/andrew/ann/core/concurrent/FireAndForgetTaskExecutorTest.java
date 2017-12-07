@@ -25,7 +25,7 @@ public class FireAndForgetTaskExecutorTest {
 	@Before
 	public void prepareTest() {
 		threadFactory = new PrioritizedThreadFactory(Priority.NORMAL);
-		executor = new FireAndForgetTaskExecutor(threadFactory);
+		executor = new FireAndForgetTaskExecutor(threadFactory, 0);
 
 		task1 = mock(AbstractTask.class, CALLS_REAL_METHODS);
 		doNothing().when(task1).execute();

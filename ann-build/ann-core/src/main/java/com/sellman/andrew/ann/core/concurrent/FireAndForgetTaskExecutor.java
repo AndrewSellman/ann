@@ -5,8 +5,8 @@ import java.util.concurrent.ThreadFactory;
 
 class FireAndForgetTaskExecutor extends AbstractTaskExecutor {
 
-	public FireAndForgetTaskExecutor(ThreadFactory threadFactory) {
-		super(threadFactory);
+	public FireAndForgetTaskExecutor(ThreadFactory threadFactory, int threadCount) {
+		super(threadFactory, threadCount);
 	}
 
 	@Override
@@ -15,7 +15,7 @@ class FireAndForgetTaskExecutor extends AbstractTaskExecutor {
 	}
 
 	@Override
-	protected void doRunTasks(Collection<AbstractTask> tasks) {
+	protected void doRunTasks(Collection<? extends AbstractTask> tasks) {
 		for (AbstractTask task : tasks) {
 			doRunTask(task);
 		}

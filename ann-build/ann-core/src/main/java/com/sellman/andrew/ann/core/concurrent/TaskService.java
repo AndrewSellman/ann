@@ -6,6 +6,6 @@ public interface TaskService extends AutoCloseable {
 
 	public void runTask(AbstractTask task);
 
-	public void runTasks(Collection<AbstractTask> tasks);
+	public void runTasks(Collection<? extends AbstractTask> tasks);
 
 }

@@ -22,15 +22,14 @@ public class MatrixTest {
 	@Test
 	public void constructorWithData() {
 		double[][] data = new double[ROW_COUNT][COLUMN_COUNT];
-		Matrix m = new Matrix(data);
 
+		Matrix m = new Matrix(data);
 		assertMatrix(m, ROW_COUNT, COLUMN_COUNT);
 	}
 
 	@Test
 	public void constructorWithDimensions() {
 		Matrix m = new Matrix(ROW_COUNT, COLUMN_COUNT);
-
 		assertMatrix(m, ROW_COUNT, COLUMN_COUNT);
 	}
 

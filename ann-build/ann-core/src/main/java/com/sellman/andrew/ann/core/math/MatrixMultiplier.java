@@ -29,10 +29,6 @@ class MatrixMultiplier {
 		return target;
 	}
 
-	public Vector multiply(Matrix m, Vector v) {
-		return new Vector(multiply(m, v.getMatrix()));
-	}
-
 	public Matrix hadamard(Matrix a, Matrix b) {
 		int rowCount = a.getRowCount();
 		Matrix target = new Matrix(rowCount, a.getColumnCount());
@@ -44,9 +40,16 @@ class MatrixMultiplier {
 		return target;
 	}
 
-	public Vector hadamard(Vector a, Vector b) {
-		return new Vector(hadamard(a.getMatrix(), b.getMatrix()));
+	public Vector multiply(final Matrix left, final Vector right) {
+		return new Vector(multiply(left, right.getMatrix()));
+	}
+	
+	public Matrix multiply(final Vector left, final Matrix right) {
+		return (multiply(left.getMatrix(), right));
 	}
 
+	public Vector hadamard(final Vector a, final Vector b) {
+		return new Vector(hadamard(a.getMatrix(), b.getMatrix()));
+	}
 
 }

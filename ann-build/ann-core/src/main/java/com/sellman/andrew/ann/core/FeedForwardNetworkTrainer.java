@@ -1,15 +1,15 @@
 package com.sellman.andrew.ann.core;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.MatrixOperations;
 import com.sellman.andrew.ann.core.math.Vector;
 import com.sellman.andrew.ann.core.training.FeedForwardNetworkTrainerConfig;
 import com.sellman.andrew.ann.core.training.TrainingProgress;
-import com.sellman.andrew.ann.core.training.TrainingStatistics;
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
 
 public class FeedForwardNetworkTrainer {
@@ -21,63 +21,71 @@ public class FeedForwardNetworkTrainer {
 		this.config = config;
 	}
 
-	public void train(List<TrainingData> trainingData) {
-		TrainingProgress progress = new TrainingProgress();
-		TrainingStatistics statistics = new TrainingStatistics();
-		progress.setStatistics(statistics);
+	public void train(List<TrainingItem> trainingData) {
+		TrainingProgress progress = new TrainingProgress(network.getContext(), config.getEventManager());
+		
+		int splitIndex = (int) (trainingData.size() * config.getPercentTrainingDataForValidation());
+		List<TrainingItem> validationData = trainingData.stream().skip(trainingData.size() - splitIndex).collect(Collectors.toList());
+		trainingData = trainingData.stream().limit(trainingData.size() - splitIndex).collect(Collectors.toList());
 
-		network.setTraining(true);
-		while (true) {
-			statistics.incrementEpoch();
+		do {
 			trainEpoch(trainingData, progress);
-			if (isFinishedTraining(progress)) {
-				break;
-			}
+			validateEpoch(validationData, progress);
+			network.setTraining(true);
+			
+		} while (!isFinishedTraining(progress));
+	}
+
+	private void validateEpoch(List<TrainingItem> validationData, TrainingProgress progress) {
+		progress.resetValidationError();
+		double outputError = 0;
+		for (TrainingItem validationExample : validationData) {
+			Vector actualOutput = network.evaluate(validationExample.getInput());
+			Vector outputDifference = subtract(actualOutput, validationExample.getExpectedOutput());
+			Vector absoluteOutputDifference = absolute(outputDifference);
+			outputError += sum(absoluteOutputDifference);
+		}
+		progress.setValidationError(outputError);		
+	}
+
+	private void trainEpoch(List<TrainingItem> trainingData, TrainingProgress progress) {
+		network.setTraining(true);
+		Collections.shuffle(trainingData);
+
+		progress.incrementEpochIndex();
+		progress.resetBatchIndex();
+		progress.resetEpochError();
+		progress.resetBatchError();
+		progress.resetValidationError();
+
+		for (int b = 0; b < trainingData.size(); b += getBatchSize()) {
+			progress.incrementBatchIndex();
+			trainBatch(trainingData.get(b), progress);
 		}
 
+		progress.setEpochError(progress.getBatchError());
 		network.setTraining(false);
 	}
 
-	private void trainEpoch(List<TrainingData> trainingData, TrainingProgress progress) {
-		if (config.isTrainingDataShuffledEachEpoch()) {
-			Collections.shuffle(trainingData);
-		}
+	private void trainBatch(TrainingItem example, TrainingProgress progress) {
+		Vector actualOutput = network.evaluate(example.getInput());
+		Vector outputDifference = getMatrixOps().subtract(actualOutput, example.getExpectedOutput());
 
-		progress.getStatistics().resetBatch();
-		progress.resetAccumulatedBatchErrors();
-
-		for (int b = 0; b < trainingData.size(); b += getBatchSize()) {
-			progress.getStatistics().incrementBatch();
-//			System.out.println("epoch: " + progress.getStatistics().getEpoch() + " batch: " + progress.getStatistics().getBatch());
-			trainExample(trainingData.get(b), progress);
-		}
-		
-		System.out.println("epoch: " + progress.getStatistics().getEpoch() + " error: " + progress.getAccumulatedBatchErrors());
-		if (progress.getStatistics().getEpoch() % 10 == 0) {
-			System.out.println();
-		}
-	}
-
-	private void trainExample(TrainingData example, TrainingProgress progress) {
-		Matrix actualOutput = network.evaluate(example.getInput());
-		Matrix outputDifference = getMatrixOps().subtract(actualOutput, example.getExpectedOutput());
-		
-		Matrix outputError = getMatrixOps().scale(outputDifference, x -> 1.0 / 2.0 * Math.pow(x, 2));
+		Vector outputError = getMatrixOps().scale(outputDifference, x -> 1.0 / 2.0 * Math.pow(x, 2));
 		double batchError = sum(outputError);
-		progress.addToAccumulatedBatchErrors(batchError);
-		
-		Matrix input = network.getInput(getLayerCount() - 1);
-		
-		Matrix primeOutput = network.getBiasedPrimeOutput(getLayerCount() - 1);
-		Matrix outputDelta = getMatrixOps().hadamard(outputDifference, primeOutput);
+		progress.accumulateBatchError(batchError);
+
+		Vector input = network.getInput(getLayerCount() - 1);
+
+		Vector primeOutput = network.getBiasedPrimeOutput(getLayerCount() - 1);
+		Vector outputDelta = getMatrixOps().hadamard(outputDifference, primeOutput);
 		network.setOutputDelta(getLayerCount() - 1, outputDelta);
 
 		for (int l = getLayerCount() - 2; l >= 0; l--) {
 			Matrix nextLayerWeights = network.getWeights(l + 1);
 			Matrix transposedNextLayerWeights = getMatrixOps().transpose(nextLayerWeights);
-			Matrix nextLayerOutputDelta = network.getOutputDelta(l + 1);
-			Matrix weightsDelta = getMatrixOps().multiply(transposedNextLayerWeights, nextLayerOutputDelta);
-
+			Vector nextLayerOutputDelta = network.getOutputDelta(l + 1);
+			Vector weightsDelta = getMatrixOps().multiply(transposedNextLayerWeights, nextLayerOutputDelta);
 			primeOutput = network.getBiasedPrimeOutput(l);
 			outputDelta = getMatrixOps().hadamard(weightsDelta, primeOutput);
 			network.setOutputDelta(l, outputDelta);
@@ -88,31 +96,31 @@ public class FeedForwardNetworkTrainer {
 			input = network.getInput(l);
 			Matrix transposedInput = getMatrixOps().transpose(input);
 			Matrix weightError = getMatrixOps().multiply(outputDelta, transposedInput);
-			
+
 			Matrix scaledWeightError = getMatrixOps().scale(weightError, x -> x * getLearningRate());
 
 			Matrix currentWeights = network.getWeights(l);
 
 			Matrix newWeights = getMatrixOps().subtract(currentWeights, scaledWeightError);
-			getMatrixOps().update(newWeights, currentWeights);
+			network.setWeights(l, newWeights);
 
-			Matrix scaledOutputDelta = getMatrixOps().scale(outputDelta, x -> x * getLearningRate());
-			Matrix currentBias = network.getBias(l);
-			Matrix newBias = getMatrixOps().subtract(currentBias, scaledOutputDelta);
-			getMatrixOps().update(newBias, currentBias);
+			Vector scaledOutputDelta = getMatrixOps().scale(outputDelta, x -> x * getLearningRate());
+			Vector currentBias = network.getBias(l);
+			Vector newBias = getMatrixOps().subtract(currentBias, scaledOutputDelta);
+			network.setBias(l, newBias);
 		}
 	}
 
 	private boolean isFinishedTraining(TrainingProgress progress) {
-		Iterator<TrainingEvaluator> trainingEvaluations = config.getTrainingEvaluators();
-		while (trainingEvaluations.hasNext()) {
-			TrainingEvaluator trainingEvaluator = trainingEvaluations.next();
-			if (trainingEvaluator.isFinishedTraining(progress)) {
-				return true;
-			}
+		AtomicBoolean finishedTraining = new AtomicBoolean();
+		List<TrainingEvaluator> trainingEvaluations = config.getTrainingEvaluators();
+		for (TrainingEvaluator trainingEvaluator : trainingEvaluations) {
+			trainingEvaluator.initFinishedTraining(finishedTraining);
+			trainingEvaluator.initTrainingProgress(progress);
 		}
 
-		return false;
+		config.getTaskService().runTasks(trainingEvaluations);
+		return finishedTraining.get();
 	}
 
 	private int getBatchSize() {
@@ -130,13 +138,29 @@ public class FeedForwardNetworkTrainer {
 	private int getLayerCount() {
 		return network.getLayerCount();
 	}
-	
+
+	private Matrix absolute(Matrix m) {
+		return getMatrixOps().absolute(m);
+	}
+
+	private Vector absolute(Vector v) {
+		return getMatrixOps().absolute(v);
+	}
+
+	private Matrix subtract(Matrix left, Matrix right) {
+		return getMatrixOps().subtract(left, right);
+	}
+
+	private Vector subtract(Vector left, Vector right) {
+		return getMatrixOps().subtract(left, right);
+	}
+
 	private double sum(Matrix m) {
 		return getMatrixOps().sum(m);
 	}
 
-	private Matrix absolute(Matrix m) {
-		return getMatrixOps().absolute(m);
+	private double sum(Vector v) {
+		return getMatrixOps().sum(v);
 	}
 
 }

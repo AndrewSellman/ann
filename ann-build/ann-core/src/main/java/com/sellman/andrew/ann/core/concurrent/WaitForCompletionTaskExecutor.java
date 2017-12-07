@@ -1,25 +1,22 @@
 package com.sellman.andrew.ann.core.concurrent;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
 class WaitForCompletionTaskExecutor extends AbstractTaskExecutor {
 
-	public WaitForCompletionTaskExecutor(ThreadFactory threadFactory) {
-		super(threadFactory);
+	public WaitForCompletionTaskExecutor(ThreadFactory threadFactory, int threadCount) {
+		super(threadFactory, threadCount);
 	}
 
 	@Override
 	protected void doRunTask(AbstractTask task) {
-		List<AbstractTask> tasks = new ArrayList<AbstractTask>(1);
-		tasks.add(task);
-		doRunTasks(tasks);
+		doRunTasks(Arrays.asList(task));
 	}
 
 	@Override
-	protected void doRunTasks(Collection<AbstractTask> tasks) {
+	protected void doRunTasks(Collection<? extends AbstractTask> tasks) {
 		try {
 			getExecutorService().invokeAll(tasks);
 		} catch (InterruptedException ie) {

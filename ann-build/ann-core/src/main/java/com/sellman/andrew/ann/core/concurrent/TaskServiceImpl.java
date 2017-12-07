@@ -3,22 +3,22 @@ package com.sellman.andrew.ann.core.concurrent;
 import java.util.Collection;
 
 class TaskServiceImpl implements TaskService {
-	private final AbstractTaskExecutor tasksExecutor;
+	private final AbstractTaskExecutor taskExecutor;
 
 	public TaskServiceImpl(AbstractTaskExecutor tasksExecutor) {
-		this.tasksExecutor = tasksExecutor;
+		this.taskExecutor = tasksExecutor;
 	}
 
-	public void runTasks(Collection<AbstractTask> tasks) {
-		tasksExecutor.runTasks(tasks);
+	public void runTasks(Collection<? extends AbstractTask> tasks) {
+		taskExecutor.runTasks(tasks);
 	}
 
 	public void runTask(AbstractTask task) {
-		tasksExecutor.runTask(task);
+		taskExecutor.runTask(task);
 	}
 
 	public void close() throws Exception {
-		tasksExecutor.close();
+		taskExecutor.close();
 	}
 
 }

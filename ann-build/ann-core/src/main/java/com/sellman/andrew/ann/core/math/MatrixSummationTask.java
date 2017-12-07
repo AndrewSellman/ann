@@ -2,7 +2,7 @@ package com.sellman.andrew.ann.core.math;
 
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 
-public class MatrixSummationTask extends AbstractTask {
+class MatrixSummationTask extends AbstractTask {
 	private final Matrix source;
 	private final int rowIndex;
 	private final Vector target;

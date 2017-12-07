@@ -25,7 +25,7 @@ public class WaitForCompletionTaskExecutorTest {
 	@Before
 	public void prepareTest() {
 		threadFactory = new PrioritizedThreadFactory(Priority.NORMAL);
-		executor = new WaitForCompletionTaskExecutor(threadFactory);
+		executor = new WaitForCompletionTaskExecutor(threadFactory, 0);
 
 		task1 = mock(AbstractTask.class, CALLS_REAL_METHODS);
 		doNothing().when(task1).execute();

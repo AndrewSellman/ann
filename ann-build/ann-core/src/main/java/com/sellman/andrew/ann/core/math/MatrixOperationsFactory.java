@@ -10,8 +10,7 @@ public class MatrixOperationsFactory {
 		MatrixSubtractor subtractor = new MatrixSubtractor(taskService);
 		MatrixScaler scaler = new MatrixScaler(taskService);
 		MatrixManipulator manipulator = new MatrixManipulator(taskService);
-		MatrixAverager averager = new MatrixAverager(taskService);
-		return new MatrixOperationsImpl(multiplier, adder, subtractor, scaler, manipulator, averager);
+		return new MatrixOperationsImpl(multiplier, adder, subtractor, scaler, manipulator);
 	}
 
 }

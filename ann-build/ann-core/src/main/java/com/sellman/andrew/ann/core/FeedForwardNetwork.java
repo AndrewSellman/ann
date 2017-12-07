@@ -2,90 +2,126 @@ package com.sellman.andrew.ann.core;
 
 import java.util.List;
 
+import com.sellman.andrew.ann.core.event.Context;
+import com.sellman.andrew.ann.core.event.Event;
+import com.sellman.andrew.ann.core.event.EventManager;
+import com.sellman.andrew.ann.core.event.NetworkInputEvent;
+import com.sellman.andrew.ann.core.event.NetworkOutputEvent;
 import com.sellman.andrew.ann.core.math.Function;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.Vector;
 
 public class FeedForwardNetwork {
-	private final String name;
-	private final List<FeedForwardLayer> layers;
+	private final FeedForwardNetworkConfig config;
 
-	public FeedForwardNetwork(String name, List<FeedForwardLayer> layers) {
-		this.name = name;
-		this.layers = layers;
+	public FeedForwardNetwork(FeedForwardNetworkConfig config) {
+		this.config = config;
 	}
 
-	public Matrix evaluate(final Matrix input) {
-		Matrix nextLayerInput = input;
-		Matrix output = null;
-		for (FeedForwardLayer layer : layers) {
+	public Vector evaluate(final Vector input) {
+		fireNetworkInputEvent(input);
+
+		Vector nextLayerInput = input;
+		Vector output = null;
+		for (FeedForwardNetworkLayer layer : getLayers()) {
 			output = layer.evaluate(nextLayerInput);
 			nextLayerInput = output;
 		}
 
+		fireNetworkOutputEvent(output);
 		return output;
 	}
 
 	protected int getLayerCount() {
-		return layers.size();
+		return config.getLayerCount();
 	}
 
-	protected Matrix getOutput(int layerIndex) {
-		return layers.get(layerIndex).getOutput();
+	protected Vector getOutput(int layerIndex) {
+		return getLayers().get(layerIndex).getOutput();
 	}
 
-	protected Matrix getBiasedPrimeOutput(int layerIndex) {
-		return layers.get(layerIndex).getBiasedPrimeOutput();
-	}
-
-	protected Matrix getUnbiasedWeightedInput(int layerIndex) {
-		return layers.get(layerIndex).getUnbiasedWeightedInput();
-	}
-
-	protected Matrix getBiasedWeightedInput(int layerIndex) {
-		return layers.get(layerIndex).getBiasedWeightedInput();
+	protected Vector getBiasedPrimeOutput(int layerIndex) {
+		return getLayers().get(layerIndex).getBiasedPrimeOutput();
 	}
 
 	protected Matrix getWeights(int layerIndex) {
-		return layers.get(layerIndex).getWeights();
+		return getLayers().get(layerIndex).getWeights();
 	}
 
-	protected Matrix getBias(int layerIndex) {
-		return layers.get(layerIndex).getBias();
+	protected void setWeights(int layerIndex, Matrix weights) {
+		getLayers().get(layerIndex).setWeights(weights);
+	}
+
+	protected Vector getBias(int layerIndex) {
+		return getLayers().get(layerIndex).getBias();
+	}
+
+	protected void setBias(int layerIndex, Vector bias) {
+		getLayers().get(layerIndex).setBias(bias);
 	}
 
 	protected Function getActivationFunction(int layerIndex) {
-		return layers.get(layerIndex).getActivationFunction();
+		return getLayers().get(layerIndex).getActivationFunction();
 	}
 
 	protected Function getActivationPrimeFunction(int layerIndex) {
-		return layers.get(layerIndex).getActivationPrimeFunction();
+		return getLayers().get(layerIndex).getActivationPrimeFunction();
 	}
 
-	protected Matrix getTransposedOutputError(int layerIndex) {
-		return layers.get(layerIndex).getTransposedOutputError();
+	protected Vector getOutputDelta(int layerIndex) {
+		return getLayers().get(layerIndex).getOutputDelta();
 	}
 
-	protected void setTransposedOutputError(int layerIndex, Matrix transposedOutputError) {
-		layers.get(layerIndex).setTransposedOutputError(transposedOutputError);
+	protected void setOutputDelta(int layerIndex, Vector outputDelta) {
+		getLayers().get(layerIndex).setOutputDelta(outputDelta);
 	}
 
-	protected Matrix getOutputDelta(int layerIndex) {
-		return layers.get(layerIndex).getOutputDelta();
-	}
-
-	protected void setOutputDelta(int layerIndex, Matrix outputDelta) {
-		layers.get(layerIndex).setOutputDelta(outputDelta);
-	}
-
-	public Matrix getInput(int layerIndex) {
-		return layers.get(layerIndex).getInput();
+	public Vector getInput(int layerIndex) {
+		return getLayers().get(layerIndex).getInput();
 	}
 
 	public void setTraining(boolean isTraining) {
-		for (FeedForwardLayer layer : layers) {
+		for (FeedForwardNetworkLayer layer : getLayers()) {
 			layer.setTraining(isTraining);
 		}
+	}
+
+	private void fireNetworkInputEvent(Vector input) {
+		if (!isAnyListener(NetworkInputEvent.class)) {
+			return;
+		}
+
+		NetworkInputEvent event = new NetworkInputEvent(getContext(), input);
+		fire(event);
+	}
+
+	private void fireNetworkOutputEvent(Vector output) {
+		if (!isAnyListener(NetworkOutputEvent.class)) {
+			return;
+		}
+
+		NetworkOutputEvent event = new NetworkOutputEvent(getContext(), output);
+		fire(event);
+	}
+
+	private void fire(Event event) {
+		getEventManager().fire(event);
+	}
+
+	private boolean isAnyListener(Class<? extends Event> eventType) {
+		return getEventManager().isAnyRegisteredListenerFor(eventType);
+	}
+	
+	protected Context getContext() {
+		return config.getContext();
+	}
+	
+	private EventManager getEventManager() {
+		return config.getEventManager();
+	}
+	
+	private List<FeedForwardNetworkLayer> getLayers() {
+		return config.getLayers();
 	}
 
 }
