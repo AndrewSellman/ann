@@ -13,42 +13,49 @@ import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 import com.sellman.andrew.ann.core.event.ConsoleListener;
 import com.sellman.andrew.ann.core.event.Context;
+import com.sellman.andrew.ann.core.event.DoNothingListener;
 import com.sellman.andrew.ann.core.event.EpochChangeEvent;
 import com.sellman.andrew.ann.core.event.EpochErrorChangeEvent;
 import com.sellman.andrew.ann.core.event.EpochErrorTrackingListener;
 import com.sellman.andrew.ann.core.event.EventManager;
+import com.sellman.andrew.ann.core.event.MatrixChangeEvent;
+import com.sellman.andrew.ann.core.event.MatrixPollEvent;
 import com.sellman.andrew.ann.core.math.FunctionType;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.MatrixOperations;
-import com.sellman.andrew.ann.core.math.MatrixOperationsFactory;
+import com.sellman.andrew.ann.core.math.MathOperations;
+import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.Vector;
 import com.sellman.andrew.ann.core.training.FeedForwardNetworkTrainerConfig;
+import com.sellman.andrew.ann.core.training.evaluator.FixedLearningRateEvaluator;
+import com.sellman.andrew.ann.core.training.evaluator.LearningRateEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.MaximumEpochsEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.MinimumEpochErrorEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
 
 public class FeedForwardNetworkTrainerExampleITCase {
-	private static final MatrixOperationsFactory OPERATIONS_FACTORY = new MatrixOperationsFactory();
+	private static final MathOperationsFactory OPERATIONS_FACTORY = new MathOperationsFactory();
 	private TaskService highPriorityTaskService;
-	private TaskService eventDispatcher;
-	private MatrixOperations matrixOperations;
+	private TaskService eventsService;
+	private MathOperations matrixOperations;
 	private FeedForwardNetworkLayer layer0;
 	private FeedForwardNetworkLayer layer1;
-	private FeedForwardNetworkTrainer trainer;
+	private AbstractFeedForwardNetworkTrainer trainer;
 	private FeedForwardNetwork network;
 	private List<TrainingEvaluator> trainingEvaluators;
 	private FeedForwardNetworkTrainerConfig config;
 	private List<TrainingItem> trainingData;
 	private EventManager eventManager;
 	private List<Double> epochErrors;
+	private LearningRateEvaluator learningRateEvaluator;
 
 	@Before
 	public void prepareTest() {
 		highPriorityTaskService = new TaskServiceBuilder().highPriority().build();
-		matrixOperations = OPERATIONS_FACTORY.getMatrixOperations(highPriorityTaskService);
+		matrixOperations = OPERATIONS_FACTORY.getOperations(highPriorityTaskService);
 
-		eventDispatcher = new TaskServiceBuilder().lowPriority().fireAndForget().setThreadCount(1).build();
-		eventManager = new EventManager(eventDispatcher);
+		eventsService = new TaskServiceBuilder().lowPriority().fireAndForget().setThreadCount(1).build();
+		eventManager = new EventManager(eventsService);
+		
 		ConsoleListener<EpochChangeEvent> listener1 = new ConsoleListener<EpochChangeEvent>();
 		eventManager.register(listener1, EpochChangeEvent.class);
 		
@@ -58,42 +65,53 @@ public class FeedForwardNetworkTrainerExampleITCase {
 		epochErrors = new ArrayList<Double>();
 		eventManager.register(new EpochErrorTrackingListener(epochErrors), EpochErrorChangeEvent.class);
 
+		DoNothingListener<MatrixPollEvent> listener3 = new DoNothingListener<MatrixPollEvent>();
+		eventManager.register(listener3, MatrixPollEvent.class);
+
+		DoNothingListener<MatrixChangeEvent> listener4 = new DoNothingListener<MatrixChangeEvent>();
+		eventManager.register(listener4, MatrixChangeEvent.class);
+
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();
 		trainingEvaluators.add(new MaximumEpochsEvaluator(100000));
 		trainingEvaluators.add(new MinimumEpochErrorEvaluator(0.000001));
 
-		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, matrixOperations, eventManager);
+		learningRateEvaluator = new FixedLearningRateEvaluator(0.25);
+		
+		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, matrixOperations, eventManager, learningRateEvaluator);
 		config.setBatchSize(1);
-		config.setLearningRate(0.5);
 
 		buildTrainingAndValidationData();
 	}
 
 	@After
 	public void completeTest() throws Exception {
+		eventManager.close();
 		highPriorityTaskService.close();
-		eventDispatcher.close();
+		eventsService.close();
 	}
 
 	@Test
 	public void train() {
 		List<FeedForwardNetworkLayer> layers = new ArrayList<FeedForwardNetworkLayer>();
-		Matrix weights0 = new Matrix(new double[][] { { 0.15, 0.2 }, { 0.25, 0.3 } });
+
+		Context context0 = new Context("test", 0);
+		Matrix weights0 = new Matrix(new double[][] { { 0.15, 0.2 }, { 0.25, 0.3 } }, context0, eventManager);
 		Vector bias0 = new Vector(new double[] { 0.35,  0.35 });
-		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, matrixOperations, FunctionType.LOGISTIC, weights0, bias0);
+		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(context0, eventManager, matrixOperations, FunctionType.LOGISTIC, weights0, bias0);
 		layer0 = new FeedForwardNetworkLayer(layer0Config);
 		layers.add(layer0);
 
-		Matrix weights1 = new Matrix(new double[][] { { 0.4, 0.45 }, { 0.5, 0.55 } });
+		Context context1 = new Context("test", 1);
+		Matrix weights1 = new Matrix(new double[][] { { 0.4, 0.45 }, { 0.5, 0.55 } }, context1, eventManager);
 		Vector bias1 = new Vector(new double[] { 0.6, 0.6 });
-		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, matrixOperations, FunctionType.LOGISTIC, weights1, bias1);
+		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(context1, eventManager, matrixOperations, FunctionType.LOGISTIC, weights1, bias1);
 		layer1 = new FeedForwardNetworkLayer(layer1Config);
 		layers.add(layer1);
 
 		FeedForwardNetworkConfig networkConfig = new FeedForwardNetworkConfig(new Context("test"), eventManager, layers);
 		network = new FeedForwardNetwork(networkConfig);
 
-		trainer = new FeedForwardNetworkTrainer(config, network);
+		trainer = new StochasticFeedForwardNetworkTrainer(config, network);
 		trainer.train(trainingData);
 
 		for (int e = 0; e < epochErrors.size() - 2; e++) {

@@ -17,13 +17,13 @@ public class MatrixManipulatorTest {
 	private static final Matrix M2X3 = new Matrix(new double[][] { { 7, 8, 9 }, { 10, 11, 12 } });
 	private static final Matrix M3X2 = new Matrix(new double[][] { { 7, 8 }, { 9, 10 }, { 11, 12 } });
 
-	private MatrixManipulator manipulator;
+	private Manipulator manipulator;
 	private TaskService taskService;
 
 	@Before
 	public void prepareTest() {
 		taskService = new TaskServiceBuilder().normalPriority().build();
-		manipulator = new MatrixManipulator(taskService);
+		manipulator = new Manipulator(taskService);
 	}
 
 	@After

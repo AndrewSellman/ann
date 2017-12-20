@@ -1,15 +1,18 @@
 package com.sellman.andrew.ann.core.math;
 
+import java.util.concurrent.CountDownLatch;
+
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 
-class MatrixMultiplicationTask extends AbstractTask {
+class MultiplicationTask extends AbstractTask {
 	private final Matrix left;
 	private final Matrix right;
 	private final Matrix target;
 	private final int rowIndex;
 	private final int columnIndex;
 
-	public MatrixMultiplicationTask(final Matrix left, final int rowIndex, final Matrix right, final int columnIndex, final Matrix target) {
+	public MultiplicationTask(CountDownLatch taskGroup, final Matrix left, final int rowIndex, final Matrix right, final int columnIndex, final Matrix target) {
+		super(taskGroup);
 		this.left = left;
 		this.right = right;
 		this.target = target;

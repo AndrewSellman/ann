@@ -1,6 +1,6 @@
 package com.sellman.andrew.ann.core.concurrent;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
 class FireAndForgetTaskExecutor extends AbstractTaskExecutor {
@@ -15,7 +15,7 @@ class FireAndForgetTaskExecutor extends AbstractTaskExecutor {
 	}
 
 	@Override
-	protected void doRunTasks(Collection<? extends AbstractTask> tasks) {
+	protected void doRunTasks(List<? extends AbstractTask> tasks) {
 		for (AbstractTask task : tasks) {
 			doRunTask(task);
 		}

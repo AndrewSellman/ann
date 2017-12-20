@@ -1,6 +1,6 @@
 package com.sellman.andrew.ann.core.event;
 
-public class Event {
+public abstract class Event {
 	private final Context context;
 
 	public Event(final Context context) {
@@ -16,7 +16,7 @@ public class Event {
 	}
 
 	public String toString() {
-		return " for network: <" + getNetworkName() + ">";
+		return " for network layer index: " + getNetworkLayerIndex() + " of network: <" + getNetworkName() + ">";
 	}
 
 }

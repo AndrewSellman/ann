@@ -2,7 +2,7 @@ package com.sellman.andrew.ann.core;
 
 import com.sellman.andrew.ann.core.math.Function;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.MatrixOperations;
+import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.Vector;
 
 public class FeedForwardNetworkLayer {
@@ -12,7 +12,10 @@ public class FeedForwardNetworkLayer {
 	private Vector biasedPrimeOutput;
 	private Vector outputDelta;
 	private boolean training;
-
+	private boolean accumulateDuringTraining;
+	private Vector accumulatedOutputDelta;
+	private Vector accumulatedBiasedPrimeOutput;
+	
 	public FeedForwardNetworkLayer(final FeedForwardNetworkLayerConfig config) {
 		this.config = config;
 	}
@@ -25,6 +28,9 @@ public class FeedForwardNetworkLayer {
 			this.input = input;
 			this.output = output;
 			biasedPrimeOutput = scale(biasedWeightedInput, config.getActivationPrimeFunction());
+			if (accumulateDuringTraining) {
+				accumulatedBiasedPrimeOutput = add(accumulatedBiasedPrimeOutput, accumulatedBiasedPrimeOutput);
+			}
 		}
 
 		return output;
@@ -64,6 +70,17 @@ public class FeedForwardNetworkLayer {
 
 	protected void setOutputDelta(Vector outputDelta) {
 		this.outputDelta = outputDelta;
+		if (training && accumulateDuringTraining) {
+			accumulatedOutputDelta = add(accumulatedOutputDelta, outputDelta);
+		}
+	}
+
+	protected Vector getAccumulatedOutputDelta() {
+		return accumulatedOutputDelta;
+	}
+
+	protected Vector getAccumulatedBiasedPrimeOutput() {
+		return accumulatedBiasedPrimeOutput;
 	}
 
 	protected boolean isTraining() {
@@ -90,7 +107,7 @@ public class FeedForwardNetworkLayer {
 	}
 
 
-	private MatrixOperations getMatrixOps() {
+	private MathOperations getMatrixOps() {
 		return config.getMatrixOps();
 	}
 
@@ -104,6 +121,19 @@ public class FeedForwardNetworkLayer {
 
 	private Vector scale(Vector v, Function f) {
 		return getMatrixOps().scale(v, f);
+	}
+
+	protected void setAccumulateDuringTraining(boolean accumulateDuringTraining) {
+		this.accumulateDuringTraining = accumulateDuringTraining;
+		if (!accumulateDuringTraining) {
+			accumulatedOutputDelta = null;
+			accumulatedBiasedPrimeOutput = null;
+		}
+	}
+
+	protected void resetAccumulationDuringTraining() {
+		accumulatedOutputDelta = new Vector(config.getWeights().getColumnCount());
+		accumulatedBiasedPrimeOutput = new Vector(config.getWeights().getColumnCount());
 	}
 
 }

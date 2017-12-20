@@ -35,7 +35,7 @@ public class TrainingProgressTest {
 	@Before
 	public void prepareTest() {
 		context = new Context("test");
-		progress = new TrainingProgress(context, eventManager);
+		progress = new TrainingProgress(context, eventManager, 42);
 	}
 
 	@Test

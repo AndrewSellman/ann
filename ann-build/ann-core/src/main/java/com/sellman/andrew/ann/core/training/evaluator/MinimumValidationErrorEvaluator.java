@@ -1,5 +1,7 @@
 package com.sellman.andrew.ann.core.training.evaluator;
 
+import com.sellman.andrew.ann.core.training.TrainingProgress;
+
 public class MinimumValidationErrorEvaluator extends TrainingEvaluator {
 	double minimumError;
 
@@ -8,8 +10,8 @@ public class MinimumValidationErrorEvaluator extends TrainingEvaluator {
 	}
 
 	@Override
-	public boolean isFinishedTraining() {
-		return getTrainingProgress().getValidationError() <= minimumError;
+	protected boolean doIsFinishedTraining(TrainingProgress progress) {
+		return progress.getValidationError() <= minimumError;
 	}
 
 }

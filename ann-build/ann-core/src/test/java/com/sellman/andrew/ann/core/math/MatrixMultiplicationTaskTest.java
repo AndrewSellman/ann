@@ -13,7 +13,7 @@ public class MatrixMultiplicationTaskTest {
 	@Test
 	public void multiplicationStep3by2with2by3() {
 		Matrix target = new Matrix(3, 3);
-		MatrixMultiplicationTask task = new MatrixMultiplicationTask(M3X2, ROW_INDEX, M2X3, COLUMN_INDEX, target);
+		MultiplicationTask task = new MultiplicationTask(null, M3X2, ROW_INDEX, M2X3, COLUMN_INDEX, target);
 
 		task.execute();
 		assertEquals(87.0, target.getValue(ROW_INDEX, COLUMN_INDEX), 0.0);

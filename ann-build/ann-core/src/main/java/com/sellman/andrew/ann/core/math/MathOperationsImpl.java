@@ -1,13 +1,13 @@
 package com.sellman.andrew.ann.core.math;
 
-class MatrixOperationsImpl implements MatrixOperations {
-	private final MatrixMultiplier multiplier;
-	private final MatrixAdder adder;
-	private final MatrixSubtractor subtractor;
-	private final MatrixScaler scaler;
-	private final MatrixManipulator manipulator;
+class MathOperationsImpl implements MathOperations {
+	private final Multiplier multiplier;
+	private final Adder adder;
+	private final Subtractor subtractor;
+	private final Scaler scaler;
+	private final Manipulator manipulator;
 	
-	public MatrixOperationsImpl(final MatrixMultiplier multiplier, final MatrixAdder adder, final MatrixSubtractor subtractor, final MatrixScaler scaler, final MatrixManipulator manipulator) {
+	public MathOperationsImpl(final Multiplier multiplier, final Adder adder, final Subtractor subtractor, final Scaler scaler, final Manipulator manipulator) {
 		this.multiplier = multiplier;
 		this.scaler = scaler;
 		this.adder = adder;

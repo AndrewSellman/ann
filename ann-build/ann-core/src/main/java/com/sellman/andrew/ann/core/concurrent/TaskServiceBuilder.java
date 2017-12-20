@@ -28,17 +28,17 @@ public class TaskServiceBuilder {
 	}
 
 	public TaskServiceBuilder normalPriority() {
-		this.priority = Priority.NORMAL;
+		priority = Priority.NORMAL;
 		return this;
 	}
 
 	public TaskServiceBuilder lowPriority() {
-		this.priority = Priority.LOW;
+		priority = Priority.LOW;
 		return this;
 	}
 
 	public TaskServiceBuilder highPriority() {
-		this.priority = Priority.HIGH;
+		priority = Priority.HIGH;
 		return this;
 	}
 

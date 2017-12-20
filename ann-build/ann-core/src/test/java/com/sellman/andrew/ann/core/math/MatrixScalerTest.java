@@ -12,7 +12,7 @@ import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 public class MatrixScalerTest {
 	private static final double SCALAR_VALUE = 123.45;
 	private static final Matrix M2X3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
-	private MatrixScaler scaler;
+	private Scaler scaler;
 	private TaskService taskService;
 
 	private Function function = new Function() {
@@ -25,7 +25,7 @@ public class MatrixScalerTest {
 	@Before
 	public void prepareTest() {
 		taskService = new TaskServiceBuilder().normalPriority().build();
-		scaler = new MatrixScaler(taskService);
+		scaler = new Scaler(taskService);
 	}
 
 	@After

@@ -14,15 +14,22 @@ import com.sellman.andrew.ann.core.event.ValidationErrorChangeEvent;
 public class TrainingProgress {
 	private final Context context;
 	private final EventManager eventManager;
+	private final int batchCount;
 	private int epochIndex;
 	private int batchIndex;
 	private double epochError;
+	private double lastEpochError;
 	private double batchError;
 	private double validationError;
 	
-	public TrainingProgress(final Context context, final EventManager eventManager) {
+	public TrainingProgress(final Context context, final EventManager eventManager, int batchCount) {
 		this.context = context;
 		this.eventManager = eventManager;
+		this.batchCount = batchCount;
+	}
+
+	public int getBatchCount() {
+		return batchCount;
 	}
 
 	public int getEpochIndex() {
@@ -65,6 +72,11 @@ public class TrainingProgress {
 		double originalEpochError = this.epochError;
 		this.epochError = epochError;
 		fireEpochErrorChange(originalEpochError);
+		lastEpochError = originalEpochError;
+	}
+
+	public double getLastEpochError() {
+		return lastEpochError;
 	}
 
 	public void resetEpochError() {

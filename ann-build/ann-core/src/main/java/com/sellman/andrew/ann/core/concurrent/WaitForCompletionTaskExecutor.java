@@ -1,7 +1,7 @@
 package com.sellman.andrew.ann.core.concurrent;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
 class WaitForCompletionTaskExecutor extends AbstractTaskExecutor {
@@ -12,13 +12,23 @@ class WaitForCompletionTaskExecutor extends AbstractTaskExecutor {
 
 	@Override
 	protected void doRunTask(AbstractTask task) {
-		doRunTasks(Arrays.asList(task));
+		CountDownLatch taskGroup = task.getTaskGroup();
+		getExecutorService().submit(task);
+		await(taskGroup);
 	}
 
 	@Override
-	protected void doRunTasks(Collection<? extends AbstractTask> tasks) {
+	protected void doRunTasks(List<? extends AbstractTask> tasks) {
+		CountDownLatch taskGroup = tasks.get(0).getTaskGroup();
+		for (AbstractTask task : tasks) {
+			getExecutorService().submit(task);
+		}
+		await(taskGroup);
+	}
+
+	private void await(CountDownLatch taskGroup) {
 		try {
-			getExecutorService().invokeAll(tasks);
+			taskGroup.await();
 		} catch (InterruptedException ie) {
 			throw new IllegalStateException("Unable to complete tasks.", ie);
 		}

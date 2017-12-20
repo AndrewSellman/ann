@@ -21,7 +21,7 @@ public class EventManagerTest {
 	@Before
 	public void prepareTest() {
 		context = new Context("test");
-		eventDispatcher = new TaskServiceBuilder().setThreadCount(1).lowPriority().build();
+		eventDispatcher = new TaskServiceBuilder().fireAndForget().setThreadCount(1).lowPriority().build();
 		manager = new EventManager(eventDispatcher);
 		event1 = new EpochChangeEvent(context, 0, 1);
 		event2 = new EpochErrorChangeEvent(context, 0.0, 1.0);

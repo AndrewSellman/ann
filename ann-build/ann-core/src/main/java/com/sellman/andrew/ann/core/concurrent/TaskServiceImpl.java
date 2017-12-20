@@ -1,6 +1,6 @@
 package com.sellman.andrew.ann.core.concurrent;
 
-import java.util.Collection;
+import java.util.List;
 
 class TaskServiceImpl implements TaskService {
 	private final AbstractTaskExecutor taskExecutor;
@@ -9,7 +9,7 @@ class TaskServiceImpl implements TaskService {
 		this.taskExecutor = tasksExecutor;
 	}
 
-	public void runTasks(Collection<? extends AbstractTask> tasks) {
+	public void runTasks(List<? extends AbstractTask> tasks) {
 		taskExecutor.runTasks(tasks);
 	}
 

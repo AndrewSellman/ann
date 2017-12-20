@@ -1,6 +1,6 @@
 package com.sellman.andrew.ann.core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,35 +21,38 @@ import com.sellman.andrew.ann.core.event.EpochErrorChangeEvent;
 import com.sellman.andrew.ann.core.event.EventManager;
 import com.sellman.andrew.ann.core.event.ValidationErrorChangeEvent;
 import com.sellman.andrew.ann.core.math.FunctionType;
+import com.sellman.andrew.ann.core.math.MathOperations;
+import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.MatrixOperations;
-import com.sellman.andrew.ann.core.math.MatrixOperationsFactory;
 import com.sellman.andrew.ann.core.math.Vector;
 import com.sellman.andrew.ann.core.training.FeedForwardNetworkTrainerConfig;
+import com.sellman.andrew.ann.core.training.evaluator.BoldDriverLearningRateEvaluator;
+import com.sellman.andrew.ann.core.training.evaluator.LearningRateEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.MaximumEpochsEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.MinimumEpochErrorEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.MinimumValidationErrorEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
 
 public class FeedForwardNetworkTrainer3By3BlockITCase {
-	private static final MatrixOperationsFactory OPERATIONS_FACTORY = new MatrixOperationsFactory();
+	private static final MathOperationsFactory OPERATIONS_FACTORY = new MathOperationsFactory();
 	private TaskService highPriorityTaskService;
 	private TaskService eventDispatcher;
-	private MatrixOperations matrixOperations;
+	private MathOperations matrixOperations;
 	private FeedForwardNetworkLayer layer0;
 	private FeedForwardNetworkLayer layer1;
-	private FeedForwardNetworkTrainer trainer;
+	private AbstractFeedForwardNetworkTrainer trainer;
 	private FeedForwardNetwork network;
 	private List<TrainingEvaluator> trainingEvaluators;
 	private FeedForwardNetworkTrainerConfig config;
 	private List<TrainingItem> trainingData;
 	private List<TrainingItem> testData;
 	private EventManager eventManager;
+	private LearningRateEvaluator learningRateEvaluator;
 
 	@Before
 	public void prepareTest() {
 		highPriorityTaskService = new TaskServiceBuilder().highPriority().build();
-		matrixOperations = OPERATIONS_FACTORY.getMatrixOperations(highPriorityTaskService);
+		matrixOperations = OPERATIONS_FACTORY.getOperations(highPriorityTaskService);
 
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();
 		trainingEvaluators.add(new MaximumEpochsEvaluator(10000));
@@ -60,16 +63,17 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 		eventManager = new EventManager(eventDispatcher);
 		ConsoleListener<EpochChangeEvent> listener1 = new ConsoleListener<EpochChangeEvent>();
 		eventManager.register(listener1, EpochChangeEvent.class);
-		
+
 		ConsoleListener<EpochErrorChangeEvent> listener2 = new ConsoleListener<EpochErrorChangeEvent>();
 		eventManager.register(listener2, EpochErrorChangeEvent.class);
-		
-//		ConsoleListener<ValidationErrorChangeEvent> listener3 = new ConsoleListener<ValidationErrorChangeEvent>();
-//		eventManager.register(listener3, ValidationErrorChangeEvent.class);
 
-		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, matrixOperations, eventManager);
-		config.setBatchSize(1);
-		config.setLearningRate(.01);
+		ConsoleListener<ValidationErrorChangeEvent> listener3 = new ConsoleListener<ValidationErrorChangeEvent>();
+		eventManager.register(listener3, ValidationErrorChangeEvent.class);
+
+		learningRateEvaluator = new BoldDriverLearningRateEvaluator(0.2, 0.05, 0.5);
+
+		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, matrixOperations, eventManager, learningRateEvaluator);
+		config.setBatchSize(100);
 
 		buildTrainingAndTestData();
 	}
@@ -81,27 +85,31 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 	}
 
 	@Test
-	public void train() {
+	public void trainStochasitc() {
 		List<FeedForwardNetworkLayer> layers = new ArrayList<FeedForwardNetworkLayer>();
-		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, matrixOperations, FunctionType.LOGISTIC, buildWeights(11, 9), buildBias(11));
+		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, matrixOperations, FunctionType.LOGISTIC, buildWeights(11, 9),
+		        buildBias(11));
 		layer0 = new FeedForwardNetworkLayer(layer0Config);
 		layers.add(layer0);
 
-		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(new Context("test", 1), eventManager, matrixOperations, FunctionType.LOGISTIC, buildWeights(1, 11), buildBias(1));
+		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(new Context("test", 1), eventManager, matrixOperations, FunctionType.LOGISTIC, buildWeights(1, 11),
+		        buildBias(1));
 		layer1 = new FeedForwardNetworkLayer(layer1Config);
 		layers.add(layer1);
 
 		FeedForwardNetworkConfig networkConfig = new FeedForwardNetworkConfig(new Context("test"), eventManager, layers);
 		network = new FeedForwardNetwork(networkConfig);
 
-		trainer = new FeedForwardNetworkTrainer(config, network);
+		trainer = new StochasticFeedForwardNetworkTrainer(config, network);
 		trainer.train(trainingData);
-		
-		for (TrainingItem validationData: testData) {
-			Vector output = network.evaluate(validationData.getInput());
-			assertEquals(validationData.getExpectedOutput().getValue(0), output.getValue(0), 0.01);
+
+		for (TrainingItem testItem : testData) {
+			Vector output = network.evaluate(testItem.getInput());
+			System.out.print("expected:\n" + testItem.getExpectedOutput());
+			System.out.println("actual:\n" + output);
+			assertEquals(testItem.getExpectedOutput().getValue(0), output.getValue(0), 0.01);
 		}
-		
+
 	}
 
 	private void buildTrainingAndTestData() {
@@ -109,6 +117,10 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 		Collections.shuffle(trainingData);
 		testData = trainingData.stream().skip(trainingData.size() - 10).collect(Collectors.toList());
 		trainingData = trainingData.stream().limit(trainingData.size() - 10).collect(Collectors.toList());
+
+		Normalizer normalizer = new Normalizer();
+		testData = normalizer.normalize(testData);
+		trainingData = normalizer.normalize(trainingData);
 	}
 
 	private void buildAllPossibleCases() {
@@ -148,16 +160,14 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 	}
 
 	private Matrix buildMatrix(int rowCount, int columnCount) {
-		double min = 0;
-		double max = 1;
 		Matrix weights = new Matrix(rowCount, columnCount);
 		for (int r = 0; r < rowCount; r++) {
 			for (int c = 0; c < columnCount; c++) {
 				double d = 0;
 				while (d == 0) {
-					d = ThreadLocalRandom.current().nextDouble(min, max);
+					d = ThreadLocalRandom.current().nextDouble(-1, 1);
 				}
-				weights.setValue(r, c, d);
+				weights.setValue(r, c, d / Math.sqrt(columnCount));
 			}
 		}
 

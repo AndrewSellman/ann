@@ -12,8 +12,8 @@ import com.sellman.andrew.ann.core.math.ConstantAdderFunction;
 import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.FunctionGroupHelper;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.MatrixOperations;
-import com.sellman.andrew.ann.core.math.MatrixOperationsFactory;
+import com.sellman.andrew.ann.core.math.MathOperations;
+import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.Vector;
 
 public class FeedForwardLayerTest {
@@ -22,10 +22,10 @@ public class FeedForwardLayerTest {
 	private static final Matrix INPUT = new Matrix(new double[][] { { 1, 2 } });
 	private static final Matrix M2X4 = new Matrix(new double[][] { { 3, 4, 5, 6 }, { 7, 8, 9, 10 } });
 	private static final Vector BIAS = new Vector(new double[] { 1000, 2000, 3000, 4000 });
-	private static final MatrixOperationsFactory OPERATIONS_FACTORY = new MatrixOperationsFactory();
+	private static final MathOperationsFactory OPERATIONS_FACTORY = new MathOperationsFactory();
 
 	private TaskService taskService;
-	private MatrixOperations matrixOperations;
+	private MathOperations matrixOperations;
 	private FunctionGroup functionGroup;
 	private FeedForwardNetworkLayer layer;
 
@@ -33,7 +33,7 @@ public class FeedForwardLayerTest {
 	public void prepareTest() {
 		functionGroup = new FunctionGroupHelper(new ConstantAdderFunction(100), null);
 		taskService = new TaskServiceBuilder().highPriority().build();
-		matrixOperations = OPERATIONS_FACTORY.getMatrixOperations(taskService);
+		matrixOperations = OPERATIONS_FACTORY.getOperations(taskService);
 //		layer = new FeedForwardLayer("test", matrixOperations, M2X4, BIAS, functionGroup);
 	}
 

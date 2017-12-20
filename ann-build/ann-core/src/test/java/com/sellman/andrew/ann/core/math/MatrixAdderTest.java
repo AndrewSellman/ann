@@ -13,13 +13,13 @@ public class MatrixAdderTest {
 	private static final Matrix M1 = new Matrix(new double[][] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 } });
 	private static final Matrix M2 = new Matrix(new double[][] { { 10, 20, 30, 40 }, { 50, 60, 70, 80 } });
 
-	private MatrixAdder adder;
+	private Adder adder;
 	private TaskService taskService;
 
 	@Before
 	public void prepareTest() {
 		taskService = new TaskServiceBuilder().normalPriority().build();
-		adder = new MatrixAdder(taskService);
+		adder = new Adder(taskService);
 	}
 
 	@After

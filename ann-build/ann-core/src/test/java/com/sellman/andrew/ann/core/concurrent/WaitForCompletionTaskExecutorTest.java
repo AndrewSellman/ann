@@ -7,20 +7,19 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.util.reflection.Whitebox;
 
 public class WaitForCompletionTaskExecutorTest {
 	private WaitForCompletionTaskExecutor executor;
-
 	private ThreadFactory threadFactory;
-
 	private AbstractTask task1, task2;
-
-	List<AbstractTask> tasks;
+	private List<AbstractTask> tasks;
 
 	@Before
 	public void prepareTest() {
@@ -45,6 +44,10 @@ public class WaitForCompletionTaskExecutorTest {
 
 	@Test
 	public void runTasks() {
+		CountDownLatch taskGroup = new CountDownLatch(2);
+		Whitebox.setInternalState(task1, "taskGroup", taskGroup);
+		Whitebox.setInternalState(task2, "taskGroup", taskGroup);
+		
 		executor.runTasks(tasks);
 		verify(task1).execute();
 		verify(task2).execute();
@@ -52,6 +55,9 @@ public class WaitForCompletionTaskExecutorTest {
 
 	@Test
 	public void runTask() {
+		CountDownLatch taskGroup = new CountDownLatch(1);
+		Whitebox.setInternalState(task1, "taskGroup", taskGroup);
+		
 		executor.runTask(task1);
 		verify(task1).execute();
 	}

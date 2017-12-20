@@ -1,13 +1,16 @@
 package com.sellman.andrew.ann.core.math;
 
+import java.util.concurrent.CountDownLatch;
+
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 
-class MatrixTransposeTask extends AbstractTask {
+class SumByRowTask extends AbstractTask {
 	private final Matrix source;
 	private final int rowIndex;
-	private final Matrix target;
+	private final Vector target;
 
-	public MatrixTransposeTask(final Matrix source, final int rowIndex, final Matrix target) {
+	public SumByRowTask(CountDownLatch taskGroup, Matrix source, int rowIndex, Vector target) {
+		super(taskGroup);
 		this.source = source;
 		this.rowIndex = rowIndex;
 		this.target = target;
@@ -15,10 +18,12 @@ class MatrixTransposeTask extends AbstractTask {
 
 	@Override
 	public void execute() {
+		double result = 0;
 		for (int columnIndex = 0; columnIndex < source.getColumnCount(); columnIndex++) {
-			double sourceValue = source.getValue(rowIndex, columnIndex);
-			target.setValue(columnIndex, rowIndex, sourceValue);
+			result += source.getValue(rowIndex, columnIndex);
 		}
+
+		target.setValue(rowIndex, result);
 	}
 
 }

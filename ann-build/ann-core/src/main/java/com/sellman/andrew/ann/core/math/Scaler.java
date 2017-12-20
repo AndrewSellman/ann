@@ -1,24 +1,81 @@
 package com.sellman.andrew.ann.core.math;
 
-public class Scaler {
-	private final double sourceRangeMin;
-	private final double sourceRangeMax;
-	private final double targetRangeMin;
-	private final double targetRangeMax;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
-	public Scaler(final double sourceRangeMin, final double sourceRangeMax, final double targetRangeMin, final double targetRangeMax) {
-		this.sourceRangeMin = sourceRangeMin;
-		this.sourceRangeMax = sourceRangeMax;
-		this.targetRangeMin = targetRangeMin;
-		this.targetRangeMax = targetRangeMax;
+import com.sellman.andrew.ann.core.concurrent.AbstractTask;
+import com.sellman.andrew.ann.core.concurrent.TaskService;
+
+class Scaler extends MathSupport {
+
+	public Scaler(final TaskService taskService) {
+		super(taskService);
 	}
 
-	public double scaleDown(final double value) {
-		return targetRangeMin + (targetRangeMax - targetRangeMin) * (value - sourceRangeMin) / (sourceRangeMax - sourceRangeMin);
+	public Matrix scale(final Matrix source, final Function f) {
+		int rowCount = source.getRowCount();
+		int columnCount = source.getColumnCount();
+		Matrix target = new Matrix(rowCount, columnCount);
+
+		if (ParallelTaskGate.doMatrixTasksInParrallel(rowCount * columnCount)) {
+			return scaleSequential(source, f, rowCount, columnCount, target);
+		}
+
+		return scaleParallel(source, f, rowCount, columnCount, target);
 	}
 
-	public double scaleUp(final double value) {
-		return sourceRangeMin + (sourceRangeMax - sourceRangeMin) * (value - targetRangeMin) / (targetRangeMax - targetRangeMin);
+	public Vector scale(final Vector v, final Function f) {
+		return new Vector(scale(v.getMatrix(), f));
+	}
+
+	private Matrix scaleParallel(final Matrix source, final Function f, final int rowCount, final int columnCount, final Matrix target) {
+		if (rowCount <= columnCount) {
+			return scaleParallelByRow(source, f, rowCount, target);
+		}
+
+		return scaleParallelByColumn(source, f, columnCount, target);
+	}
+
+	private Matrix scaleParallelByColumn(final Matrix source, final Function f, final int columnCount, final Matrix target) {
+		List<AbstractTask> tasks = getScaleParallelByColumnTasks(source, f, columnCount, target);
+		return runTasksAndReturnTarget(tasks, target);
+	}
+
+	private List<AbstractTask> getScaleParallelByColumnTasks(final Matrix source, final Function f, final int columnCount, final Matrix target) {
+		CountDownLatch groupTask = new CountDownLatch(columnCount);
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(columnCount);
+		for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+			tasks.add(new ScaleByColumnTask(groupTask, source, columnIndex, f, target));
+		}
+
+		return tasks;
+	}
+
+	private Matrix scaleParallelByRow(final Matrix source, final Function f, final int rowCount, final Matrix target) {
+		List<AbstractTask> tasks = getScaleParallelByRowTasks(source, f, rowCount, target);
+		return runTasksAndReturnTarget(tasks, target);
+	}
+
+	private List<AbstractTask> getScaleParallelByRowTasks(final Matrix source, final Function f, final int rowCount, final Matrix target) {
+		CountDownLatch groupTask = new CountDownLatch(rowCount);
+		List<AbstractTask> tasks = new ArrayList<AbstractTask>(rowCount);
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			tasks.add(new ScaleByRowTask(groupTask, source, rowIndex, f, target));
+		}
+
+		return tasks;
+	}
+
+	
+	private Matrix scaleSequential(final Matrix source, final Function f, final int rowCount, final int columnCount, final Matrix target) {
+		for (int rowIndex = 0; rowIndex < source.getRowCount(); rowIndex++) {
+			for (int columnIndex = 0; columnIndex < source.getColumnCount(); columnIndex++) {
+				target.setValue(rowIndex, columnIndex, f.evaluate(source.getValue(rowIndex, columnIndex)));
+			}
+		}
+
+		return target;
 	}
 
 }

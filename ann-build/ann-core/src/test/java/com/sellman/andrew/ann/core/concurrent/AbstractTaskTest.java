@@ -19,7 +19,7 @@ public class AbstractTaskTest {
 	
 	@Test
 	public void test() throws Exception {
-		task.call();
+		task.run();
 		verify(task).execute();
 	}
 }

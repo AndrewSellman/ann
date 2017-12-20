@@ -13,11 +13,11 @@ public class ScalerTest {
 	private static final double TARGET_RANGE_MIN = 0.0;
 	private static final double TARGET_RANGE_MAX = 1.0;
 	
-	private Scaler scaler;
+	private Range scaler;
 	
 	@Before
 	public void prepareTest() {
-		scaler = new Scaler(SOURCE_RANGE_MIN, SOURCE_RANGE_MAX, TARGET_RANGE_MIN, TARGET_RANGE_MAX);
+		scaler = new Range(SOURCE_RANGE_MIN, SOURCE_RANGE_MAX, TARGET_RANGE_MIN, TARGET_RANGE_MAX);
 	}
 
 	@Test

@@ -16,8 +16,8 @@ import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.FunctionGroupHelper;
 import com.sellman.andrew.ann.core.math.FunctionType;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.MatrixOperations;
-import com.sellman.andrew.ann.core.math.MatrixOperationsFactory;
+import com.sellman.andrew.ann.core.math.MathOperations;
+import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.Vector;
 
 public class FeedForwardNetworkTest {
@@ -26,11 +26,11 @@ public class FeedForwardNetworkTest {
 	private static final Vector BIAS1 = new Vector(new double[] { 1000, 2000, 3000, 4000 });
 	private static final Matrix WEIGHT2 = new Matrix(new double[][] { { 11 }, { 12 }, { 13 }, { 14 } });
 	private static final Vector BIAS2 = new Vector(new double[] { 1000});
-	private static final MatrixOperationsFactory OPERATIONS_FACTORY = new MatrixOperationsFactory();
+	private static final MathOperationsFactory OPERATIONS_FACTORY = new MathOperationsFactory();
 
 	private TaskService highPriorityTaskService;
 	private TaskService lowPriorityTaskService;
-	private MatrixOperations matrixOperations;
+	private MathOperations matrixOperations;
 	private FunctionGroup layer1FunctionGroup;
 	private FeedForwardNetworkLayer layer1;
 	private FunctionGroup layer2FunctionGroup;
@@ -41,7 +41,7 @@ public class FeedForwardNetworkTest {
 	public void prepareTest() {
 		highPriorityTaskService = new TaskServiceBuilder().highPriority().build();
 		lowPriorityTaskService = new TaskServiceBuilder().lowPriority().fireAndForget().build();
-		matrixOperations = OPERATIONS_FACTORY.getMatrixOperations(highPriorityTaskService);
+		matrixOperations = OPERATIONS_FACTORY.getOperations(highPriorityTaskService);
 
 		layer1FunctionGroup = new FunctionGroupHelper(new ConstantAdderFunction(100), null);
 //		layer1 = new FeedForwardLayer("layer1", matrixOperations, WEIGHT1, BIAS1, layer1FunctionGroup);

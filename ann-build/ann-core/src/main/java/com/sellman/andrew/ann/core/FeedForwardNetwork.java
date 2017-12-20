@@ -76,6 +76,18 @@ public class FeedForwardNetwork {
 		getLayers().get(layerIndex).setOutputDelta(outputDelta);
 	}
 
+	protected void setAccumulateDuringTraining(boolean accumulateDuringTraining) {
+		for (FeedForwardNetworkLayer layer : getLayers()) {
+			layer.setAccumulateDuringTraining(accumulateDuringTraining);
+		}
+	}
+
+	protected void resetAccumulationDuringTraining() {
+		for (FeedForwardNetworkLayer layer : getLayers()) {
+			layer.resetAccumulationDuringTraining();
+		}
+	}
+	
 	public Vector getInput(int layerIndex) {
 		return getLayers().get(layerIndex).getInput();
 	}

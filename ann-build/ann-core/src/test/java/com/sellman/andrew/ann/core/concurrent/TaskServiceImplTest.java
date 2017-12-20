@@ -2,7 +2,7 @@ package com.sellman.andrew.ann.core.concurrent;
 
 import static org.mockito.Mockito.verify;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class TaskServiceImplTest {
 	private AbstractTask task;
 
 	@Mock
-	private Collection<AbstractTask> tasks;
+	private List<AbstractTask> tasks;
 
 	@Before
 	public void prepareTest() {

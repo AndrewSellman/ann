@@ -1,6 +1,6 @@
 package com.sellman.andrew.ann.core.concurrent;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -12,7 +12,7 @@ abstract class AbstractTaskExecutor {
 		if (threadCount < 0) {
 			throw new IllegalArgumentException("threadCount cannot be less tan zero!");
 		}
-		
+
 		if (threadCount == 0) {
 			this.executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
 		} else {
@@ -20,7 +20,7 @@ abstract class AbstractTaskExecutor {
 		}
 	}
 
-	public final void runTasks(Collection<? extends AbstractTask> tasks) {
+	public final void runTasks(List<? extends AbstractTask> tasks) {
 		doRunTasks(tasks);
 	}
 
@@ -39,6 +39,6 @@ abstract class AbstractTaskExecutor {
 
 	protected abstract void doRunTask(AbstractTask task);
 
-	protected abstract void doRunTasks(Collection<? extends AbstractTask> tasks);
+	protected abstract void doRunTasks(List<? extends AbstractTask> tasks);
 
 }

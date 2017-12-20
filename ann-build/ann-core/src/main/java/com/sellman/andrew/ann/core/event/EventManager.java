@@ -4,34 +4,47 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-public class EventManager {
-	private final TaskService eventDispatcher;
+public class EventManager implements AutoCloseable {
 	private final Map<Class<? extends Event>, List<Listener<? extends Event>>> eventListeners;
-	private Object lock;
-
-	public EventManager(TaskService eventDispatcher) {
-		this.eventDispatcher = eventDispatcher;
+	private final Queue<Event> pendingEvents;
+	private final Semaphore arbitrator;
+	private final Object lock;
+	private final EventDispatcher dispatcher;
+	private final AtomicBoolean keepDispatchingEvents;
+	
+	public EventManager(TaskService taskService) {
 		eventListeners = new ConcurrentHashMap<Class<? extends Event>, List<Listener<? extends Event>>>();
+		pendingEvents = new ConcurrentLinkedQueue<Event>();
+		keepDispatchingEvents = new AtomicBoolean(true);
+		arbitrator = new Semaphore(0);
 		lock = new Object();
+		dispatcher = new EventDispatcher(eventListeners, pendingEvents, keepDispatchingEvents, arbitrator);
+		taskService.runTask(dispatcher);
 	}
 
-	public <T extends Event> boolean fire(T event) {
+	public <T extends Event> boolean fire(final T event) {
 		List<Listener<? extends Event>> listeners = getListenersFor(event.getClass());
 		if (listeners.isEmpty()) {
 			return false;
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		EventHandlerTask<T> eventTask = new EventHandlerTask(listeners, event);
-		eventDispatcher.runTask(eventTask);
+		pendingEvents.add(event);
+		if (arbitrator.availablePermits() == 0) {
+			arbitrator.release();	
+		}
+		
 		return true;
 	}
 
-	public <T extends Event> boolean register(Listener<T> listener, Class<T> eventType) {
+	public <T extends Event> boolean register(final Listener<T> listener, final Class<T> eventType) {
 		List<Listener<? extends Event>> listeners = getListenersFor(eventType);
 
 		if (listeners.contains(listener)) {
@@ -43,18 +56,18 @@ public class EventManager {
 		return true;
 	}
 
-	public <T extends Event> boolean unregister(Listener<T> listener, Class<T> eventType) {
+	public <T extends Event> boolean unregister(final Listener<T> listener, final Class<T> eventType) {
 		List<Listener<? extends Event>> listeners = getListenersFor(eventType);
 		synchronized (listeners) {
 			return listeners.removeIf(x -> x.getClass().equals(listener.getClass()));
 		}
 	}
 
-	public <T extends Event> boolean isAnyRegisteredListenerFor(Class<T> eventType) {
+	public <T extends Event> boolean isAnyRegisteredListenerFor(final Class<T> eventType) {
 		return !getListenersFor(eventType).isEmpty();
 	}
 
-	private <T extends Event> List<Listener<? extends Event>> getListenersFor(Class<T> eventType) {
+	private <T extends Event> List<Listener<? extends Event>> getListenersFor(final Class<T> eventType) {
 		List<Listener<? extends Event>> listeners = eventListeners.get(eventType);
 		if (listeners == null) {
 			synchronized (lock) {
@@ -67,6 +80,12 @@ public class EventManager {
 		}
 
 		return listeners;
+	}
+
+	@Override
+	public void close() {
+		keepDispatchingEvents.set(false);
+		arbitrator.release();
 	}
 
 }

@@ -4,39 +4,35 @@ import java.util.List;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.event.EventManager;
-import com.sellman.andrew.ann.core.math.MatrixOperations;
+import com.sellman.andrew.ann.core.math.MathOperations;
+import com.sellman.andrew.ann.core.training.evaluator.LearningRateEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
 
 public class FeedForwardNetworkTrainerConfig {
 	private static final double DEFAULT_PERCENT_TRAINING_DATA_FOR_VALIDATION = 0.15;
 	private static final int DEFAULT_BATCH_SIZE = 1;
-	private static final double DEFAULT_LEARNING_RATE = 0.5;
 	private final List<TrainingEvaluator> trainingEvaluators;
-	private final MatrixOperations matrixOps;
+	private final MathOperations mathOps;
 	private final EventManager eventManager;
 	private final TaskService taskService;
-	private double learningRate = 0.5;
 	private int batchSize = 1;
 	private double percentTrainingDataForValidation;
+	private final LearningRateEvaluator learningRateEvaluator;
 
-	public FeedForwardNetworkTrainerConfig(final TaskService taskService, final List<TrainingEvaluator> trainingEvaluators, final MatrixOperations matrixOperations, final EventManager eventManager) {
+	public FeedForwardNetworkTrainerConfig(final TaskService taskService, final List<TrainingEvaluator> trainingEvaluators, final MathOperations mathOperations, final EventManager eventManager, LearningRateEvaluator learningRateEvaluator) {
 		this.trainingEvaluators = trainingEvaluators;
-		this.matrixOps = matrixOperations;
-		this.learningRate = DEFAULT_LEARNING_RATE;
+		this.mathOps = mathOperations;
 		this.batchSize = DEFAULT_BATCH_SIZE;
 		this.setPercentTrainingDataForValidation(DEFAULT_PERCENT_TRAINING_DATA_FOR_VALIDATION);
 		this.eventManager = eventManager;
 		this.taskService = taskService;
+		this.learningRateEvaluator = learningRateEvaluator;
 	}
 
-	public double getLearningRate() {
-		return learningRate;
+	public LearningRateEvaluator getLearningRateEvaluator() {
+		return learningRateEvaluator;
 	}
-
-	public void setLearningRate(double learningRate) {
-		this.learningRate = learningRate;
-	}
-
+	
 	public int getBatchSize() {
 		return batchSize;
 	}
@@ -45,8 +41,8 @@ public class FeedForwardNetworkTrainerConfig {
 		this.batchSize = batchSize;
 	}
 
-	public MatrixOperations getMatrixOperations() {
-		return matrixOps;
+	public MathOperations getMathOperations() {
+		return mathOps;
 	}
 
 	public List<TrainingEvaluator> getTrainingEvaluators() {
