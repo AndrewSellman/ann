@@ -10,15 +10,15 @@ public class BatchChangeEvent extends Event {
 		this.newBatchIndex = newBatchIndex;
 	}
 
-	public int getOriginalBatchIndex() {
+	public final int getOriginalBatchIndex() {
 		return originalBatchIndex;
 	}
 
-	public int getNewBatchIndex() {
+	public final int getNewBatchIndex() {
 		return newBatchIndex;
 	}
 	
-	public String toString() {
+	public final String toString() {
 		return "Batch index was: <" + originalBatchIndex + "> and is now: <" + newBatchIndex + ">" + super.toString();
 	}
 

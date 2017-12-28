@@ -7,16 +7,16 @@ public abstract class Event {
 		this.context = context;
 	}
 
-	public String getNetworkName() {
+	public final String getNetworkName() {
 		return context.getNetworkName();
 	}
 
-	public int getNetworkLayerIndex() {
+	public final int getNetworkLayerIndex() {
 		return context.getNetworkLayerIndex();
 	}
 
 	public String toString() {
-		return " for network layer index: " + getNetworkLayerIndex() + " of network: <" + getNetworkName() + ">";
+		return " for network layer index: <" + getNetworkLayerIndex() + "> of network: <" + getNetworkName() + ">";
 	}
 
 }

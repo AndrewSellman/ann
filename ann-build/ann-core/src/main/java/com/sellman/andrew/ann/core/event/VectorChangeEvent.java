@@ -1,11 +1,11 @@
 package com.sellman.andrew.ann.core.event;
 
-public class MatrixChangeEvent extends MatrixEvent {
+public class VectorChangeEvent extends VectorEvent {
 	private final double originalValue;
 	private final double newValue;
 
-	public MatrixChangeEvent(final Context context, int rowIndex, int columnIndex, double originalValue, double newValue) {
-		super(context, rowIndex, columnIndex);
+	public VectorChangeEvent(final Context context, int rowIndex, double originalValue, double newValue) {
+		super(context, rowIndex);
 		this.originalValue = originalValue;
 		this.newValue = newValue;
 	}
@@ -19,7 +19,7 @@ public class MatrixChangeEvent extends MatrixEvent {
 	}
 
 	public final String toString() {
-		return "Matrix value was: <" + originalValue + "> and is now <" + newValue + ">" + super.toString();
+		return "Vector value was: <" + getOriginalValue() + "> and is now <" + getNewValue() + ">" + super.toString();
 	}	
 	
 }

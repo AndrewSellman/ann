@@ -10,15 +10,15 @@ public class EpochChangeEvent extends Event {
 		this.newEpochIndex = newEpochIndex;
 	}
 
-	public int getOriginalEpochIndex() {
+	public final int getOriginalEpochIndex() {
 		return originalEpochIndex;
 	}
 
-	public int getNewEpochIndex() {
+	public final int getNewEpochIndex() {
 		return newEpochIndex;
 	}
 	
-	public String toString() {
+	public final String toString() {
 		return "Epoch index was: <" + originalEpochIndex + "> and is now: <" + newEpochIndex + ">" + super.toString();
 	}
 

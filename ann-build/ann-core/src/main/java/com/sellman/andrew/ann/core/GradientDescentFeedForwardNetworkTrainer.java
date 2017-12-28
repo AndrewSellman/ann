@@ -7,19 +7,19 @@ import com.sellman.andrew.ann.core.math.Vector;
 import com.sellman.andrew.ann.core.training.FeedForwardNetworkTrainerConfig;
 import com.sellman.andrew.ann.core.training.TrainingProgress;
 
-public class StochasticFeedForwardNetworkTrainer extends AbstractFeedForwardNetworkTrainer {
+public class GradientDescentFeedForwardNetworkTrainer extends AbstractFeedForwardNetworkTrainer {
 
-	public StochasticFeedForwardNetworkTrainer(final FeedForwardNetworkTrainerConfig config, final FeedForwardNetwork network) {
+	public GradientDescentFeedForwardNetworkTrainer(final FeedForwardNetworkTrainerConfig config, final FeedForwardNetwork network) {
 		super(config, network);
 	}
 
 	protected final void trainBatch(List<TrainingItem> batchTrainingItems, TrainingProgress progress) {
 		for (TrainingItem trainingItem : batchTrainingItems) {
-			trainBatch(trainingItem, progress);
+			train(trainingItem, progress);
 		}
 	}
 
-	private void trainBatch(TrainingItem example, TrainingProgress progress) {
+	private void train(TrainingItem example, TrainingProgress progress) {
 		Vector actualOutput = feedForward(example.getInput());
 		Vector outputDifference = subtract(actualOutput, example.getExpectedOutput());
 

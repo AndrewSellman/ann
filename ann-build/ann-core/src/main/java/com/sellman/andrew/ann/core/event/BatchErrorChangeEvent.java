@@ -10,15 +10,15 @@ public class BatchErrorChangeEvent extends Event {
 		this.newError = newError;
 	}
 
-	public double getOriginalError() {
+	public final double getOriginalError() {
 		return originalError;
 	}
 
-	public double getNewError() {
+	public final double getNewError() {
 		return newError;
 	}
 	
-	public String toString() {
+	public final String toString() {
 		return "Batch error was: <" + originalError + ">; and is now: <" + newError + ">" + super.toString();
 	}
 

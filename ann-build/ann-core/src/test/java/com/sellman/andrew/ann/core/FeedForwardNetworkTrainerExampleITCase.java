@@ -111,7 +111,7 @@ public class FeedForwardNetworkTrainerExampleITCase {
 		FeedForwardNetworkConfig networkConfig = new FeedForwardNetworkConfig(new Context("test"), eventManager, layers);
 		network = new FeedForwardNetwork(networkConfig);
 
-		trainer = new StochasticFeedForwardNetworkTrainer(config, network);
+		trainer = new GradientDescentFeedForwardNetworkTrainer(config, network);
 		trainer.train(trainingData);
 
 		for (int e = 0; e < epochErrors.size() - 2; e++) {

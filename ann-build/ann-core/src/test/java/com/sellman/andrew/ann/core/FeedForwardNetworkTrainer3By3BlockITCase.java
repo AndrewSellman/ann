@@ -100,7 +100,7 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 		FeedForwardNetworkConfig networkConfig = new FeedForwardNetworkConfig(new Context("test"), eventManager, layers);
 		network = new FeedForwardNetwork(networkConfig);
 
-		trainer = new StochasticFeedForwardNetworkTrainer(config, network);
+		trainer = new GradientDescentFeedForwardNetworkTrainer(config, network);
 		trainer.train(trainingData);
 
 		for (TrainingItem testItem : testData) {

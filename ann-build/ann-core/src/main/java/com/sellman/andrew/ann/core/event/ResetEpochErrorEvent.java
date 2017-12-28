@@ -8,11 +8,11 @@ public class ResetEpochErrorEvent extends Event {
 		this.originalEpochError = originalEpochError;
 	}
 
-	public String toString() {
+	public final String toString() {
 		return "Epoch error was: <" + originalEpochError + "> and is now <0.0>" + super.toString();
 	}
 
-	public double getOriginalEpochError() {
+	public final double getOriginalEpochError() {
 		return originalEpochError;
 	}
 

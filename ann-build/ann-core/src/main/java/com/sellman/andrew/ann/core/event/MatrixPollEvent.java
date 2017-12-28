@@ -8,11 +8,11 @@ public class MatrixPollEvent extends MatrixEvent {
 		this.currentValue = currentValue;
 	}
 
-	public double getCurrentValue() {
+	public final double getCurrentValue() {
 		return currentValue;
 	}
 
-	public String toString() {
+	public final String toString() {
 		return "Matrix value is: <" + currentValue + "> " + super.toString();
 	}
 

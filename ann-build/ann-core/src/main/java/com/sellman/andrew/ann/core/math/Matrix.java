@@ -41,14 +41,14 @@ public class Matrix {
 
 	public double getValue(int rowIndex, int columnIndex) {
 		double currentValue = data[rowIndex][columnIndex];
-		fireMatrixPollEvent(rowIndex, columnIndex, currentValue);
+		firePollEvent(rowIndex, columnIndex, currentValue);
 		return currentValue;
 	}
 
 	public void setValue(int rowIndex, int columnIndex, double value) {
 		double originalValue = data[rowIndex][columnIndex];
 		data[rowIndex][columnIndex] = value;
-		fireMatrixChangeEvent(rowIndex, columnIndex, originalValue, value);
+		fireChangeEvent(rowIndex, columnIndex, originalValue, value);
 	}
 
 	public String toString() {
@@ -67,7 +67,7 @@ public class Matrix {
 		return sb.toString();
 	}
 
-	private void fireMatrixChangeEvent(int rowIndex, int columnIndex, double originalValue, double newValue) {
+	private void fireChangeEvent(int rowIndex, int columnIndex, double originalValue, double newValue) {
 		if (!isAnyListener(MatrixChangeEvent.class)) {
 			return;
 		}
@@ -76,17 +76,17 @@ public class Matrix {
 		fire(event);
 	}
 
-	private boolean isAnyListener(Class<? extends Event> eventType) {
-		return eventManager != null && eventManager.isAnyRegisteredListenerFor(eventType);
-	}
-
-	private void fireMatrixPollEvent(int rowIndex, int columnIndex, double currentValue) {
+	private void firePollEvent(int rowIndex, int columnIndex, double currentValue) {
 		if (!isAnyListener(MatrixPollEvent.class)) {
 			return;
 		}
 
 		MatrixPollEvent event = new MatrixPollEvent(context, rowIndex, columnIndex, currentValue);
 		fire(event);
+	}
+
+	private boolean isAnyListener(Class<? extends Event> eventType) {
+		return eventManager != null && eventManager.isAnyRegisteredListenerFor(eventType);
 	}
 
 	private void fire(Event event) {

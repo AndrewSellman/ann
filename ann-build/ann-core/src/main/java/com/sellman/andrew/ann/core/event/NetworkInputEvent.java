@@ -10,11 +10,11 @@ public class NetworkInputEvent extends Event {
 		this.input = input;
 	}
 
-	public Vector getInput() {
+	public final Vector getInput() {
 		return input;
 	}
 
-	public String toString() {
+	public final String toString() {
 		return "Input" + super.toString() + " is:\n" + input.toString();
 	}
 

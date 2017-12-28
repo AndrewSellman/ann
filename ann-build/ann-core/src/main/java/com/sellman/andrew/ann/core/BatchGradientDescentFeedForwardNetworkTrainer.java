@@ -12,11 +12,9 @@ import com.sellman.andrew.ann.core.training.TrainingProgress;
 import com.sellman.andrew.ann.core.training.evaluator.LearningRateRecommendation;
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
 
-public class MiniBatchFeedForwardNetworkTrainer extends AbstractFeedForwardNetworkTrainer {
-	private Matrix priorWeights;
-	private Vector priorBias;
+public class BatchGradientDescentFeedForwardNetworkTrainer extends AbstractFeedForwardNetworkTrainer {
 	
-	public MiniBatchFeedForwardNetworkTrainer(final FeedForwardNetworkTrainerConfig config, final FeedForwardNetwork network) {
+	public BatchGradientDescentFeedForwardNetworkTrainer(final FeedForwardNetworkTrainerConfig config, final FeedForwardNetwork network) {
 		super(config, network);
 	}
 
@@ -77,4 +75,48 @@ public class MiniBatchFeedForwardNetworkTrainer extends AbstractFeedForwardNetwo
 		
 	}
 
+	private void train(TrainingItem example, TrainingProgress progress) {
+		Vector actualOutput = feedForward(example.getInput());
+		Vector outputDifference = subtract(actualOutput, example.getExpectedOutput());
+
+		Vector outputError = scale(outputDifference, x -> 1.0 / 2.0 * Math.pow(x, 2));
+		double batchError = sum(outputError);
+		progress.accumulateBatchError(batchError);
+
+		Vector input = getNetworkInput(getLayerCount() - 1);
+
+		Vector primeOutput = getNetworkBiasedPrimeOutput(getLayerCount() - 1);
+		Vector outputDelta = hadamard(outputDifference, primeOutput);
+		setNetworkOutputDelta(getLayerCount() - 1, outputDelta);
+
+		for (int l = getLayerCount() - 2; l >= 0; l--) {
+			Matrix nextLayerWeights = getNetworkWeights(l + 1);
+			Matrix transposedNextLayerWeights = transpose(nextLayerWeights);
+			Vector nextLayerOutputDelta = getNetworkOutputDelta(l + 1);
+			Vector weightsDelta = multiply(transposedNextLayerWeights, nextLayerOutputDelta);
+			primeOutput = getNetworkBiasedPrimeOutput(l);
+			outputDelta = hadamard(weightsDelta, primeOutput);
+			setNetworkOutputDelta(l, outputDelta);
+		}
+
+		for (int l = 0; l < getLayerCount(); l++) {
+			outputDelta = getNetworkOutputDelta(l);
+			input = getNetworkInput(l);
+			Matrix transposedInput = transpose(input);
+			Matrix weightError = multiply(outputDelta, transposedInput);
+
+			Matrix scaledWeightError = scale(weightError, x -> x * getLearningRate(progress));
+
+			Matrix currentWeights = getNetworkWeights(l);
+
+			Matrix newWeights = subtract(currentWeights, scaledWeightError);
+			setNetworkWeights(l, newWeights);
+
+			Vector scaledOutputDelta = scale(outputDelta, x -> x * getLearningRate(progress));
+			Vector currentBias = getNetworkBias(l);
+			Vector newBias = subtract(currentBias, scaledOutputDelta);
+			setNetworkBias(l, newBias);
+		}
+	}
+	
 }

@@ -54,7 +54,7 @@ class EventDispatcher extends AbstractTask {
 		}
 	}
 
-	public <T extends Event> void dispatch(Listener<T> listener, T event) {
+	private <T extends Event> void dispatch(Listener<T> listener, T event) {
 		listener.onEvent(event);
 	}
 

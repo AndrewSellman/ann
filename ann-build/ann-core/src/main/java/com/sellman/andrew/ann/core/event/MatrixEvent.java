@@ -10,12 +10,16 @@ public abstract class MatrixEvent extends Event {
 		this.columnIndex = columnIndex;
 	}
 
-	public int getRowIndex() {
+	public final int getRowIndex() {
 		return rowIndex;
 	}
 
-	public int getColumnIndex() {
+	public final int getColumnIndex() {
 		return columnIndex;
+	}
+
+	public String toString() {
+		return " for rowIndex: <" + getRowIndex() + "> and columnIndex: <" + getColumnIndex() + ">" + super.toString();
 	}
 
 }
