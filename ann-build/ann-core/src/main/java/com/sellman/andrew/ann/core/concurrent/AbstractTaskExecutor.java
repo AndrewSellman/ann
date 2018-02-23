@@ -14,9 +14,11 @@ abstract class AbstractTaskExecutor {
 		}
 
 		if (threadCount == 0) {
-			this.executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
+			executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
+		} else if (threadCount == 1) {
+			executorService = Executors.newSingleThreadExecutor(threadFactory);
 		} else {
-			this.executorService = Executors.newFixedThreadPool(threadCount, threadFactory);
+			executorService = Executors.newFixedThreadPool(threadCount, threadFactory);
 		}
 	}
 

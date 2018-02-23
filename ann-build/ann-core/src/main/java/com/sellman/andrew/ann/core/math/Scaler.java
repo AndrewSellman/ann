@@ -7,20 +7,20 @@ import java.util.concurrent.CountDownLatch;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-class Scaler extends MathSupport {
+class Scaler extends ParallelizableOperation {
 
-	public Scaler(final TaskService taskService) {
-		super(taskService);
+	public Scaler(final TaskService taskService, final ParallelizableOperationAdvisor advisor) {
+		super(taskService, advisor);
 	}
 
 	public Matrix scale(final Matrix source, final Function f) {
 		int rowCount = source.getRowCount();
 		int columnCount = source.getColumnCount();
 		Matrix target = new Matrix(rowCount, columnCount);
-
-		if (ParallelTaskGate.doMatrixTasksInParrallel(rowCount * columnCount)) {
-			return scaleSequential(source, f, rowCount, columnCount, target);
-		}
+//TODO
+//		if (ParallelizableOperationAdvisor.shouldMultiplyInParrallel(rowCount * columnCount)) {
+//			return scaleSequential(source, f, rowCount, columnCount, target);
+//		}
 
 		return scaleParallel(source, f, rowCount, columnCount, target);
 	}
@@ -76,6 +76,26 @@ class Scaler extends MathSupport {
 		}
 
 		return target;
+	}
+
+	@Override
+	protected Matrix doParallelOp(Matrix left, Matrix right) {
+		// TODO Auto-generated method stub
+		return null;
+		
+	}
+
+	@Override
+	protected Matrix doSequentialOp(Matrix left, Matrix right) {
+		// TODO Auto-generated method stub
+		return null;
+		
+	}
+
+	@Override
+	public void close() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

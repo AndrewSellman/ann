@@ -1,14 +1,19 @@
 package com.sellman.andrew.ann.core.math;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 class MathOperationsImpl implements MathOperations {
-	private final Multiplier multiplier;
+	private final StandardMultiplier standardMultiplier;
+	private final HadamardMultiplier hadamardMultiplier;
 	private final Adder adder;
 	private final Subtractor subtractor;
 	private final Scaler scaler;
 	private final Manipulator manipulator;
 	
-	public MathOperationsImpl(final Multiplier multiplier, final Adder adder, final Subtractor subtractor, final Scaler scaler, final Manipulator manipulator) {
-		this.multiplier = multiplier;
+	public MathOperationsImpl(final StandardMultiplier standardMultiplier, final HadamardMultiplier hadamardMultiplier, final Adder adder, final Subtractor subtractor, final Scaler scaler, final Manipulator manipulator) {
+		this.standardMultiplier = standardMultiplier;
+		this.hadamardMultiplier = hadamardMultiplier;
 		this.scaler = scaler;
 		this.adder = adder;
 		this.subtractor = subtractor;
@@ -17,27 +22,27 @@ class MathOperationsImpl implements MathOperations {
 	
 	@Override
 	public Matrix multiply(final Matrix left, final Matrix right) {
-		return multiplier.multiply(left, right);
+		return standardMultiplier.multiply(left, right);
 	}
 	
 	@Override
 	public Vector multiply(final Matrix left, final Vector right) {
-		return multiplier.multiply(left, right);
+		return standardMultiplier.multiply(left, right);
 	}
 
 	@Override
 	public Matrix multiply(final Vector left, final Matrix right) {
-		return multiplier.multiply(left, right);
+		return standardMultiplier.multiply(left, right);
 	}
 
 	@Override
 	public Matrix hadamard(final Matrix a, final Matrix b) {
-		return multiplier.hadamard(a, b);
+		return hadamardMultiplier.multiply(a, b);
 	}
 
 	@Override
 	public Vector hadamard(final Vector a, final Vector b) {
-		return multiplier.hadamard(a, b);
+		return hadamardMultiplier.multiply(a, b);
 	}
 	
 	@Override
@@ -110,4 +115,16 @@ class MathOperationsImpl implements MathOperations {
 		return scaler.scale(v, x -> Math.abs(x));
 	}
 
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("MathOperationsImpl " + toString() + "was created.");
+	}
+
+	@Override
+	@PreDestroy
+	public void close() throws Exception {
+		System.out.println("Closing MathOperationsImpl " + toString() + "...");
+		standardMultiplier.close();
+		System.out.println("Closed MathOperationsImpl " + toString());
+	}
 }

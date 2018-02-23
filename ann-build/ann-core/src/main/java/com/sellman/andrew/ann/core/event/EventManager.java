@@ -10,6 +10,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
 public class EventManager implements AutoCloseable {
@@ -82,10 +85,18 @@ public class EventManager implements AutoCloseable {
 		return listeners;
 	}
 
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("EventManager " + toString() + "was created.");
+	}
+	
+	@PreDestroy
 	@Override
 	public void close() {
+		System.out.println("Destroying EventManager " + toString() + "...");
 		keepDispatchingEvents.set(false);
 		arbitrator.release();
+		System.out.println("Destroyed EventManager " + toString());
 	}
 
 }

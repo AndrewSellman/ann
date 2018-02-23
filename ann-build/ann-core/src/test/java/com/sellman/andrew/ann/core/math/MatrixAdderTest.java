@@ -1,6 +1,7 @@
 package com.sellman.andrew.ann.core.math;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,11 +16,13 @@ public class MatrixAdderTest {
 
 	private Adder adder;
 	private TaskService taskService;
-
+	private ParallelizableOperationAdvisor advisor;
+	
 	@Before
 	public void prepareTest() {
-		taskService = new TaskServiceBuilder().normalPriority().build();
-		adder = new Adder(taskService);
+		taskService = new TaskServiceBuilder().highPriority().build();
+		advisor = mock(ParallelizableOperationAdvisor.class);
+		adder = new Adder(taskService, advisor);
 	}
 
 	@After

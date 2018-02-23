@@ -1,6 +1,7 @@
 package com.sellman.andrew.ann.core.math;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,6 +15,7 @@ public class MatrixScalerTest {
 	private static final Matrix M2X3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
 	private Scaler scaler;
 	private TaskService taskService;
+	private ParallelizableOperationAdvisor advisor;
 
 	private Function function = new Function() {
 		@Override
@@ -25,7 +27,8 @@ public class MatrixScalerTest {
 	@Before
 	public void prepareTest() {
 		taskService = new TaskServiceBuilder().normalPriority().build();
-		scaler = new Scaler(taskService);
+		advisor = mock(ParallelizableOperationAdvisor.class);
+		scaler = new Scaler(taskService, advisor);
 	}
 
 	@After

@@ -7,10 +7,10 @@ import java.util.concurrent.CountDownLatch;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-class Adder extends MathSupport {
+class Adder extends ParallelizableOperation {
 
-	public Adder(final TaskService taskService) {
-		super(taskService);
+	public Adder(final TaskService taskService, final ParallelizableOperationAdvisor advisor) {
+		super(taskService, advisor);
 	}
 
 	public Matrix add(final Matrix a, final Matrix b) {
@@ -18,9 +18,10 @@ class Adder extends MathSupport {
 		int columnCount = b.getColumnCount();
 		Matrix target = new Matrix(rowCount, columnCount);
 
-		if (ParallelTaskGate.doMatrixTasksInParrallel(target.getCellCount())) {
-			return addParallel(a, b, rowCount, columnCount, target);
-		}
+		// TODO
+//		if (ParallelizableOperationAdvisor.shouldMultiplyInParrallel(target.getCellCount())) {
+//			return addParallel(a, b, rowCount, columnCount, target);
+//		}
 
 		return addSequential(a, b, rowCount, columnCount, target);
 	}
@@ -33,9 +34,10 @@ class Adder extends MathSupport {
 		int rowCount = m.getRowCount();
 		int columnCount = m.getColumnCount();
 
-		if (ParallelTaskGate.doMatrixTasksInParrallel(rowCount * columnCount)) {
-			return sumParallel(m, rowCount, columnCount);
-		}
+//TODO
+		//		if (ParallelizableOperationAdvisor.shouldMultiplyInParrallel(rowCount * columnCount)) {
+//			return sumParallel(m, rowCount, columnCount);
+//		}
 
 		return sumSequential(m, rowCount, columnCount);
 	}
@@ -141,6 +143,24 @@ class Adder extends MathSupport {
 		}
 
 		return result;
+	}
+
+	@Override
+	protected Matrix doParallelOp(Matrix a, Matrix b) {
+		return null;
+		
+	}
+
+	@Override
+	protected Matrix doSequentialOp(Matrix a, Matrix b) {
+		return null;
+		
+	}
+
+	@Override
+	public void close() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

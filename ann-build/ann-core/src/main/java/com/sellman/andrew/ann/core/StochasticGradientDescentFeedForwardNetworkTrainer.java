@@ -7,9 +7,9 @@ import com.sellman.andrew.ann.core.math.Vector;
 import com.sellman.andrew.ann.core.training.FeedForwardNetworkTrainerConfig;
 import com.sellman.andrew.ann.core.training.TrainingProgress;
 
-public class GradientDescentFeedForwardNetworkTrainer extends AbstractFeedForwardNetworkTrainer {
+public class StochasticGradientDescentFeedForwardNetworkTrainer extends AbstractFeedForwardNetworkTrainer {
 
-	public GradientDescentFeedForwardNetworkTrainer(final FeedForwardNetworkTrainerConfig config, final FeedForwardNetwork network) {
+	public StochasticGradientDescentFeedForwardNetworkTrainer(final FeedForwardNetworkTrainerConfig config, final FeedForwardNetwork network) {
 		super(config, network);
 	}
 

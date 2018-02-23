@@ -3,7 +3,7 @@ package com.sellman.andrew.ann.core.concurrent;
 import java.util.concurrent.CountDownLatch;
 
 public abstract class AbstractTask implements Runnable, Task {
-	private final CountDownLatch taskGroup;
+	private CountDownLatch taskGroup;
 
 	public AbstractTask(CountDownLatch taskGroup) {
 		this.taskGroup = taskGroup;
@@ -12,8 +12,12 @@ public abstract class AbstractTask implements Runnable, Task {
 	public AbstractTask() {
 		this(null);
 	}
+	
+	public final void setTaskGroup(CountDownLatch taskGroup) {
+		this.taskGroup = taskGroup;
+	}
 
-	protected final CountDownLatch getTaskGroup() {
+	public final CountDownLatch getTaskGroup() {
 		return taskGroup;
 	}
 
@@ -26,6 +30,10 @@ public abstract class AbstractTask implements Runnable, Task {
 				taskGroup.countDown();
 			}
 		}
+	}
+	
+	public void recycle() {
+		this.taskGroup = null;
 	}
 
 }

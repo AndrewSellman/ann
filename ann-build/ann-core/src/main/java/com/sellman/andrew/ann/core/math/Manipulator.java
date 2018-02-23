@@ -7,20 +7,20 @@ import java.util.concurrent.CountDownLatch;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-class Manipulator extends MathSupport {
+class Manipulator extends ParallelizableOperation {
 
-	public Manipulator(final TaskService taskService) {
-		super(taskService);
+	public Manipulator(final TaskService taskService, final ParallelizableOperationAdvisor advisor) {
+		super(taskService, advisor);
 	}
 
 	public Matrix transpose(final Matrix source) {
 		int rowCount = source.getRowCount();
 		int columnCount = source.getColumnCount();
 		Matrix target = new Matrix(columnCount, rowCount);
-
-		if (ParallelTaskGate.doMatrixTasksInParrallel(rowCount * columnCount)) {
-			return transposeParallel(source, rowCount, columnCount, target);
-		}
+//		TODO
+//		if (ParallelizableOperationAdvisor.shouldMultiplyInParrallel(rowCount * columnCount)) {
+//			return transposeParallel(source, rowCount, columnCount, target);
+//		}
 
 		return transposeSequential(source, rowCount, columnCount, target);
 	}
@@ -32,11 +32,11 @@ class Manipulator extends MathSupport {
 	public void update(final Matrix source, final Matrix target) {
 		int rowCount = source.getRowCount();
 		int columnCount = source.getColumnCount();
-
-		if (ParallelTaskGate.doMatrixTasksInParrallel(rowCount * columnCount)) {
-			updateParallel(source, rowCount, columnCount, target);
-			return;
-		}
+//TODO
+//		if (ParallelizableOperationAdvisor.shouldMultiplyInParrallel(rowCount * columnCount)) {
+//			updateParallel(source, rowCount, columnCount, target);
+//			return;
+//		}
 
 		updateSequential(source, target);
 	}
@@ -142,6 +142,25 @@ class Manipulator extends MathSupport {
 		}
 
 		return target;
+	}
+
+	@Override
+	protected Matrix doParallelOp(Matrix a, Matrix b) {
+		// TODO Auto-generated method stub
+		return null;
+		
+	}
+
+	@Override
+	protected Matrix doSequentialOp(Matrix a, Matrix b) {
+		return null;
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void close() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

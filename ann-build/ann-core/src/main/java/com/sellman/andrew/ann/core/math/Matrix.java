@@ -23,6 +23,10 @@ public class Matrix {
 		this(data, null, null);
 	}
 
+	public Matrix(int rowCount, int columnCount, Context context, EventManager eventManager) {
+		this(new double[rowCount][columnCount], context, eventManager);
+	}
+	
 	public Matrix(int rowCount, int columnCount) {
 		this(new double[rowCount][columnCount]);
 	}

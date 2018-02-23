@@ -2,129 +2,139 @@ package com.sellman.andrew.ann.core.math;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
+import static org.mockito.Mockito.*;
 
-public class MatrixMultiplierTest {
+public class StandardMultiplierTest {
+	private static final int NO_LIMIT = -1;
+	private static final int MAX_IDLE = 1000;
+	private static final int MIN_IDLE = 100;
 	private static final Matrix M1X2 = new Matrix(new double[][] { { 1, 2 } });
 	private static final Matrix M2X1 = new Matrix(new double[][] { { 3 }, { 4 } });
 	private static final Matrix M2X3 = new Matrix(new double[][] { { 1, 2, 3 }, { 4, 5, 6 } });
 	private static final Matrix M3X2 = new Matrix(new double[][] { { 7, 8 }, { 9, 10 }, { 11, 12 } });
 
-	private Multiplier multiplier;
+	private StandardMultiplier multiplier;
 	private TaskService taskService;
+	private StandardMultiplyByRowTaskPool rowTaskPool;
+	private StandardMultiplyByColumnTaskPool columnTaskPool;
+	private ParallelizableOperationAdvisor advisor;
 
 	@Before
-	public void prepareTest() {
+	public void prepareTests() {
 		taskService = new TaskServiceBuilder().highPriority().build();
-		multiplier = new Multiplier(taskService);
+
+		GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+		poolConfig.setMinIdle(MIN_IDLE);
+		poolConfig.setMaxIdle(MAX_IDLE);
+		poolConfig.setMaxTotal(NO_LIMIT);
+
+		GenericObjectPool<StandardMultiplyByRowTask> rowTaskObjectPool = new GenericObjectPool<StandardMultiplyByRowTask>(new StandardMultiplyByRowTaskFactory(), poolConfig);
+		rowTaskPool = new StandardMultiplyByRowTaskPool(rowTaskObjectPool);
+
+		GenericObjectPool<StandardMultiplyByColumnTask> columnTaskObjectPool = new GenericObjectPool<StandardMultiplyByColumnTask>(new StandardMultiplyByColumnTaskFactory(), poolConfig);
+		columnTaskPool = new StandardMultiplyByColumnTaskPool(columnTaskObjectPool);
+
+		advisor = mock(ParallelizableOperationAdvisor.class);
+		
+		multiplier = new StandardMultiplier(taskService, rowTaskPool, columnTaskPool, advisor);
 	}
 
 	@After
-	public void completeTest() throws Exception {
+	public void completeTests() throws Exception {
+		waitForTasksToBeRecycled();
+		
+		assertEquals(rowTaskPool.getBorrowedCount(), rowTaskPool.getRecycledCount());
+		assertEquals(columnTaskPool.getBorrowedCount(), columnTaskPool.getRecycledCount());
+		multiplier.close();
 		taskService.close();
 	}
 
 	@Test
 	public void multiply1by2MatrixWith2by1MatrixParallel() {
-		ParallelTaskGate.setParrallelMatrixTasksCellCountThreshold(0);
+		doAsParallel(M1X2, M2X1);
 
 		Matrix result = multiplier.multiply(M1X2, M2X1);
 		assertMultiply1by2MatrixWith2by1Matrix(result);
+		verifyAdvisor(M1X2, M2X1);
 	}
 
 	@Test
 	public void multiply1by2MatrixWith2by1MatrixSequentially() {
 		Matrix result = multiplier.multiply(M1X2, M2X1);
 		assertMultiply1by2MatrixWith2by1Matrix(result);
+		verifyAdvisor(M1X2, M2X1);
 	}
 
 	@Test
 	public void multiply1by2MatrixWith2by3MatrixParallel() {
-		ParallelTaskGate.setParrallelMatrixTasksCellCountThreshold(0);
+		doAsParallel(M1X2, M2X3);
 
 		Matrix result = multiplier.multiply(M1X2, M2X3);
 		assertMultiply1by2MatrixWith2by3Matrix(result);
+		verifyAdvisor(M1X2, M2X3);
 	}
 
 	@Test
 	public void multiply1by2MatrixWith2by3MatrixSequentially() {
 		Matrix result = multiplier.multiply(M1X2, M2X3);
 		assertMultiply1by2MatrixWith2by3Matrix(result);
+		verifyAdvisor(M1X2, M2X3);
 	}
 
 	@Test
-	public void multiply2byMatrix1With1by2MatrixParallel() {
-		ParallelTaskGate.setParrallelMatrixTasksCellCountThreshold(0);
+	public void multiply2by1Matrix1With1by2MatrixParallel() {
+		doAsParallel(M2X1, M1X2);
 
 		Matrix result = multiplier.multiply(M2X1, M1X2);
-		assertMultiply2byMatrix1With1by2Matrix(result);
+		assertMultiply2by1Matrix1With1by2Matrix(result);
+		verifyAdvisor(M2X1, M1X2);
 	}
 
 	@Test
-	public void multiply2byMatrix1With1by2MatrixSequentially() {
+	public void multiply2by1Matrix1With1by2MatrixSequentially() {
 		Matrix result = multiplier.multiply(M2X1, M1X2);
-		assertMultiply2byMatrix1With1by2Matrix(result);
+		assertMultiply2by1Matrix1With1by2Matrix(result);
+		verifyAdvisor(M2X1, M1X2);
 	}
 
 	@Test
 	public void multiply2by3MatrixWith3by2MatrixParallel() {
-		ParallelTaskGate.setParrallelMatrixTasksCellCountThreshold(0);
+		doAsParallel(M2X3, M3X2);
 
 		Matrix result = multiplier.multiply(M2X3, M3X2);
 		assertMultiply2by3MatrixWith3by2Matrix(result);
+		verifyAdvisor(M2X3, M3X2);
 	}
 
 	@Test
 	public void multiply2by3MatrixWith3by2MatrixSequentially() {
 		Matrix result = multiplier.multiply(M2X3, M3X2);
 		assertMultiply2by3MatrixWith3by2Matrix(result);
+		verifyAdvisor(M2X3, M3X2);
 	}
 
 	@Test
 	public void multiply3by2MatrixWith2by3MatrixParallel() {
-		ParallelTaskGate.setParrallelMatrixTasksCellCountThreshold(0);
+		doAsParallel(M3X2, M2X3);
 
 		Matrix result = multiplier.multiply(M3X2, M2X3);
 		assertMultiply3by2MatrixWith2by3Matrix(result);
+		verifyAdvisor(M3X2, M2X3);
 	}
 
 	@Test
 	public void multiply3by2MatrixWith2by3MatrixSequentially() {
 		Matrix result = multiplier.multiply(M3X2, M2X3);
 		assertMultiply3by2MatrixWith2by3Matrix(result);
-	}
-
-	@Test
-	public void hadamard1by2MatrixWith1by2MatrixParallel() {
-		ParallelTaskGate.setParrallelMatrixTasksCellCountThreshold(0);
-
-		Matrix result = multiplier.hadamard(M1X2, M1X2);
-		assertHadamard1by2MatrixWith1by2Matrix(result);
-	}
-
-	@Test
-	public void hadamard1by2MatrixWith1by2MatrixSequential() {
-		Matrix result = multiplier.hadamard(M1X2, M1X2);
-		assertHadamard1by2MatrixWith1by2Matrix(result);
-	}
-
-	@Test
-	public void hadamard2by1MatrixWith2by1MatrixParallel() {
-		ParallelTaskGate.setParrallelMatrixTasksCellCountThreshold(0);
-
-		Matrix result = multiplier.hadamard(M2X1, M2X1);
-		assertHadamard2by1MatrixWith2by1Matrix(result);
-	}
-
-	@Test
-	public void hadamard2by1MatrixWith2by1MatrixSequential() {
-		Matrix result = multiplier.hadamard(M2X1, M2X1);
-		assertHadamard2by1MatrixWith2by1Matrix(result);
+		verifyAdvisor(M3X2, M2X3);
 	}
 
 	private void assertMultiply1by2MatrixWith2by1Matrix(Matrix result) {
@@ -141,7 +151,7 @@ public class MatrixMultiplierTest {
 		assertEquals(15.0, result.getValue(0, 2), 0.0);
 	}
 
-	private void assertMultiply2byMatrix1With1by2Matrix(Matrix result) {
+	private void assertMultiply2by1Matrix1With1by2Matrix(Matrix result) {
 		assertEquals(2, result.getRowCount());
 		assertEquals(2, result.getColumnCount());
 		assertEquals(3.0, result.getValue(0, 0), 0.0);
@@ -173,18 +183,23 @@ public class MatrixMultiplierTest {
 		assertEquals(105.0, result.getValue(2, 2), 0.0);
 	}
 
-	private void assertHadamard1by2MatrixWith1by2Matrix(Matrix result) {
-		assertEquals(1, result.getRowCount());
-		assertEquals(2, result.getColumnCount());
-		assertEquals(1.0, result.getValue(0, 0), 0.0);
-		assertEquals(4.0, result.getValue(0, 1), 0.0);
+	private void waitForTasksToBeRecycled() throws InterruptedException {
+		int attempt = 0;
+		while (rowTaskPool.getBorrowedCount() != rowTaskPool.getRecycledCount() || columnTaskPool.getBorrowedCount() != columnTaskPool.getRecycledCount()) {
+			Thread.sleep(100);
+			if (attempt > 5) {
+				break;
+			}
+			attempt++;
+		}
 	}
 
-	private void assertHadamard2by1MatrixWith2by1Matrix(Matrix result) {
-		assertEquals(2, result.getRowCount());
-		assertEquals(1, result.getColumnCount());
-		assertEquals(9.0, result.getValue(0, 0), 0.0);
-		assertEquals(16.0, result.getValue(1, 0), 0.0);
+	private void doAsParallel(Matrix left, Matrix right) {
+		when(advisor.doAsParrallelOp(multiplier, left.getRowCount(), left.getColumnCount(), right.getRowCount(), right.getColumnCount())).thenReturn(true);
+	}
+
+	private void verifyAdvisor(Matrix left, Matrix right) {
+		verify(advisor).doAsParrallelOp(multiplier, left.getRowCount(), left.getColumnCount(), right.getRowCount(), right.getColumnCount());
 	}
 
 }

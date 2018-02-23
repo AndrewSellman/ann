@@ -4,12 +4,12 @@ public class LearningRateRecommendation {
 	private final double learningRate;
 	private final boolean rollBack;
 	
-	public LearningRateRecommendation(double learningRate, boolean rollBack) {
+	public LearningRateRecommendation(final double learningRate, final boolean rollBack) {
 		this.learningRate = learningRate;
 		this.rollBack = rollBack;
 	}
 
-	public LearningRateRecommendation(double learningRate) {
+	public LearningRateRecommendation(final double learningRate) {
 		this(learningRate, false);
 	}
 	

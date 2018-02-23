@@ -4,6 +4,6 @@ import com.sellman.andrew.ann.core.training.TrainingProgress;
 
 public abstract class LearningRateEvaluator {
 	
-	public abstract LearningRateRecommendation getRecommendation(TrainingProgress progress);
+	public abstract LearningRateRecommendation getRecommendation(final TrainingProgress progress);
 
 }

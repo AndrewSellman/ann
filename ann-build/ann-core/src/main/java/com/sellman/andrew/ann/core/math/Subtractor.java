@@ -7,20 +7,20 @@ import java.util.concurrent.CountDownLatch;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-class Subtractor extends MathSupport {
+class Subtractor extends ParallelizableOperation {
 
-	public Subtractor(final TaskService taskService) {
-		super(taskService);
+	public Subtractor(final TaskService taskService, final ParallelizableOperationAdvisor advisor) {
+		super(taskService, advisor);
 	}
 
 	public Matrix subtract(final Matrix left, final Matrix right) {
 		int rowCount = left.getRowCount();
 		int columnCount = right.getColumnCount();
 		Matrix target = new Matrix(rowCount, columnCount);
-
-		if (ParallelTaskGate.doMatrixTasksInParrallel(rowCount * columnCount)) {
-			return subtractParallel(left, right, rowCount, columnCount, target);
-		}
+//TODO
+//		if (ParallelizableOperationAdvisor.shouldMultiplyInParrallel(rowCount * columnCount)) {
+//			return subtractParallel(left, right, rowCount, columnCount, target);
+//		}
 
 		return subtractSequential(left, right, rowCount, columnCount, target);
 	}
@@ -75,6 +75,24 @@ class Subtractor extends MathSupport {
 		}
 
 		return target;
+	}
+
+	@Override
+	protected Matrix doParallelOp(Matrix left, Matrix right) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Matrix doSequentialOp(Matrix left, Matrix right) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void close() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
