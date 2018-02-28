@@ -5,7 +5,8 @@ import java.util.concurrent.CountDownLatch;
 public abstract class AbstractTask implements Runnable, Task {
 	private CountDownLatch taskGroup;
 
-	public AbstractTask(CountDownLatch taskGroup) {
+//TODO remove these constructors after all operations changed to use task pools
+	public AbstractTask(final CountDownLatch taskGroup) {
 		this.taskGroup = taskGroup;
 	}
 
@@ -13,7 +14,7 @@ public abstract class AbstractTask implements Runnable, Task {
 		this(null);
 	}
 	
-	public final void setTaskGroup(CountDownLatch taskGroup) {
+	public final void setTaskGroup(final CountDownLatch taskGroup) {
 		this.taskGroup = taskGroup;
 	}
 

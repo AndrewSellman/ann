@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
-import com.sellman.andrew.ann.core.math.ConstantAdderFunction;
+import com.sellman.andrew.ann.core.math.ConstantAdditionFunction;
 import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.FunctionGroupHelper;
 import com.sellman.andrew.ann.core.math.Matrix;
@@ -31,7 +31,7 @@ public class FeedForwardLayerTest {
 
 	@Before
 	public void prepareTest() {
-		functionGroup = new FunctionGroupHelper(new ConstantAdderFunction(100), null);
+		functionGroup = new FunctionGroupHelper(new ConstantAdditionFunction(100), null);
 		taskService = new TaskServiceBuilder().highPriority().build();
 		matrixOperations = OPERATIONS_FACTORY.getOperations(taskService);
 //		layer = new FeedForwardLayer("test", matrixOperations, M2X4, BIAS, functionGroup);

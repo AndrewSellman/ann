@@ -4,65 +4,69 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 class MathOperationsImpl implements MathOperations {
-	private final StandardMultiplier standardMultiplier;
-	private final HadamardMultiplier hadamardMultiplier;
-	private final Adder adder;
-	private final Subtractor subtractor;
+	private final StandardMultiplication standardMultiplication;
+	private final HadamardMultiplication hadamardMultiplication;
+	private final Addition addition;
+	private final Summation summation;
+	private final Subtraction subtraction;
 	private final Scaler scaler;
-	private final Manipulator manipulator;
+	private final Transposition transposition;
+	private final Updation updation;
 	
-	public MathOperationsImpl(final StandardMultiplier standardMultiplier, final HadamardMultiplier hadamardMultiplier, final Adder adder, final Subtractor subtractor, final Scaler scaler, final Manipulator manipulator) {
-		this.standardMultiplier = standardMultiplier;
-		this.hadamardMultiplier = hadamardMultiplier;
+	public MathOperationsImpl(final StandardMultiplication standardMultiplier, final HadamardMultiplication hadamardMultiplier, final Addition adder, final Summation summer, final Subtraction subtractor, final Scaler scaler, final Transposition transposition, final Updation updation) {
+		this.standardMultiplication = standardMultiplier;
+		this.hadamardMultiplication = hadamardMultiplier;
 		this.scaler = scaler;
-		this.adder = adder;
-		this.subtractor = subtractor;
-		this.manipulator = manipulator;
+		this.addition = adder;
+		this.summation = summer;
+		this.subtraction = subtractor;
+		this.transposition = transposition;
+		this.updation = updation;
 	}
 	
 	@Override
 	public Matrix multiply(final Matrix left, final Matrix right) {
-		return standardMultiplier.multiply(left, right);
+		return standardMultiplication.doOperation(left, right);
 	}
 	
 	@Override
 	public Vector multiply(final Matrix left, final Vector right) {
-		return standardMultiplier.multiply(left, right);
+		return standardMultiplication.doOperation(left, right);
 	}
 
 	@Override
 	public Matrix multiply(final Vector left, final Matrix right) {
-		return standardMultiplier.multiply(left, right);
+		return standardMultiplication.doOperation(left, right);
 	}
 
 	@Override
 	public Matrix hadamard(final Matrix a, final Matrix b) {
-		return hadamardMultiplier.multiply(a, b);
+		return hadamardMultiplication.doOperation(a, b);
 	}
 
 	@Override
 	public Vector hadamard(final Vector a, final Vector b) {
-		return hadamardMultiplier.multiply(a, b);
+		return hadamardMultiplication.doOperation(a, b);
 	}
 	
 	@Override
 	public Matrix add(final Matrix a, final Matrix b) {
-		return adder.add(a, b);
+		return addition.doOperation(a, b);
 	}
 
 	@Override
 	public Vector add(final Vector a, final Vector b) {
-		return adder.add(a, b);
+		return addition.doOperation(a, b);
 	}
 
 	@Override
 	public Matrix subtract(final Matrix left, final Matrix right) {
-		return subtractor.subtract(left, right);
+		return subtraction.doOperation(left, right);
 	}
 
 	@Override
 	public Vector subtract(final Vector left, final Vector right) {
-		return subtractor.subtract(left, right);
+		return subtraction.doOperation(left, right);
 	}
 
 	@Override
@@ -77,32 +81,32 @@ class MathOperationsImpl implements MathOperations {
 
 	@Override
 	public Matrix transpose(final Matrix a) {
-		return manipulator.transpose(a);
+		return transposition.doOperation(a);
 	}
 
 	@Override
 	public Matrix transpose(final Vector v) {
-		return manipulator.transpose(v);
+		return transposition.doOperation(v);
 	}
 
 	@Override
 	public void update(final Matrix source, final Matrix target) {
-		manipulator.update(source, target);
+		updation.doOperation(source, target);
 	}
 
 	@Override
 	public void update(final Vector source, final Vector target) {
-		manipulator.update(source, target);
+		updation.doOperation(source, target);
 	}
 
 	@Override
 	public double sum(final Matrix m) {
-		return adder.sum(m);
+		return summation.doOperation(m);
 	}
 
 	@Override
 	public double sum(final Vector v) {
-		return adder.sum(v);
+		return summation.doOperation(v);
 	}
 
 	@Override
@@ -124,7 +128,14 @@ class MathOperationsImpl implements MathOperations {
 	@PreDestroy
 	public void close() throws Exception {
 		System.out.println("Closing MathOperationsImpl " + toString() + "...");
-		standardMultiplier.close();
+		standardMultiplication.close();
+		hadamardMultiplication.close();
+		addition.close();
+		summation.close();
+		subtraction.close();
+		scaler.close();
+		transposition.close();
+		updation.close();
 		System.out.println("Closed MathOperationsImpl " + toString());
 	}
 }

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
-import com.sellman.andrew.ann.core.math.ConstantAdderFunction;
+import com.sellman.andrew.ann.core.math.ConstantAdditionFunction;
 import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.FunctionGroupHelper;
 import com.sellman.andrew.ann.core.math.FunctionType;
@@ -43,10 +43,10 @@ public class FeedForwardNetworkTest {
 		lowPriorityTaskService = new TaskServiceBuilder().lowPriority().fireAndForget().build();
 		matrixOperations = OPERATIONS_FACTORY.getOperations(highPriorityTaskService);
 
-		layer1FunctionGroup = new FunctionGroupHelper(new ConstantAdderFunction(100), null);
+		layer1FunctionGroup = new FunctionGroupHelper(new ConstantAdditionFunction(100), null);
 //		layer1 = new FeedForwardLayer("layer1", matrixOperations, WEIGHT1, BIAS1, layer1FunctionGroup);
 
-		layer2FunctionGroup = new FunctionGroupHelper(new ConstantAdderFunction(-100), null);
+		layer2FunctionGroup = new FunctionGroupHelper(new ConstantAdditionFunction(-100), null);
 //		layer2 = new FeedForwardLayer("layer2", matrixOperations, WEIGHT2, BIAS2, layer2FunctionGroup);
 	}
 

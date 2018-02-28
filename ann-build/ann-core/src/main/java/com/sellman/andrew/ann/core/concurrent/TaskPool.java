@@ -19,7 +19,11 @@ public abstract class TaskPool<T extends AbstractTask> implements AutoCloseable 
 		return borrowedTasks;
 	}
 
-	public final void recycle(List<T> tasks) {
+	public void recycle(List<T> tasks) {
+		if (tasks == null) {
+			return;
+		}
+
 		for (T task : tasks) {
 			recycle(task);
 		}
@@ -42,6 +46,10 @@ public abstract class TaskPool<T extends AbstractTask> implements AutoCloseable 
 
 	public long getRecycledCount() {
 		return pool.getReturnedCount();
+	}
+
+	public void clear() {
+		pool.clear();
 	}
 
 	protected abstract List<T> getNewBorrowList(int howManyTasks);

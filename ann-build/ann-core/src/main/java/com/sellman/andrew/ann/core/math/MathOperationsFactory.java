@@ -8,98 +8,226 @@ import com.sellman.andrew.ann.core.concurrent.TaskService;
 public class MathOperationsFactory {
 	private static final int NO_LIMIT = -1;
 	private static final int MAX_IDLE = 1000;
-	private static final int MIN_IDLE = 500;
+	private static final int MIN_IDLE = 250;
 
 	public MathOperations getOperations(final TaskService taskService) {
-		StandardMultiplier standardMultiplier = getStandardMultiplier(taskService);
-		HadamardMultiplier hadamardMultiplier = getHadamardMultiplier(taskService);
-		Adder adder = getAdder(taskService);
-		Subtractor subtractor = getSubtractor(taskService);
+		StandardMultiplication standardMultiplier = getStandardMultiplication(taskService);
+		HadamardMultiplication hadamardMultiplier = getHadamardMultiplication(taskService);
+		Addition adder = getAddition(taskService);
+		Summation summation = getSummation(taskService);
+		Subtraction subtractor = getSubtraction(taskService);
 		Scaler scaler = getScaler(taskService);
-		Manipulator manipulator = getManipulator(taskService);
-		return new MathOperationsImpl(standardMultiplier, hadamardMultiplier, adder, subtractor, scaler, manipulator);
+		Transposition transposition = getTransposition(taskService);
+		Updation updation = getUpdation(taskService);
+		return new MathOperationsImpl(standardMultiplier, hadamardMultiplier, adder, summation, subtractor, scaler, transposition, updation);
 	}
 
-	private Adder getAdder(TaskService taskService) {
-		ParallelizableOperationAdvisor advisor = new ParallelizableOperationAdvisor();
-		return new Adder(taskService, advisor);
+	private Addition getAddition(TaskService taskService) {
+		AdditionByRowTaskPool opByRowTaskPool = getAdditionByRowTaskPool();
+		AdditionByColumnTaskPool opByColumnTaskPool = getAdditionByColumnTaskPool();
+		ParallelizableOperation1Advisor advisor = new ParallelizableOperation1Advisor();
+		return new Addition(taskService, opByRowTaskPool, opByColumnTaskPool, advisor);
 	}
 
-	private Subtractor getSubtractor(TaskService taskService) {
-		ParallelizableOperationAdvisor advisor = new ParallelizableOperationAdvisor();
-		return new Subtractor(taskService, advisor);
+	private AdditionByRowTaskPool getAdditionByRowTaskPool() {
+		return new AdditionByRowTaskPool(getAdditionByRowTaskObjectPool());
+	}
+
+	private AdditionByColumnTaskPool getAdditionByColumnTaskPool() {
+		return new AdditionByColumnTaskPool(getAdditionByColumnTaskObjectPool());
+	}
+
+	private GenericObjectPool<AdditionByRowTask> getAdditionByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<AdditionByRowTask>(new AdditionByRowTaskFactory(), config);
+	}
+
+	private GenericObjectPool<AdditionByColumnTask> getAdditionByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<AdditionByColumnTask>(new AdditionByColumnTaskFactory(), config);
+	}
+
+	private Subtraction getSubtraction(TaskService taskService) {
+		SubtractionByRowTaskPool opByRowTaskPool = getSubtractionByRowTaskPool();
+		SubtractionByColumnTaskPool opByColumnTaskPool = getSubtractionByColumnTaskPool();
+		ParallelizableOperation1Advisor advisor = new ParallelizableOperation1Advisor();
+		return new Subtraction(taskService, opByRowTaskPool, opByColumnTaskPool, advisor);
+	}
+
+	private SubtractionByColumnTaskPool getSubtractionByColumnTaskPool() {
+		return new SubtractionByColumnTaskPool(getSubtractionByColumnTaskObjectPool());
+	}
+
+	private GenericObjectPool<SubtractionByColumnTask> getSubtractionByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<SubtractionByColumnTask>(new SubtractionByColumnTaskFactory(), config);
+	}
+
+	private SubtractionByRowTaskPool getSubtractionByRowTaskPool() {
+		return new SubtractionByRowTaskPool(getSubtractionByRowTaskObjectPool());
+	}
+
+	private GenericObjectPool<SubtractionByRowTask> getSubtractionByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<SubtractionByRowTask>(new SubtractionByRowTaskFactory(), config);
 	}
 
 	private Scaler getScaler(TaskService taskService) {
-		ParallelizableOperationAdvisor advisor = new ParallelizableOperationAdvisor();
-		return new Scaler(taskService, advisor);
+		ScalerByRowTaskPool opByRowTaskPool = getScalerByRowTaskPool();
+		ScalerByColumnTaskPool opByColumnTaskPool = getScalerByColumnTaskPool();
+		ParallelizableOperation2Advisor advisor = new ParallelizableOperation2Advisor();
+		return new Scaler(taskService, advisor, opByRowTaskPool, opByColumnTaskPool);
 	}
 
-	private Manipulator getManipulator(TaskService taskService) {
-		ParallelizableOperationAdvisor advisor = new ParallelizableOperationAdvisor();
-		return new Manipulator(taskService, advisor);
+	private ScalerByRowTaskPool getScalerByRowTaskPool() {
+		return new ScalerByRowTaskPool(getScaleByRowTaskObjectPool());
 	}
 
-	private StandardMultiplier getStandardMultiplier(final TaskService taskService) {
-		StandardMultiplyByRowTaskPool rowTaskPool = getStandardMultiplyByRowTaskPool();
-		StandardMultiplyByColumnTaskPool columnTaskPool = getStandardMultiplyByColumnTaskPool();
-		ParallelizableOperationAdvisor advisor = new ParallelizableOperationAdvisor();
-		return new StandardMultiplier(taskService, rowTaskPool, columnTaskPool, advisor);
+	private ScalerByColumnTaskPool getScalerByColumnTaskPool() {
+		return new ScalerByColumnTaskPool(getScaleByColumnTaskObjectPool());
 	}
 
-	private StandardMultiplyByColumnTaskPool getStandardMultiplyByColumnTaskPool() {
-		return new StandardMultiplyByColumnTaskPool(getStandardMultiplyByColumnTaskObjectPool());
+	private GenericObjectPool<ScalerByRowTask> getScaleByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<ScalerByRowTask>(new ScalerByRowTaskFactory(), config);
 	}
 
-	private StandardMultiplyByRowTaskPool getStandardMultiplyByRowTaskPool() {
-		return new StandardMultiplyByRowTaskPool(getStandardMultiplyByRowTaskObjectPool());
+	private GenericObjectPool<ScalerByColumnTask> getScaleByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<ScalerByColumnTask>(new ScalerByColumnTaskFactory(), config);
 	}
 
-	private GenericObjectPool<StandardMultiplyByRowTask> getStandardMultiplyByRowTaskObjectPool() {
+	private StandardMultiplication getStandardMultiplication(final TaskService taskService) {
+		StandardMultiplicationByRowTaskPool opByRowTaskPool = getStandardMultiplicationByRowTaskPool();
+		StandardMultiplicationByColumnTaskPool opByColumnTaskPool = getStandardMultiplicationByColumnTaskPool();
+		ParallelizableOperation1Advisor advisor = new ParallelizableOperation1Advisor();
+		return new StandardMultiplication(taskService, opByRowTaskPool, opByColumnTaskPool, advisor);
+	}
+
+	private StandardMultiplicationByColumnTaskPool getStandardMultiplicationByColumnTaskPool() {
+		return new StandardMultiplicationByColumnTaskPool(getStandardMultiplicationByColumnTaskObjectPool());
+	}
+
+	private StandardMultiplicationByRowTaskPool getStandardMultiplicationByRowTaskPool() {
+		return new StandardMultiplicationByRowTaskPool(getStandardMultiplicationByRowTaskObjectPool());
+	}
+
+	private GenericObjectPool<StandardMultiplicationByRowTask> getStandardMultiplicationByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<StandardMultiplicationByRowTask>(new StandardMultiplicationByRowTaskFactory(), config);
+	}
+
+	private GenericObjectPool<StandardMultiplicationByColumnTask> getStandardMultiplicationByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<StandardMultiplicationByColumnTask>(new StandardMultiplicationByColumnTaskFactory(), config);
+	}
+
+	private HadamardMultiplication getHadamardMultiplication(TaskService taskService) {
+		HadamardMultiplicationByRowTaskPool opByRowTaskPool = getHadamardMultiplicationByRowTaskPool();
+		HadamardMultiplicationByColumnTaskPool opByColumnTaskPool = getHadamardMultiplicationByColumnTaskPool();
+		ParallelizableOperation1Advisor advisor = new ParallelizableOperation1Advisor();
+		return new HadamardMultiplication(taskService, opByRowTaskPool, opByColumnTaskPool, advisor);
+	}
+
+	private HadamardMultiplicationByColumnTaskPool getHadamardMultiplicationByColumnTaskPool() {
+		return new HadamardMultiplicationByColumnTaskPool(getHadamardMultiplicationByColumnTaskObjectPool());
+	}
+
+	private GenericObjectPool<HadamardMultiplicationByColumnTask> getHadamardMultiplicationByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<HadamardMultiplicationByColumnTask>(new HadamardMultiplicationByColumnTaskFactory(), config);
+	}
+
+	private HadamardMultiplicationByRowTaskPool getHadamardMultiplicationByRowTaskPool() {
+		return new HadamardMultiplicationByRowTaskPool(getHadamardMultiplicationByRowTaskObjectPool());
+	}
+
+	private GenericObjectPool<HadamardMultiplicationByRowTask> getHadamardMultiplicationByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<HadamardMultiplicationByRowTask>(new HadamardMultiplicationByRowTaskFactory(), config);
+	}
+
+	private Transposition getTransposition(TaskService taskService) {
+		TranspositionByRowTaskPool opByRowTaskPool = getTranspositionByRowTaskPool();
+		TranspositionByColumnTaskPool opByColumnTaskPool = getTranspositionByColumnTaskPool();
+		ParallelizableOperation3Advisor advisor = new ParallelizableOperation3Advisor();
+		return new Transposition(taskService, opByRowTaskPool, opByColumnTaskPool, advisor);
+	}
+
+	private TranspositionByColumnTaskPool getTranspositionByColumnTaskPool() {
+		return new TranspositionByColumnTaskPool(getTranspositionByColumnTaskObjectPool());
+	}
+
+	private GenericObjectPool<TranspositionByColumnTask> getTranspositionByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<TranspositionByColumnTask>(new TranspositionByColumnTaskFactory(), config);
+	}
+
+	private TranspositionByRowTaskPool getTranspositionByRowTaskPool() {
+		return new TranspositionByRowTaskPool(getTranspositionByRowTaskObjectPool());
+	}
+
+	private GenericObjectPool<TranspositionByRowTask> getTranspositionByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<TranspositionByRowTask>(new TranspositionByRowTaskFactory(), config);
+	}
+
+	private Summation getSummation(TaskService taskService) {
+		SummationByRowTaskPool opByRowTaskPool = getSummationByRowTaskPool();
+		SummationByColumnTaskPool opByColumnTaskPool = getSummationByColumnTaskPool();
+		ParallelizableOperation4Advisor advisor = new ParallelizableOperation4Advisor();
+		return new Summation(taskService, opByRowTaskPool, opByColumnTaskPool, advisor);
+	}
+
+	private SummationByColumnTaskPool getSummationByColumnTaskPool() {
+		return new SummationByColumnTaskPool(getSummationByColumnTaskObjectPool());
+	}
+
+	private GenericObjectPool<SummationByColumnTask> getSummationByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<SummationByColumnTask>(new SummationByColumnTaskFactory(), config);
+	}
+
+	private SummationByRowTaskPool getSummationByRowTaskPool() {
+		return new SummationByRowTaskPool(getSummationByRowTaskObjectPool());
+	}
+
+	private GenericObjectPool<SummationByRowTask> getSummationByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<SummationByRowTask>(new SummationByRowTaskFactory(), config);
+	}
+
+	private Updation getUpdation(TaskService taskService) {
+		UpdationByRowTaskPool opByRowTaskPool = getUpdationByRowTaskPool();
+		UpdationByColumnTaskPool opByColumnTaskPool = getUpdationByColumnTaskPool();
+		ParallelizableOperation5Advisor advisor = new ParallelizableOperation5Advisor();
+		return new Updation(taskService, opByRowTaskPool, opByColumnTaskPool, advisor);
+	}
+
+	private UpdationByColumnTaskPool getUpdationByColumnTaskPool() {
+		return new UpdationByColumnTaskPool(getUpdationByColumnTaskObjectPool());
+	}
+
+	private GenericObjectPool<UpdationByColumnTask> getUpdationByColumnTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<UpdationByColumnTask>(new UpdationByColumnTaskFactory(), config);
+	}
+
+	private UpdationByRowTaskPool getUpdationByRowTaskPool() {
+		return new UpdationByRowTaskPool(getUpdationByRowTaskObjectPool());
+	}
+
+	private GenericObjectPool<UpdationByRowTask> getUpdationByRowTaskObjectPool() {
+		GenericObjectPoolConfig config = getBasicObjectPoolConfiguration();
+		return new GenericObjectPool<UpdationByRowTask>(new UpdationByRowTaskFactory(), config);
+	}
+
+	private GenericObjectPoolConfig getBasicObjectPoolConfiguration() {
 		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
 		config.setMinIdle(MIN_IDLE);
 		config.setMaxIdle(MAX_IDLE);
 		config.setMaxTotal(NO_LIMIT);
-		return new GenericObjectPool<StandardMultiplyByRowTask>(new StandardMultiplyByRowTaskFactory(), config);
-	}
-
-	private GenericObjectPool<StandardMultiplyByColumnTask> getStandardMultiplyByColumnTaskObjectPool() {
-		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-		config.setMinIdle(MIN_IDLE);
-		config.setMaxIdle(MAX_IDLE);
-		config.setMaxTotal(NO_LIMIT);
-		return new GenericObjectPool<StandardMultiplyByColumnTask>(new StandardMultiplyByColumnTaskFactory(), config);
-	}
-
-	private HadamardMultiplier getHadamardMultiplier(TaskService taskService) {
-		HadamardMultiplyByRowTaskPool rowTaskPool = getHadamardMultiplyByRowTaskPool();
-		HadamardMultiplyByColumnTaskPool columnTaskPool = getHadamardMultiplyByColumnTaskPool();
-		ParallelizableOperationAdvisor advisor = new ParallelizableOperationAdvisor();
-		return new HadamardMultiplier(taskService, rowTaskPool, columnTaskPool, advisor);
-	}
-
-	private HadamardMultiplyByColumnTaskPool getHadamardMultiplyByColumnTaskPool() {
-		return new HadamardMultiplyByColumnTaskPool(getHadamardMultiplyByColumnTaskObjectPool());
-	}
-
-	private GenericObjectPool<HadamardMultiplyByColumnTask> getHadamardMultiplyByColumnTaskObjectPool() {
-		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-		config.setMinIdle(MIN_IDLE);
-		config.setMaxIdle(MAX_IDLE);
-		config.setMaxTotal(NO_LIMIT);
-		return new GenericObjectPool<HadamardMultiplyByColumnTask>(new HadamardMultiplyByColumnTaskFactory(), config);
-	}
-
-	private HadamardMultiplyByRowTaskPool getHadamardMultiplyByRowTaskPool() {
-		return new HadamardMultiplyByRowTaskPool(getHadamardMultiplyByRowTaskObjectPool());
-	}
-
-	private GenericObjectPool<HadamardMultiplyByRowTask> getHadamardMultiplyByRowTaskObjectPool() {
-		GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-		config.setMinIdle(MIN_IDLE);
-		config.setMaxIdle(MAX_IDLE);
-		config.setMaxTotal(NO_LIMIT);
-		return new GenericObjectPool<HadamardMultiplyByRowTask>(new HadamardMultiplyByRowTaskFactory(), config);
+		return config;
 	}
 
 }
