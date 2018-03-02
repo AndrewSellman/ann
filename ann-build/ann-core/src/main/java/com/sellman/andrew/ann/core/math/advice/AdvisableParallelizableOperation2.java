@@ -17,12 +17,16 @@ public abstract class AdvisableParallelizableOperation2<R extends AbstractOperat
 		this.advisor = advisor;
 	}
 
-	public final Matrix doShellSequentialOp(final Matrix m, final Function f) {
-		return doSequentialOp(m, f);
+	public final long getSequentialOpNanos(final Matrix m, final Function f) {
+		long start = System.nanoTime();
+		doSequentialOp(m, f);
+		return System.nanoTime() - start;
 	}
 
-	public Matrix doShellParallelOp(final Matrix m, final Function f) {
-		return doParallelOp(m, f);
+	public long getParallelOpNanos(final Matrix m, final Function f) {
+		long start = System.nanoTime();
+		doParallelOp(m, f);
+		return System.nanoTime() - start;
 	}
 
 	@Override

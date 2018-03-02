@@ -28,8 +28,8 @@ public class ParallelizableOperation2Advisor extends ParallelizableOperationAdvi
 		for (int t = 0; t < getTestCount(); t++) {
 			Matrix m = getRandomMatrix(matrixRowCount, matrixColumnCount);
 
-			sequentialOpTotal += getSequentialOpNanos(op, m, function);
-			parallelOpTotal += getParallelOpNanos(op, m, function);
+			sequentialOpTotal += op.getSequentialOpNanos(m, function);
+			parallelOpTotal += op.getParallelOpNanos(m, function);
 		}
 
 		double averageSequentialOp = sequentialOpTotal * 1.0 / getTestCount();
@@ -38,20 +38,6 @@ public class ParallelizableOperation2Advisor extends ParallelizableOperationAdvi
 		asParallel = averageParallelOp < averageSequentialOp;
 		storeAdvice(key, asParallel);
 		return asParallel;
-	}
-
-	private double getSequentialOpNanos(final AdvisableParallelizableOperation2<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> op, final Matrix m,
-			final Function f) {
-		long start = System.nanoTime();
-		op.doShellSequentialOp(m, f);
-		return (System.nanoTime() - start);
-	}
-
-	private long getParallelOpNanos(final AdvisableParallelizableOperation2<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> op, final Matrix m,
-			final Function f) {
-		long start = System.nanoTime();
-		op.doShellParallelOp(m, f);
-		return (System.nanoTime() - start);
 	}
 
 	private Matrix getRandomMatrix(final int rowCount, final int columnCount) {

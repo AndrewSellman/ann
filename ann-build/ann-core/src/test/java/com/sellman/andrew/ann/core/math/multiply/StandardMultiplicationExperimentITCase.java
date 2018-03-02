@@ -118,17 +118,11 @@ public class StandardMultiplicationExperimentITCase {
 	}
 
 	private long multiplySequential(Matrix left, Matrix right) {
-		long start = System.nanoTime();
-		multiplier.doShellSequentialOp(left, right);
-		long end = System.nanoTime();
-		return end - start;
+		return multiplier.getSequentialOpNanos(left, right);
 	}
 
 	private long multiplyParallel(Matrix left, Matrix right) {
-		long start = System.nanoTime();
-		multiplier.doShellParallelOp(left, right);
-		long end = System.nanoTime();
-		return end - start;
+		return multiplier.getParallelOpNanos(left, right);
 	}
 
 	private long multiply(Matrix left, Matrix right) {

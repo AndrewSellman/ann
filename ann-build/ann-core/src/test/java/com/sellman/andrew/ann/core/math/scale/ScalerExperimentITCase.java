@@ -120,17 +120,11 @@ public class ScalerExperimentITCase {
 	}
 
 	private long scaleSequential(Matrix m, Function f) {
-		long start = System.nanoTime();
-		scaler.doShellSequentialOp(m, f);
-		long end = System.nanoTime();
-		return end - start;
+		return scaler.getSequentialOpNanos(m, f);
 	}
 
 	private long scaleParallel(Matrix m, Function f) {
-		long start = System.nanoTime();
-		scaler.doShellParallelOp(m, f);
-		long end = System.nanoTime();
-		return end - start;
+		return scaler.getParallelOpNanos(m, f);
 	}
 
 	private long scale(Matrix m, Function f) {

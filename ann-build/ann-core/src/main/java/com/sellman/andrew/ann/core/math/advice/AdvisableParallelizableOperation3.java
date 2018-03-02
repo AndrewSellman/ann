@@ -11,17 +11,22 @@ import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTaskPool;
 public abstract class AdvisableParallelizableOperation3<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> extends ParallelizableOperation3<R, C> {
 	private final ParallelizableOperation3Advisor advisor;
 
-	protected AdvisableParallelizableOperation3(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool, final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool, final ParallelizableOperation3Advisor advisor) {
+	protected AdvisableParallelizableOperation3(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool,
+			final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool, final ParallelizableOperation3Advisor advisor) {
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
 		this.advisor = advisor;
 	}
 
-	public final Matrix doShellParallelOp(final Matrix m) {
-		return doParallelOp(m);
+	public final long getParallelOpNanos(final Matrix m) {
+		long start = System.nanoTime();
+		doParallelOp(m);
+		return System.nanoTime() - start;
 	}
 
-	public final Matrix doShellSequentialOp(final Matrix m) {
-		return doSequentialOp(m);
+	public final long getSequentialOpNanos(final Matrix m) {
+		long start = System.nanoTime();
+		doSequentialOp(m);
+		return System.nanoTime() - start;
 	}
 
 	protected final boolean doAsParallelOp(final Matrix m) {
