@@ -6,9 +6,9 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation2;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation2Advisor;
-import com.sellman.andrew.ann.core.math.factory.ParallelizabeOperation2Factory;
+import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation2Factory;
 
-public class ScalerFactory extends ParallelizabeOperation2Factory {
+public class ScalerFactory extends AdvisableParallelizabeOperation2Factory {
 
 	public ScalerFactory(final TaskService taskService, final int taskPoolLimit, final int maxIdleTasks, final int minIdleTasks, final int adviceTestCount, final ParallelizableOperation2Advisor advisor) {
 		super(taskService, taskPoolLimit, maxIdleTasks, minIdleTasks, adviceTestCount, advisor);

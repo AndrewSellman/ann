@@ -6,9 +6,9 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation5;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation5Advisor;
-import com.sellman.andrew.ann.core.math.factory.ParallelizabeOperation5Factory;
+import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation5Factory;
 
-public class UpdationFactory extends ParallelizabeOperation5Factory {
+public class UpdationFactory extends AdvisableParallelizabeOperation5Factory {
 
 	public UpdationFactory(final TaskService taskService, final int taskPoolLimit, final int maxIdleTasks, final int minIdleTasks, final int adviceTestCount, final ParallelizableOperation5Advisor advisor) {
 		super(taskService, taskPoolLimit, maxIdleTasks, minIdleTasks, adviceTestCount, advisor);

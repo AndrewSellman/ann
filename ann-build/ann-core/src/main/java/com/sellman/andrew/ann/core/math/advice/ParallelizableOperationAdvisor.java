@@ -2,6 +2,9 @@ package com.sellman.andrew.ann.core.math.advice;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
+
+import com.sellman.andrew.ann.core.math.Matrix;
 
 class ParallelizableOperationAdvisor {
 	private static final int DEFAULT_TEST_COUNT = 100;
@@ -17,16 +20,27 @@ class ParallelizableOperationAdvisor {
 		this(DEFAULT_TEST_COUNT);
 	}
 
-	protected Boolean getAdvice(AdviceKey key) {
+	protected final Boolean getAdvice(final AdviceKey key) {
 		return parallelOpAdvice.get(key);
 	}
 
-	protected void storeAdvice(AdviceKey key, boolean advice) {
+	protected final void storeAdvice(final AdviceKey key, final boolean advice) {
 		parallelOpAdvice.put(key, advice);
 	}
 
-	protected int getTestCount() {
+	protected final int getOpTestCount() {
 		return testCount;
 	}
-	
+
+	protected final Matrix getRandomMatrix(final int rowCount, final int columnCount) {
+		Matrix m = new Matrix(rowCount, columnCount);
+		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+				m.setValue(rowIndex, columnIndex, ThreadLocalRandom.current().nextDouble());
+			}
+		}
+
+		return m;
+	}
+
 }

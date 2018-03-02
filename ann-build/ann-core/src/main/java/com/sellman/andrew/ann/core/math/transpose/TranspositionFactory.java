@@ -6,9 +6,9 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation3;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation3Advisor;
-import com.sellman.andrew.ann.core.math.factory.ParallelizabeOperation3Factory;
+import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation3Factory;
 
-public class TranspositionFactory extends ParallelizabeOperation3Factory {
+public class TranspositionFactory extends AdvisableParallelizabeOperation3Factory {
 
 	public TranspositionFactory(final TaskService taskService, final int taskPoolLimit, final int maxIdleTasks, final int minIdleTasks, final int adviceTestCount, final ParallelizableOperation3Advisor advisor) {
 		super(taskService, taskPoolLimit, maxIdleTasks, minIdleTasks, adviceTestCount, advisor);

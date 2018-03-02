@@ -4,7 +4,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 
-abstract class ParallelizabeOperationFactory {
+abstract class AdvisableParallelizabeOperationFactory {
 	private static final int NO_LIMIT = -1;
 	private static final int DEFAULT_TASK_POOL_LIMIT = NO_LIMIT;
 	private static final int DEFAULT_MAX_IDLE_TASKS = 1000;
@@ -16,7 +16,7 @@ abstract class ParallelizabeOperationFactory {
 	private final int minIdleTasks;
 	private final int adviceTestCount;
 	
-	public ParallelizabeOperationFactory(TaskService taskService, int taskPoolLimit, int maxIdleTasks, int minIdleTasks, int adviceTestCount) {
+	public AdvisableParallelizabeOperationFactory(TaskService taskService, int taskPoolLimit, int maxIdleTasks, int minIdleTasks, int adviceTestCount) {
 		this.taskService = taskService;
 		this.taskPoolLimit = taskPoolLimit;
 		this.maxIdleTasks = maxIdleTasks;
@@ -24,7 +24,7 @@ abstract class ParallelizabeOperationFactory {
 		this.adviceTestCount = adviceTestCount;
 	}
 
-	public ParallelizabeOperationFactory(TaskService taskService) {
+	public AdvisableParallelizabeOperationFactory(TaskService taskService) {
 		this(taskService, DEFAULT_TASK_POOL_LIMIT, DEFAULT_MAX_IDLE_TASKS, DEFAULT_MIN_IDLE_TASKS, DEFAULT_ADVICE_TEST_COUNT);
 	}
 
