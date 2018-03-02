@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.sellman.andrew.ann.core.math.Function;
 import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.function.Function;
 import com.sellman.andrew.ann.core.training.FeedForwardNetworkTrainerConfig;
 import com.sellman.andrew.ann.core.training.TrainingProgress;
 import com.sellman.andrew.ann.core.training.evaluator.LearningRateRecommendation;

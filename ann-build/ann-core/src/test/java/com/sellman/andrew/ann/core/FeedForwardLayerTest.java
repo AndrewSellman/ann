@@ -4,17 +4,31 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 import com.sellman.andrew.ann.core.math.ConstantAdditionFunction;
-import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.FunctionGroupHelper;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.add.AdditionFactory;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation1Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation2Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation3Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation4Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation5Advisor;
+import com.sellman.andrew.ann.core.math.function.FunctionGroup;
+import com.sellman.andrew.ann.core.math.multiply.HadamardMultiplicationFactory;
+import com.sellman.andrew.ann.core.math.multiply.StandardMultiplicationFactory;
+import com.sellman.andrew.ann.core.math.scale.ScalerFactory;
+import com.sellman.andrew.ann.core.math.subtract.SubtractionFactory;
+import com.sellman.andrew.ann.core.math.sum.SummationFactory;
+import com.sellman.andrew.ann.core.math.transpose.TranspositionFactory;
+import com.sellman.andrew.ann.core.math.update.UpdationFactory;
 
 public class FeedForwardLayerTest {
 	// private static final Vector BIAS = new Vector(new double[] { 1000, 2000,
@@ -22,18 +36,39 @@ public class FeedForwardLayerTest {
 	private static final Matrix INPUT = new Matrix(new double[][] { { 1, 2 } });
 	private static final Matrix M2X4 = new Matrix(new double[][] { { 3, 4, 5, 6 }, { 7, 8, 9, 10 } });
 	private static final Vector BIAS = new Vector(new double[] { 1000, 2000, 3000, 4000 });
-	private static final MathOperationsFactory OPERATIONS_FACTORY = new MathOperationsFactory();
+	private AdditionFactory additionFactory;
+	private SummationFactory summationFactory;
+	private SubtractionFactory subtractionFactory;
+	private ScalerFactory scalerFactory;
+	private TranspositionFactory transpositionFactory;
+	private HadamardMultiplicationFactory hadamardMultiplicationFactory;
+	private StandardMultiplicationFactory standardMultiplicationFactory;
+	private UpdationFactory updationFactory;
+	private MathOperationsFactory operationsFactory;
 
 	private TaskService taskService;
-	private MathOperations matrixOperations;
+	private MathOperations ops;
 	private FunctionGroup functionGroup;
 	private FeedForwardNetworkLayer layer;
-
+	
+	
 	@Before
 	public void prepareTest() {
-		functionGroup = new FunctionGroupHelper(new ConstantAdditionFunction(100), null);
 		taskService = new TaskServiceBuilder().highPriority().build();
-		matrixOperations = OPERATIONS_FACTORY.getOperations(taskService);
+		
+		additionFactory = new AdditionFactory(taskService, new ParallelizableOperation1Advisor());
+		summationFactory = new SummationFactory(taskService, new ParallelizableOperation4Advisor());
+		subtractionFactory = new SubtractionFactory(taskService, new ParallelizableOperation1Advisor());
+		scalerFactory = new ScalerFactory(taskService, new ParallelizableOperation2Advisor());
+		transpositionFactory = new TranspositionFactory(taskService, new ParallelizableOperation3Advisor());
+		standardMultiplicationFactory = new StandardMultiplicationFactory(taskService, new ParallelizableOperation1Advisor());
+		hadamardMultiplicationFactory = new HadamardMultiplicationFactory(taskService, new ParallelizableOperation1Advisor());
+		updationFactory = new UpdationFactory(taskService, new ParallelizableOperation5Advisor());
+		operationsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
+		
+		functionGroup = new FunctionGroupHelper(new ConstantAdditionFunction(100), null);
+
+		ops = operationsFactory.getOperations(taskService);
 //		layer = new FeedForwardLayer("test", matrixOperations, M2X4, BIAS, functionGroup);
 	}
 

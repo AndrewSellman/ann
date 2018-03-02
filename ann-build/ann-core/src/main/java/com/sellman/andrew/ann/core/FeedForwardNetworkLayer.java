@@ -1,9 +1,9 @@
 package com.sellman.andrew.ann.core;
 
-import com.sellman.andrew.ann.core.math.Function;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.function.Function;
 
 public class FeedForwardNetworkLayer {
 	private final FeedForwardNetworkLayerConfig config;

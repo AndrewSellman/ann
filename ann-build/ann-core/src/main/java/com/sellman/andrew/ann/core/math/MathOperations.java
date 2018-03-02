@@ -1,5 +1,7 @@
 package com.sellman.andrew.ann.core.math;
 
+import com.sellman.andrew.ann.core.math.function.Function;
+
 public interface MathOperations extends AutoCloseable {
 	
 	public Matrix multiply(final Matrix left, final Matrix right);

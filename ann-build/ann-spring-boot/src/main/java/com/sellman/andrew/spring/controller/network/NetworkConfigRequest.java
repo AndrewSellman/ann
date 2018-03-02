@@ -3,7 +3,7 @@ package com.sellman.andrew.spring.controller.network;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sellman.andrew.ann.core.math.FunctionType;
+import com.sellman.andrew.ann.core.math.function.FunctionType;
 
 public class NetworkConfigRequest {
 	private int inputAttributeCount;

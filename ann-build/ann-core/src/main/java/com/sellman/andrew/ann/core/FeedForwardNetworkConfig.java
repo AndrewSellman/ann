@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.sellman.andrew.ann.core.event.Context;
 import com.sellman.andrew.ann.core.event.EventManager;
-import com.sellman.andrew.ann.core.math.Function;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.function.Function;
 
 public class FeedForwardNetworkConfig {
 	private final Context context;

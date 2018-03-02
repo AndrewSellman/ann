@@ -1,5 +1,8 @@
 package com.sellman.andrew.ann.core.math;
 
+import com.sellman.andrew.ann.core.math.function.Function;
+import com.sellman.andrew.ann.core.math.function.FunctionGroup;
+
 public class FunctionGroupHelper implements FunctionGroup {
 	private final Function function;
 	private final Function prime;

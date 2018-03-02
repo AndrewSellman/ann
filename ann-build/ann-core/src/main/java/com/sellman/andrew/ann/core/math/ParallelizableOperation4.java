@@ -4,13 +4,15 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTaskPool;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTaskPool;
 
-abstract class ParallelizableOperation4<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> extends ParallelizableOperation<R, C> {
-	private final ParallelizableOperation4Advisor advisor;
+public abstract class ParallelizableOperation4<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> extends ParallelizableOperation<R, C> {
 
-	protected ParallelizableOperation4(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool, final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool, final ParallelizableOperation4Advisor advisor) {
+	protected ParallelizableOperation4(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool, final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool) {
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
-		this.advisor = advisor;
 	}
 
 	public final double doOperation(final Matrix m) {
@@ -38,11 +40,9 @@ abstract class ParallelizableOperation4<R extends AbstractOperationByRowTask, C 
 		return doSequentialOp(m, targetRowCount, targetColumnCount, target);
 	}
 
-	abstract protected double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount, Matrix target);
+	protected abstract double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount, Matrix target);
 
-	private final boolean doAsParallelOp(final Matrix m) {
-		return advisor.doAsParrallelOp(this, m.getRowCount(), m.getColumnCount());
-	}
+	protected abstract boolean doAsParallelOp(final Matrix m);
 
 	private double doParallelOp(final Matrix m, final int rowCount, final int columnCount) {
 		if (rowCount <= columnCount) {

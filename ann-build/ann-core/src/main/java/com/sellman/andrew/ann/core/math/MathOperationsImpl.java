@@ -3,32 +3,44 @@ package com.sellman.andrew.ann.core.math;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import com.sellman.andrew.ann.core.math.function.Function;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+
 class MathOperationsImpl implements MathOperations {
-	private final StandardMultiplication standardMultiplication;
-	private final HadamardMultiplication hadamardMultiplication;
-	private final Addition addition;
-	private final Summation summation;
-	private final Subtraction subtraction;
-	private final Scaler scaler;
-	private final Transposition transposition;
-	private final Updation updation;
-	
-	public MathOperationsImpl(final StandardMultiplication standardMultiplier, final HadamardMultiplication hadamardMultiplier, final Addition adder, final Summation summer, final Subtraction subtractor, final Scaler scaler, final Transposition transposition, final Updation updation) {
+	private final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> standardMultiplication;
+	private final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> hadamardMultiplication;
+	private final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> addition;
+	private final ParallelizableOperation4<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> summation;
+	private final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> subtraction;
+	private final ParallelizableOperation2<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> scaler;
+	private final ParallelizableOperation3<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> transposition;
+	private final ParallelizableOperation5<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> updation;
+
+	public MathOperationsImpl(final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> standardMultiplier,
+			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> hadamardMultiplier,
+			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> addition,
+			final ParallelizableOperation4<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> summation,
+			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> subtractor,
+			final ParallelizableOperation2<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> scaler,
+			final ParallelizableOperation3<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> transposition,
+			final ParallelizableOperation5<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> updation) {
+
 		this.standardMultiplication = standardMultiplier;
 		this.hadamardMultiplication = hadamardMultiplier;
 		this.scaler = scaler;
-		this.addition = adder;
-		this.summation = summer;
+		this.addition = addition;
+		this.summation = summation;
 		this.subtraction = subtractor;
 		this.transposition = transposition;
 		this.updation = updation;
 	}
-	
+
 	@Override
 	public Matrix multiply(final Matrix left, final Matrix right) {
 		return standardMultiplication.doOperation(left, right);
 	}
-	
+
 	@Override
 	public Vector multiply(final Matrix left, final Vector right) {
 		return standardMultiplication.doOperation(left, right);
@@ -48,7 +60,7 @@ class MathOperationsImpl implements MathOperations {
 	public Vector hadamard(final Vector a, final Vector b) {
 		return hadamardMultiplication.doOperation(a, b);
 	}
-	
+
 	@Override
 	public Matrix add(final Matrix a, final Matrix b) {
 		return addition.doOperation(a, b);
@@ -71,12 +83,12 @@ class MathOperationsImpl implements MathOperations {
 
 	@Override
 	public Matrix scale(final Matrix m, final Function f) {
-		return scaler.scale(m, f);
+		return scaler.doOperation(m, f);
 	}
 
 	@Override
 	public Vector scale(final Vector v, final Function f) {
-		return scaler.scale(v, f);
+		return scaler.doOperation(v, f);
 	}
 
 	@Override
@@ -111,12 +123,12 @@ class MathOperationsImpl implements MathOperations {
 
 	@Override
 	public Matrix absolute(final Matrix m) {
-		return scaler.scale(m, x -> Math.abs(x));
+		return scaler.doOperation(m, x -> Math.abs(x));
 	}
 
 	@Override
 	public Vector absolute(final Vector v) {
-		return scaler.scale(v, x -> Math.abs(x));
+		return scaler.doOperation(v, x -> Math.abs(x));
 	}
 
 	@PostConstruct

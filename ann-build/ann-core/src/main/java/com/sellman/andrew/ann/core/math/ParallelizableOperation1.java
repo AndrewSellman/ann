@@ -4,13 +4,15 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTaskPool;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTaskPool;
 
-abstract class ParallelizableOperation1<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> extends ParallelizableOperation<R, C> {
-	private final ParallelizableOperation1Advisor advisor;
+public abstract class ParallelizableOperation1<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> extends ParallelizableOperation<R, C> {
 
-	protected ParallelizableOperation1(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool, final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool, final ParallelizableOperation1Advisor advisor) {
+	protected ParallelizableOperation1(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool, final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool) {
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
-		this.advisor = advisor;
 	}
 
 	public final Matrix doOperation(final Matrix a, final Matrix b) {
@@ -47,13 +49,11 @@ abstract class ParallelizableOperation1<R extends AbstractOperationByRowTask, C 
 		return doSequentialOp(a, b, targetRowCount, targetColumnCount, target);
 	}
 
-	abstract protected Matrix doSequentialOp(Matrix a, Matrix b, int targetRowCount, int targetColumnCount, Matrix target);
+	protected abstract Matrix doSequentialOp(Matrix a, Matrix b, int targetRowCount, int targetColumnCount, Matrix target);
 
-	private final boolean doAsParallelOp(final Matrix a, final Matrix b) {
-		return advisor.doAsParrallelOp(this, a.getRowCount(), a.getColumnCount(), b.getRowCount(), b.getColumnCount());
-	}
+	protected abstract boolean doAsParallelOp(final Matrix a, final Matrix b);
 
-	private final Matrix doParallelOp(final Matrix a, final Matrix b, final int targetRowCount, final int targetColumnCount, final Matrix target) {
+	private Matrix doParallelOp(final Matrix a, final Matrix b, final int targetRowCount, final int targetColumnCount, final Matrix target) {
 		if (targetRowCount <= targetColumnCount) {
 			return doParallelOpByRow(a, b, targetRowCount, target);
 		}

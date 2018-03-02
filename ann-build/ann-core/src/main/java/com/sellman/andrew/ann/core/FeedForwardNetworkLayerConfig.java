@@ -2,11 +2,11 @@ package com.sellman.andrew.ann.core;
 
 import com.sellman.andrew.ann.core.event.Context;
 import com.sellman.andrew.ann.core.event.EventManager;
-import com.sellman.andrew.ann.core.math.Function;
-import com.sellman.andrew.ann.core.math.FunctionGroup;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.function.Function;
+import com.sellman.andrew.ann.core.math.function.FunctionGroup;
 
 public class FeedForwardNetworkLayerConfig {
 	private final Context context;

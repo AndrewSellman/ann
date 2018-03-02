@@ -6,18 +6,17 @@ import java.util.concurrent.CountDownLatch;
 import com.sellman.andrew.ann.core.concurrent.AbstractTask;
 import com.sellman.andrew.ann.core.concurrent.TaskPool;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.function.Function;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTaskPool;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTaskPool;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationTask;
 
 abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> implements AutoCloseable {
 	private final TaskService taskService;
 	private final AbstractOperationByRowTaskPool<R> opByRowTaskPool;
 	private final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool;
-
-	// TODO remove this constructor
-	protected ParallelizableOperation(final TaskService taskService) {
-		this.taskService = taskService;
-		opByRowTaskPool = null;
-		opByColumnTaskPool = null;
-	}
 
 	protected ParallelizableOperation(final TaskService taskService, AbstractOperationByRowTaskPool<R> opByRowTaskPool, AbstractOperationByColumnTaskPool<C> opByColumnTaskPool) {
 		this.taskService = taskService;

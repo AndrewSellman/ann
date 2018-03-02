@@ -1,5 +1,7 @@
 package com.sellman.andrew.ann.core.math;
 
+import com.sellman.andrew.ann.core.math.function.Function;
+
 public class ConstantAdditionFunction implements Function {
 	private final double constant;
 

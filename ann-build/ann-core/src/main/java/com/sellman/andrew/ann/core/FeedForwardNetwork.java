@@ -7,9 +7,9 @@ import com.sellman.andrew.ann.core.event.Event;
 import com.sellman.andrew.ann.core.event.EventManager;
 import com.sellman.andrew.ann.core.event.NetworkInputEvent;
 import com.sellman.andrew.ann.core.event.NetworkOutputEvent;
-import com.sellman.andrew.ann.core.math.Function;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.function.Function;
 
 public class FeedForwardNetwork {
 	private final FeedForwardNetworkConfig config;

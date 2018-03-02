@@ -4,13 +4,15 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTaskPool;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTaskPool;
 
-abstract class ParallelizableOperation3<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> extends ParallelizableOperation<R, C> {
-	private final ParallelizableOperation3Advisor advisor;
+public abstract class ParallelizableOperation3<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> extends ParallelizableOperation<R, C> {
 
-	protected ParallelizableOperation3(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool, final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool, final ParallelizableOperation3Advisor advisor) {
+	protected ParallelizableOperation3(final TaskService taskService, final AbstractOperationByRowTaskPool<R> opByRowTaskPool, final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool) {
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
-		this.advisor = advisor;
 	}
 
 	public final Matrix doOperation(final Matrix m) {
@@ -37,13 +39,11 @@ abstract class ParallelizableOperation3<R extends AbstractOperationByRowTask, C 
 		return doSequentialOp(m, sourceRowCount, sourceColumnCount);
 	}
 
-	abstract protected Matrix doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount);
+	protected abstract Matrix doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount);
 	
-	abstract Matrix getTarget(int sourceRowCount, int sourceColumnCount);
+	protected abstract Matrix getTarget(int sourceRowCount, int sourceColumnCount);
 
-	private final boolean doAsParallelOp(final Matrix m) {
-		return advisor.doAsParrallelOp(this, m.getRowCount(), m.getColumnCount());
-	}
+	protected abstract boolean doAsParallelOp(final Matrix m);
 
 	private final Matrix doParallelOp(final Matrix source, final int sourceRowCount, final int sourceColumnCount) {
 		Matrix target = getTarget(sourceRowCount, sourceColumnCount);

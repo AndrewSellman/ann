@@ -20,11 +20,24 @@ import com.sellman.andrew.ann.core.event.EpochChangeEvent;
 import com.sellman.andrew.ann.core.event.EpochErrorChangeEvent;
 import com.sellman.andrew.ann.core.event.EventManager;
 import com.sellman.andrew.ann.core.event.ValidationErrorChangeEvent;
-import com.sellman.andrew.ann.core.math.FunctionType;
 import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.add.AdditionFactory;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation1Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation2Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation3Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation4Advisor;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation5Advisor;
+import com.sellman.andrew.ann.core.math.function.FunctionType;
+import com.sellman.andrew.ann.core.math.multiply.HadamardMultiplicationFactory;
+import com.sellman.andrew.ann.core.math.multiply.StandardMultiplicationFactory;
+import com.sellman.andrew.ann.core.math.scale.ScalerFactory;
+import com.sellman.andrew.ann.core.math.subtract.SubtractionFactory;
+import com.sellman.andrew.ann.core.math.sum.SummationFactory;
+import com.sellman.andrew.ann.core.math.transpose.TranspositionFactory;
+import com.sellman.andrew.ann.core.math.update.UpdationFactory;
 import com.sellman.andrew.ann.core.training.FeedForwardNetworkTrainerConfig;
 import com.sellman.andrew.ann.core.training.evaluator.BoldDriverLearningRateEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.LearningRateEvaluator;
@@ -34,10 +47,18 @@ import com.sellman.andrew.ann.core.training.evaluator.MinimumValidationErrorEval
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
 
 public class FeedForwardNetworkTrainer3By3BlockITCase {
-	private static final MathOperationsFactory OPERATIONS_FACTORY = new MathOperationsFactory();
+	private AdditionFactory additionFactory;
+	private SummationFactory summationFactory;
+	private SubtractionFactory subtractionFactory;
+	private ScalerFactory scalerFactory;
+	private TranspositionFactory transpositionFactory;
+	private HadamardMultiplicationFactory hadamardMultiplicationFactory;
+	private StandardMultiplicationFactory standardMultiplicationFactory;
+		private UpdationFactory updationFactory;
+	private MathOperationsFactory operationsFactory;
 	private TaskService highPriorityTaskService;
 	private TaskService eventDispatcher;
-	private MathOperations matrixOperations;
+	private MathOperations ops;
 	private FeedForwardNetworkLayer layer0;
 	private FeedForwardNetworkLayer layer1;
 	private AbstractFeedForwardNetworkTrainer trainer;
@@ -52,7 +73,18 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 	@Before
 	public void prepareTest() {
 		highPriorityTaskService = new TaskServiceBuilder().highPriority().build();
-		matrixOperations = OPERATIONS_FACTORY.getOperations(highPriorityTaskService);
+
+		additionFactory = new AdditionFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
+		summationFactory = new SummationFactory(highPriorityTaskService, new ParallelizableOperation4Advisor());
+		subtractionFactory = new SubtractionFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
+		scalerFactory = new ScalerFactory(highPriorityTaskService, new ParallelizableOperation2Advisor());
+		transpositionFactory = new TranspositionFactory(highPriorityTaskService, new ParallelizableOperation3Advisor());
+		standardMultiplicationFactory = new StandardMultiplicationFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
+		hadamardMultiplicationFactory = new HadamardMultiplicationFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
+		updationFactory = new UpdationFactory(highPriorityTaskService, new ParallelizableOperation5Advisor());
+		operationsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
+		
+		ops = operationsFactory.getOperations(highPriorityTaskService);
 
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();
 		trainingEvaluators.add(new MaximumEpochsEvaluator(10000));
@@ -72,7 +104,7 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 
 		learningRateEvaluator = new BoldDriverLearningRateEvaluator(0.2, 0.05, 0.5);
 
-		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, matrixOperations, eventManager, learningRateEvaluator);
+		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, ops, eventManager, learningRateEvaluator);
 		config.setBatchSize(100);
 
 		buildTrainingAndTestData();
@@ -87,12 +119,12 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 	@Test
 	public void trainStochasitc() {
 		List<FeedForwardNetworkLayer> layers = new ArrayList<FeedForwardNetworkLayer>();
-		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, matrixOperations, FunctionType.LOGISTIC, buildWeights(11, 9),
+		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, ops, FunctionType.LOGISTIC, buildWeights(11, 9),
 		        buildBias(11));
 		layer0 = new FeedForwardNetworkLayer(layer0Config);
 		layers.add(layer0);
 
-		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(new Context("test", 1), eventManager, matrixOperations, FunctionType.LOGISTIC, buildWeights(1, 11),
+		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(new Context("test", 1), eventManager, ops, FunctionType.LOGISTIC, buildWeights(1, 11),
 		        buildBias(1));
 		layer1 = new FeedForwardNetworkLayer(layer1Config);
 		layers.add(layer1);
