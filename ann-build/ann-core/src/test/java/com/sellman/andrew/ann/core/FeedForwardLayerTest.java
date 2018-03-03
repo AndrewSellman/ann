@@ -68,7 +68,7 @@ public class FeedForwardLayerTest {
 		
 		functionGroup = new FunctionGroupHelper(new ConstantAdditionFunction(100), null);
 
-		ops = operationsFactory.getOperations(taskService);
+		ops = operationsFactory.getOperations();
 //		layer = new FeedForwardLayer("test", matrixOperations, M2X4, BIAS, functionGroup);
 	}
 

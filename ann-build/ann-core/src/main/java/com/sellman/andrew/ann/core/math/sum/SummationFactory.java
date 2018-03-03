@@ -18,7 +18,7 @@ public class SummationFactory extends AdvisableParallelizabeOperation4Factory {
 		super(taskService, advisor);
 	}
 
-	public AdvisableParallelizableOperation4<SummationByRowTask, SummationByColumnTask> getOperation() {
+	public final AdvisableParallelizableOperation4<SummationByRowTask, SummationByColumnTask> getOperation() {
 		SummationByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		SummationByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
 		return new Summation(getTaskService(), opByRowTaskPool, opByColumnTaskPool, getOperationAdvisor());

@@ -1,6 +1,5 @@
 package com.sellman.andrew.ann.core.math;
 
-import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.math.add.AdditionFactory;
 import com.sellman.andrew.ann.core.math.multiply.HadamardMultiplicationFactory;
 import com.sellman.andrew.ann.core.math.multiply.StandardMultiplicationFactory;
@@ -41,7 +40,7 @@ public class MathOperationsFactory {
 		this.updationFactory = updationFactory;
 	}
 
-	public MathOperations getOperations(final TaskService taskService) {
+	public final MathOperations getOperations() {
 		ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> standardMultiplier = getStandardMultiplication();
 		ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> hadamardMultiplier = getHadamardMultiplication();
 		ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> addition = getAddition();

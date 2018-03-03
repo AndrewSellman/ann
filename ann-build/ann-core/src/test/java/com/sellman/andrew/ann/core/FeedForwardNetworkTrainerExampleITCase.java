@@ -83,7 +83,7 @@ public class FeedForwardNetworkTrainerExampleITCase {
 		updationFactory = new UpdationFactory(highPriorityTaskService, new ParallelizableOperation5Advisor());
 		operationsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
 		
-		ops = operationsFactory.getOperations(highPriorityTaskService);
+		ops = operationsFactory.getOperations();
 
 		eventsService = new TaskServiceBuilder().lowPriority().fireAndForget().setThreadCount(1).build();
 		eventManager = new EventManager(eventsService);

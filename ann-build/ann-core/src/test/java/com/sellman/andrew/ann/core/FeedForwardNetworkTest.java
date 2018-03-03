@@ -74,7 +74,7 @@ public class FeedForwardNetworkTest {
 		updationFactory = new UpdationFactory(highPriorityTaskService, new ParallelizableOperation5Advisor());
 		operationsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
 		
-		ops = operationsFactory.getOperations(highPriorityTaskService);
+		ops = operationsFactory.getOperations();
 
 		layer1FunctionGroup = new FunctionGroupHelper(new ConstantAdditionFunction(100), null);
 //		layer1 = new FeedForwardLayer("layer1", matrixOperations, WEIGHT1, BIAS1, layer1FunctionGroup);

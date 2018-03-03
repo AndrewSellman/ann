@@ -40,7 +40,7 @@ public class MathOperationsConfiguration {
 		HadamardMultiplicationFactory hadamardMultiplicationFactory = getHadamardMultiplicationFactory();
 		UpdationFactory updationFactory = getUpdationFactory();
 		MathOperationsFactory opsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
-		return opsFactory.getOperations(highPriorityWaitForCompletionMultiThreadedTaskService);
+		return opsFactory.getOperations();
 	}
 
 	private SummationFactory getSummationFactory() {

@@ -18,7 +18,7 @@ public class UpdationFactory extends AdvisableParallelizabeOperation5Factory {
 		super(taskService, advisor);
 	}
 
-	public AdvisableParallelizableOperation5<UpdationByRowTask, UpdationByColumnTask> getOperation() {
+	public final AdvisableParallelizableOperation5<UpdationByRowTask, UpdationByColumnTask> getOperation() {
 		UpdationByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		UpdationByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
 		return new Updation(getTaskService(), opByRowTaskPool, opByColumnTaskPool, getOperationAdvisor());

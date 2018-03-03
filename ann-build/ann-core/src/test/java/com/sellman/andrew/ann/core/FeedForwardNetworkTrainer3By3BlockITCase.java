@@ -84,7 +84,7 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 		updationFactory = new UpdationFactory(highPriorityTaskService, new ParallelizableOperation5Advisor());
 		operationsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
 		
-		ops = operationsFactory.getOperations(highPriorityTaskService);
+		ops = operationsFactory.getOperations();
 
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();
 		trainingEvaluators.add(new MaximumEpochsEvaluator(10000));
