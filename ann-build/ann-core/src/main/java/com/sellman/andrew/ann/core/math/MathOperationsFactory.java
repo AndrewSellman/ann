@@ -40,7 +40,7 @@ public class MathOperationsFactory {
 		this.updationFactory = updationFactory;
 	}
 
-	public final MathOperations getOperations() {
+	public MathOperations getOperations() {
 		ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> standardMultiplier = getStandardMultiplication();
 		ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> hadamardMultiplier = getHadamardMultiplication();
 		ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> addition = getAddition();

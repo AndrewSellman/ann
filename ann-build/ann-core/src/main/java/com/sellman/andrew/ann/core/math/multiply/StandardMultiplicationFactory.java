@@ -18,7 +18,7 @@ public class StandardMultiplicationFactory extends AdvisableParallelizabeOperati
 		super(taskService, advisor);
 	}
 
-	public final AdvisableParallelizableOperation1<StandardMultiplicationByRowTask, StandardMultiplicationByColumnTask> getOperation() {
+	public AdvisableParallelizableOperation1<StandardMultiplicationByRowTask, StandardMultiplicationByColumnTask> getOperation() {
 		StandardMultiplicationByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		StandardMultiplicationByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
 		return new StandardMultiplication(getTaskService(), opByRowTaskPool, opByColumnTaskPool, getOperationAdvisor());

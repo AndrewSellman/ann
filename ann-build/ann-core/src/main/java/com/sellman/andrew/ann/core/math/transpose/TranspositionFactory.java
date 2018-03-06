@@ -18,7 +18,7 @@ public class TranspositionFactory extends AdvisableParallelizabeOperation3Factor
 		super(taskService, advisor);
 	}
 
-	public final AdvisableParallelizableOperation3<TranspositionByRowTask, TranspositionByColumnTask> getOperation() {
+	public AdvisableParallelizableOperation3<TranspositionByRowTask, TranspositionByColumnTask> getOperation() {
 		TranspositionByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		TranspositionByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
 		return new Transposition(getTaskService(), opByRowTaskPool, opByColumnTaskPool, getOperationAdvisor());

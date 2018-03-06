@@ -18,7 +18,7 @@ public class ScalerFactory extends AdvisableParallelizabeOperation2Factory {
 		super(taskService, advisor);
 	}
 
-	public final AdvisableParallelizableOperation2<ScalerByRowTask, ScalerByColumnTask> getOperation() {
+	public AdvisableParallelizableOperation2<ScalerByRowTask, ScalerByColumnTask> getOperation() {
 		ScalerByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		ScalerByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
 		return new Scaler(getTaskService(), opByRowTaskPool, opByColumnTaskPool, getOperationAdvisor());

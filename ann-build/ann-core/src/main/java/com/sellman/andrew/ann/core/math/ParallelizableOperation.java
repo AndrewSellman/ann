@@ -13,7 +13,7 @@ import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTaskPool;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationTask;
 
-abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> implements AutoCloseable {
+public abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> implements AutoCloseable {
 	private final TaskService taskService;
 	private final AbstractOperationByRowTaskPool<R> opByRowTaskPool;
 	private final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool;
@@ -63,7 +63,7 @@ abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C e
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		System.out.println("Closing " + toString() + "...");
 		getOperationByRowTaskPool().close();
 		getOperationByColumnTaskPool().close();

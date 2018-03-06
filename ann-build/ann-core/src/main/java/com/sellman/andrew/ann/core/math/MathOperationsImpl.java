@@ -7,7 +7,7 @@ import com.sellman.andrew.ann.core.math.function.Function;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
 
-class MathOperationsImpl implements MathOperations {
+class MathOperationsImpl implements MathOperations, AutoCloseable {
 	private final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> standardMultiplication;
 	private final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> hadamardMultiplication;
 	private final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> addition;
@@ -21,7 +21,7 @@ class MathOperationsImpl implements MathOperations {
 			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> hadamardMultiplier,
 			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> addition,
 			final ParallelizableOperation4<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> summation,
-			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> subtractor,
+			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> subtraction,
 			final ParallelizableOperation2<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> scaler,
 			final ParallelizableOperation3<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> transposition,
 			final ParallelizableOperation5<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> updation) {
@@ -31,7 +31,7 @@ class MathOperationsImpl implements MathOperations {
 		this.scaler = scaler;
 		this.addition = addition;
 		this.summation = summation;
-		this.subtraction = subtractor;
+		this.subtraction = subtraction;
 		this.transposition = transposition;
 		this.updation = updation;
 	}
@@ -133,13 +133,13 @@ class MathOperationsImpl implements MathOperations {
 
 	@PostConstruct
 	public void postConstruct() {
-		System.out.println("MathOperationsImpl " + toString() + "was created.");
+		System.out.println(toString() + " was created.");
 	}
 
 	@Override
 	@PreDestroy
-	public void close() throws Exception {
-		System.out.println("Closing MathOperationsImpl " + toString() + "...");
+	public void close() {
+		System.out.println("Closing " + toString() + "...");
 		standardMultiplication.close();
 		hadamardMultiplication.close();
 		addition.close();
@@ -148,6 +148,6 @@ class MathOperationsImpl implements MathOperations {
 		scaler.close();
 		transposition.close();
 		updation.close();
-		System.out.println("Closed MathOperationsImpl " + toString());
+		System.out.println("Closed " + toString());
 	}
 }

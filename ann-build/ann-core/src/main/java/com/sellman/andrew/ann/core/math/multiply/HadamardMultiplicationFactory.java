@@ -18,7 +18,7 @@ public class HadamardMultiplicationFactory extends AdvisableParallelizabeOperati
 		super(taskService, advisor);
 	}
 
-	public final AdvisableParallelizableOperation1<HadamardMultiplicationByRowTask, HadamardMultiplicationByColumnTask> getOperation() {
+	public AdvisableParallelizableOperation1<HadamardMultiplicationByRowTask, HadamardMultiplicationByColumnTask> getOperation() {
 		HadamardMultiplicationByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		HadamardMultiplicationByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
 		return new HadamardMultiplication(getTaskService(), opByRowTaskPool, opByColumnTaskPool, getOperationAdvisor());

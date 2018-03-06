@@ -15,8 +15,12 @@ public abstract class Event {
 		return context.getNetworkLayerIndex();
 	}
 
+	public final Representation getRepresentation() {
+		return context.getRepresents();
+	}
+
 	public String toString() {
-		return " for network layer index: <" + getNetworkLayerIndex() + "> of network: <" + getNetworkName() + ">";
+		return " representing " + getRepresentation() + " for network layer index: <" + getNetworkLayerIndex() + "> of network: <" + getNetworkName() + ">";
 	}
 
 }

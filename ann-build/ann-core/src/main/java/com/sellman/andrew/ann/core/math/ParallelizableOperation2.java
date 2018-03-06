@@ -16,7 +16,7 @@ public abstract class ParallelizableOperation2<R extends AbstractOperationByRowT
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
 	}
 
-	public final Matrix doOperation(final Matrix m, final Function f) {
+	public Matrix doOperation(final Matrix m, final Function f) {
 		if (doAsParallelOp(m, f)) {
 			return doParallelOp(m, f);
 		}
@@ -24,7 +24,7 @@ public abstract class ParallelizableOperation2<R extends AbstractOperationByRowT
 		return doSequentialOp(m, f);
 	}
 
-	public final Vector doOperation(final Vector v, final Function f) {
+	public Vector doOperation(final Vector v, final Function f) {
 		return new Vector(doOperation(v.getMatrix(), f));
 	}
 

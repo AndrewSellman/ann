@@ -30,7 +30,7 @@
 			<version>${mockito.version}</version>
 		</dependency>
 
-		<dependency>
+ 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito</artifactId>
 			<version>${powermock.version}</version>

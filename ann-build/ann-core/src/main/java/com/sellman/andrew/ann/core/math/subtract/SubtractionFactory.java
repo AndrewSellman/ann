@@ -18,7 +18,7 @@ public class SubtractionFactory extends AdvisableParallelizabeOperation1Factory 
 		super(taskService, advisor);
 	}
 
-	public final AdvisableParallelizableOperation1<SubtractionByRowTask, SubtractionByColumnTask> getOperation() {
+	public AdvisableParallelizableOperation1<SubtractionByRowTask, SubtractionByColumnTask> getOperation() {
 		SubtractionByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		SubtractionByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
 		return new Subtraction(getTaskService(), opByRowTaskPool, opByColumnTaskPool, getOperationAdvisor());
