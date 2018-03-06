@@ -5,18 +5,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.sellman.andrew</groupId>
-		<artifactId>ann-build</artifactId>
+		<artifactId>vann-build</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ann-spring-boot</artifactId>
+	<artifactId>vann-spring-boot</artifactId>
 	<packaging>jar</packaging>
-	<name>ann-spring-boot</name>
+	<name>vann-spring-boot</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.sellman.andrew</groupId>
-			<artifactId>ann-core</artifactId>
+			<artifactId>vann-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 

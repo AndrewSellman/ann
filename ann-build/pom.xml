@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.sellman.andrew</groupId>
-	<artifactId>ann-build</artifactId>
+	<artifactId>vann-build</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -14,7 +14,7 @@
 		<version>1.5.9.RELEASE</version>
 	</parent>
 
-	<name>ann-build</name>
+	<name>vann-build</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,8 +58,8 @@
 	</dependencies>
 
 	<modules>
-		<module>ann-core</module>
-		<module>ann-spring-boot</module>
+		<module>vann-core</module>
+		<module>vann-spring-boot</module>
 	</modules>
 
 </project>
