@@ -4,9 +4,9 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizabeOperation1Factory;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation1;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation1Advisor;
-import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation1Factory;
 
 public class HadamardMultiplicationFactory extends AdvisableParallelizabeOperation1Factory {
 
@@ -18,6 +18,7 @@ public class HadamardMultiplicationFactory extends AdvisableParallelizabeOperati
 		super(taskService, advisor);
 	}
 
+	@Override
 	public AdvisableParallelizableOperation1<HadamardMultiplicationByRowTask, HadamardMultiplicationByColumnTask> getOperation() {
 		HadamardMultiplicationByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		HadamardMultiplicationByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();

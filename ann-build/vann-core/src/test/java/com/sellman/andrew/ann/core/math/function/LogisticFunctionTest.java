@@ -1,11 +1,8 @@
 package com.sellman.andrew.ann.core.math.function;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
-import com.sellman.andrew.ann.core.math.function.Function;
-import com.sellman.andrew.ann.core.math.function.LogisticFunction;
 
 public class LogisticFunctionTest {
 	private static final double INPUT = 0.3775;

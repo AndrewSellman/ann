@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 class StandardMultiplicationByRowTaskFactory extends BasePooledObjectFactory<StandardMultiplicationByRowTask> {
 
 	@Override
-	public StandardMultiplicationByRowTask create() throws Exception {
+	public StandardMultiplicationByRowTask create() {
 		return new StandardMultiplicationByRowTask();
 	}
 
@@ -16,7 +16,8 @@ class StandardMultiplicationByRowTaskFactory extends BasePooledObjectFactory<Sta
 		return new DefaultPooledObject<StandardMultiplicationByRowTask>(task);
 	}
 
-	public void passivateObject(PooledObject<StandardMultiplicationByRowTask> po) throws Exception {
+	@Override
+	public void passivateObject(PooledObject<StandardMultiplicationByRowTask> po) {
 		po.getObject().recycle();
 	}
 	

@@ -63,10 +63,10 @@ public abstract class ParallelizableOperation2<R extends AbstractOperationByRowT
 				populateTask(task, taskGroup, m, f, target, columnIndex);
 			}
 
-			return runTasksAndGetTarget(tasks, target);
+			return runTasksAndReturnTarget(tasks, target);
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(getByColumnExceptionContext(m, f, targetColumnCount, target), e);
 		} finally {
 			getOperationByColumnTaskPool().recycle(tasks);
 		}
@@ -83,10 +83,10 @@ public abstract class ParallelizableOperation2<R extends AbstractOperationByRowT
 				populateTask(task, taskGroup, m, f, target, rowIndex);
 			}
 
-			return runTasksAndGetTarget(tasks, target);
+			return runTasksAndReturnTarget(tasks, target);
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(getByRowExceptionContext(m, f, targetRowCount, target), e);
 		} finally {
 			getOperationByRowTaskPool().recycle(tasks);
 		}
@@ -100,6 +100,19 @@ public abstract class ParallelizableOperation2<R extends AbstractOperationByRowT
 
 	private void populateTask(final R task, final CountDownLatch taskGroup, final Matrix m, final Function f, final Matrix target, final int rowIndex) {
 		populateTask(task, taskGroup, m, null, f, target, null, rowIndex);
+	}
+
+	private String getByRowExceptionContext(Matrix m, Function f, int targetRowCount, Matrix target) {
+		return toStringByRow(m, null, f, targetRowCount, target, null);
+	}
+
+	private String getByColumnExceptionContext(Matrix m, Function f, int targetColumnCount, Matrix target) {
+		return toStringByColumn(m, null, f, targetColumnCount, target, null);
+	}
+
+	@Override
+	public void close() {
+		super.close();
 	}
 
 }

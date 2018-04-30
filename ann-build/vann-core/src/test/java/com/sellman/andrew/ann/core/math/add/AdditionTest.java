@@ -14,13 +14,6 @@ import org.junit.Test;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.add.Addition;
-import com.sellman.andrew.ann.core.math.add.AdditionByColumnTask;
-import com.sellman.andrew.ann.core.math.add.AdditionByColumnTaskFactory;
-import com.sellman.andrew.ann.core.math.add.AdditionByColumnTaskPool;
-import com.sellman.andrew.ann.core.math.add.AdditionByRowTask;
-import com.sellman.andrew.ann.core.math.add.AdditionByRowTaskFactory;
-import com.sellman.andrew.ann.core.math.add.AdditionByRowTaskPool;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation1Advisor;
 
 public class AdditionTest {
@@ -73,6 +66,8 @@ public class AdditionTest {
 		Matrix result = addition.doOperation(M2X4, M2X4);
 		assertResult(M2X4, M2X4, result);
 		verifyAdvisor(M2X4, M2X4);
+		assertEquals(2, opByRowTaskPool.getBorrowedCount());
+		assertEquals(0, opByColumnTaskPool.getBorrowedCount());
 	}
 
 	@Test
@@ -80,6 +75,8 @@ public class AdditionTest {
 		Matrix result = addition.doOperation(M2X4, M2X4);
 		assertResult(M2X4, M2X4, result);
 		verifyAdvisor(M2X4, M2X4);
+		assertEquals(0, opByRowTaskPool.getBorrowedCount());
+		assertEquals(0, opByColumnTaskPool.getBorrowedCount());
 	}
 
 	@Test
@@ -89,6 +86,8 @@ public class AdditionTest {
 		Matrix result = addition.doOperation(M4X2, M4X2);
 		assertResult(M4X2, M4X2, result);
 		verifyAdvisor(M4X2, M4X2);
+		assertEquals(0, opByRowTaskPool.getBorrowedCount());
+		assertEquals(2, opByColumnTaskPool.getBorrowedCount());
 	}
 
 	@Test
@@ -96,6 +95,8 @@ public class AdditionTest {
 		Matrix result = addition.doOperation(M4X2, M4X2);
 		assertResult(M4X2, M4X2, result);
 		verifyAdvisor(M4X2, M4X2);
+		assertEquals(0, opByRowTaskPool.getBorrowedCount());
+		assertEquals(0, opByColumnTaskPool.getBorrowedCount());
 	}
 
 	private void waitForTasksToBeRecycled() throws InterruptedException {

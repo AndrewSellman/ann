@@ -17,8 +17,8 @@ import com.sellman.andrew.ann.core.event.EventManager;
 import com.sellman.andrew.ann.core.event.Representation;
 import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.Range;
 import com.sellman.andrew.ann.core.math.Vector;
+import com.sellman.andrew.ann.core.math.util.IntervalScale;
 import com.sellman.andrew.spring.config.EventManagerBeanNames;
 import com.sellman.andrew.spring.config.MathOperationsBeanNames;
 import com.sellman.andrew.spring.controller.network.NetworkConfigRequest;
@@ -90,13 +90,13 @@ public class FeedForwardNetworkFactory {
 
 //TODO allow different ways to generate random values and specify the range.
 	private Matrix getWeights(String networkName, int layerIndex, int rowCount, int columnCount) {
-		Range range = new Range(-1, 1, -1/Math.sqrt(columnCount), 1/Math.sqrt(columnCount));
+		IntervalScale scale = new IntervalScale(-1, 1, -1/Math.sqrt(columnCount), 1/Math.sqrt(columnCount));
 		Context context = getWeightsContext(networkName, layerIndex);
 		Matrix m = new Matrix(rowCount, columnCount, context, eventManager);
 		for (int r = 0; r < rowCount; r++) {
 			for (int c = 0; c < columnCount; c++) {
 				double weight = nextGaussian();
-				weight = range.scaleDown(weight);
+				weight = scale.down(weight);
 				m.setValue(r, c, weight);
 			}
 		}

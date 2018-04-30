@@ -4,9 +4,9 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizabeOperation5Factory;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation5;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation5Advisor;
-import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation5Factory;
 
 public class UpdationFactory extends AdvisableParallelizabeOperation5Factory {
 

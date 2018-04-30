@@ -35,14 +35,14 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 		return doOperation(a.getMatrix(), b);
 	}
 
-	protected final Matrix doParallelOp(final Matrix a, final Matrix b) {
+	protected Matrix doParallelOp(final Matrix a, final Matrix b) {
 		int targetRowCount = a.getRowCount();
 		int targetColumnCount = b.getColumnCount();
 		Matrix target = new Matrix(targetRowCount, targetColumnCount);
 		return doParallelOp(a, b, targetRowCount, targetColumnCount, target);
 	}
 
-	protected final Matrix doSequentialOp(final Matrix a, final Matrix b) {
+	protected Matrix doSequentialOp(final Matrix a, final Matrix b) {
 		int targetRowCount = a.getRowCount();
 		int targetColumnCount = b.getColumnCount();
 		Matrix target = new Matrix(targetRowCount, targetColumnCount);
@@ -72,10 +72,10 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 				populateTask(task, taskGroup, a, b, target, columnIndex);
 			}
 
-			return runTasksAndGetTarget(tasks, target);
+			return runTasksAndReturnTarget(tasks, target);
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(getByColumnExceptionContext(a, b, targetColumnCount, target), e);
 		} finally {
 			getOperationByColumnTaskPool().recycle(tasks);
 		}
@@ -92,10 +92,10 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 				populateTask(task, taskGroup, a, b, target, rowIndex);
 			}
 
-			return runTasksAndGetTarget(tasks, target);
+			return runTasksAndReturnTarget(tasks, target);
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(getByRowExceptionContext(a, b, targetRowCount, target), e);
 		} finally {
 			getOperationByRowTaskPool().recycle(tasks);
 		}
@@ -107,6 +107,19 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 
 	private void populateTask(final C task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, final Matrix target, final int columnIndex) {
 		populateTask(task, taskGroup, a, b, null, target, null, columnIndex);
+	}
+
+	private String getByRowExceptionContext(Matrix a, Matrix b, int targetRowCount, Matrix target) {
+		return toStringByRow(a, b, null, targetRowCount, target, null);
+	}
+
+	private String getByColumnExceptionContext(Matrix a, Matrix b, int targetColumnCount, Matrix target) {
+		return toStringByColumn(a, b, null, targetColumnCount, target, null);
+	}
+
+	@Override
+	public void close() {
+		super.close();
 	}
 
 }

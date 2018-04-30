@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
-import com.sellman.andrew.ann.core.concurrent.TaskPool;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTaskPool;
 
 class SubtractionByColumnTaskPool extends AbstractOperationByColumnTaskPool<SubtractionByColumnTask> {

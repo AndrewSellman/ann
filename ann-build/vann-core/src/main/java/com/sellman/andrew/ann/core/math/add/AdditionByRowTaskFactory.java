@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 class AdditionByRowTaskFactory extends BasePooledObjectFactory<AdditionByRowTask> {
 
 	@Override
-	public AdditionByRowTask create() throws Exception {
+	public AdditionByRowTask create() {
 		return new AdditionByRowTask();
 	}
 
@@ -16,7 +16,8 @@ class AdditionByRowTaskFactory extends BasePooledObjectFactory<AdditionByRowTask
 		return new DefaultPooledObject<AdditionByRowTask>(task);
 	}
 
-	public void passivateObject(PooledObject<AdditionByRowTask> po) throws Exception {
+	@Override
+	public void passivateObject(PooledObject<AdditionByRowTask> po) {
 		po.getObject().recycle();
 	}
 

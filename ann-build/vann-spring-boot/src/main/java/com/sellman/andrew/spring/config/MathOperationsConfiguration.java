@@ -9,6 +9,7 @@ import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.add.AdditionFactory;
+import com.sellman.andrew.ann.core.math.advice.AdviceKey;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation1Advisor;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation2Advisor;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation3Advisor;
@@ -21,6 +22,8 @@ import com.sellman.andrew.ann.core.math.subtract.SubtractionFactory;
 import com.sellman.andrew.ann.core.math.sum.SummationFactory;
 import com.sellman.andrew.ann.core.math.transpose.TranspositionFactory;
 import com.sellman.andrew.ann.core.math.update.UpdationFactory;
+import com.sellman.andrew.vann.core.cache.Cache;
+import com.sellman.andrew.vann.core.cache.CacheBuilder;
 
 @Configuration
 public class MathOperationsConfiguration {
@@ -44,35 +47,75 @@ public class MathOperationsConfiguration {
 	}
 
 	private SummationFactory getSummationFactory() {
-		return new SummationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation4Advisor());
+		return new SummationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation4Advisor(getSummationAdviceCache()));
+	}
+	
+	@Bean
+	public Cache<AdviceKey, Boolean> getSummationAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("addition").build();
 	}
 
 	private TranspositionFactory getTranspositionFactory() {
-		return new TranspositionFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation3Advisor());
+		return new TranspositionFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation3Advisor(getTranspositionAdviceCache()));
+	}
+
+	@Bean
+	public Cache<AdviceKey, Boolean> getTranspositionAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("transposition").build();
 	}
 
 	private UpdationFactory getUpdationFactory() {
-		return new UpdationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation5Advisor());
+		return new UpdationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation5Advisor(getUpdationnAdviceCache()));
+	}
+
+	@Bean
+	public Cache<AdviceKey, Boolean> getUpdationnAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("updation").build();
 	}
 
 	private AdditionFactory getAdditionFactory() {
-		return new AdditionFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor());
+		return new AdditionFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor(getAdditionAdviceCache()));
+	}
+
+	@Bean
+	public Cache<AdviceKey, Boolean> getAdditionAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("addition").build();
 	}
 
 	private ScalerFactory getScalerFactory() {
-		return new ScalerFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation2Advisor());
+		return new ScalerFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation2Advisor(getScalerAdviceCache()));
+	}
+
+	@Bean
+	public Cache<AdviceKey, Boolean> getScalerAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("scaler").build();
 	}
 
 	private SubtractionFactory getSubtractionFactory() {
-		return new SubtractionFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor());
+		return new SubtractionFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor(getSubtractionAdviceCache()));
+	}
+
+	@Bean
+	public Cache<AdviceKey, Boolean> getSubtractionAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("subtraction").build();
 	}
 
 	private HadamardMultiplicationFactory getHadamardMultiplicationFactory() {
-		return new HadamardMultiplicationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor());
+		return new HadamardMultiplicationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor(getHadamardMultiplicationAdviceCache()));
+	}
+
+	@Bean
+	public Cache<AdviceKey, Boolean> getHadamardMultiplicationAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("hadamardMultiplcation").build();
 	}
 
 	private StandardMultiplicationFactory getStandardMultiplicationFactory() {
-		return new StandardMultiplicationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor());
+		return new StandardMultiplicationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation1Advisor(getStandardMultiplicationAdviceCache()));
+	}
+
+	@Bean
+	public Cache<AdviceKey, Boolean> getStandardMultiplicationAdviceCache() {
+		return new CacheBuilder<AdviceKey, Boolean>("standardMultiplcation").build();
 	}
 
 }

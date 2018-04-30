@@ -1,9 +1,9 @@
 package com.sellman.andrew.ann.core.math.multiply;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizabeOperation1Factory;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation1Experiment;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation1Advisor;
-import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation1Factory;
 
 public class HadamardMultiplicationExperimentITCase extends AdvisableParallelizableOperation1Experiment {
 

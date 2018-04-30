@@ -4,19 +4,20 @@ import com.sellman.andrew.ann.core.math.Matrix;
 import com.sellman.andrew.ann.core.math.function.Function;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+import com.sellman.andrew.vann.core.cache.Cache;
 
 public class ParallelizableOperation2Advisor extends ParallelizableOperationAdvisor {
 
-	public ParallelizableOperation2Advisor(final int testCount) {
-		super(testCount);
+	public ParallelizableOperation2Advisor(final int testCount, Cache<AdviceKey, Boolean> cache) {
+		super(testCount, cache);
 	}
 
-	public ParallelizableOperation2Advisor() {
-		super();
+	public ParallelizableOperation2Advisor(Cache<AdviceKey, Boolean> cache) {
+		super(cache);
 	}
 
 	public boolean doAsParrallelOp(final AdvisableParallelizableOperation2<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> op, final int matrixRowCount, final int matrixColumnCount, final Function function) {
-		AdviceKeyB key = new AdviceKeyB(matrixRowCount, matrixColumnCount, function);
+		AdviceKey key = new AdviceKeyB(matrixRowCount, matrixColumnCount, function);
 		Boolean asParallel = getAdvice(key);
 		if (asParallel != null) {
 			return asParallel;

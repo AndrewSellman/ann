@@ -16,20 +16,20 @@ public abstract class AdvisableParallelizableOperation1<R extends AbstractOperat
 		this.advisor = advisor;
 	}
 
-	public final long getParallelOpNanos(final Matrix a, final Matrix b) {
+	public long getParallelOpNanos(final Matrix a, final Matrix b) {
 		long start = System.nanoTime();
 		doParallelOp(a, b);
 		return System.nanoTime() - start;
 	}
 
-	public final long getSequentialOpNanos(final Matrix a, final Matrix b) {
+	public long getSequentialOpNanos(final Matrix a, final Matrix b) {
 		long start = System.nanoTime();
 		doSequentialOp(a, b);
 		return System.nanoTime() - start;
 	}
 
 	@Override
-	protected boolean doAsParallelOp(final Matrix a, final Matrix b) {
+	protected final boolean doAsParallelOp(final Matrix a, final Matrix b) {
 		return advisor.doAsParrallelOp(this, a.getRowCount(), a.getColumnCount(), b.getRowCount(), b.getColumnCount());
 	}
 

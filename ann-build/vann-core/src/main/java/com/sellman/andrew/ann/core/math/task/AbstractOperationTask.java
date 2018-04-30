@@ -60,19 +60,19 @@ public abstract class AbstractOperationTask extends AbstractTask {
 		this.matrixTarget = target;
 	}
 
-	public Function getFunction() {
+	public final Function getFunction() {
 		return f;
 	}
 
-	public void setFunction(Function function) {
+	public final void setFunction(Function function) {
 		this.f = function;
 	}
 
-	public Vector getVectorTarget() {
+	public final Vector getVectorTarget() {
 		return vectorTarget;
 	}
 
-	public void setVectorTarget(Vector vectorTarget) {
+	public final void setVectorTarget(Vector vectorTarget) {
 		this.vectorTarget = vectorTarget;
 	}
 

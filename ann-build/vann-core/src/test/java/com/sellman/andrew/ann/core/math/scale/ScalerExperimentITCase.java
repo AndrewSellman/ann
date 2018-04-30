@@ -11,13 +11,15 @@ import org.junit.Test;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation2Advisor;
+import com.sellman.andrew.ann.core.math.advice.AdviceKey;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation2;
+import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation2Advisor;
 import com.sellman.andrew.ann.core.math.function.Function;
 import com.sellman.andrew.ann.core.math.function.FunctionType;
-import com.sellman.andrew.ann.core.math.scale.ScalerFactory;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+import com.sellman.andrew.vann.core.cache.Cache;
+import com.sellman.andrew.vann.core.cache.CacheBuilder;
 
 public class ScalerExperimentITCase {
 	private static final int MAX_ROWS = 500;
@@ -29,12 +31,14 @@ public class ScalerExperimentITCase {
 	private TaskService taskService;
 	private ParallelizableOperation2Advisor advisor;
 	private ScalerFactory opFactory;
+	private Cache<AdviceKey, Boolean> cache;
 
 	@Before
 	public void prepareTest() {
 		taskService = new TaskServiceBuilder().highPriority().setThreadCount(Runtime.getRuntime().availableProcessors()).build();
-
-		advisor = new ParallelizableOperation2Advisor();
+		cache = new CacheBuilder<AdviceKey, Boolean>("scaler").build();
+		cache.clear();
+		advisor = new ParallelizableOperation2Advisor(cache);
 		opFactory = new ScalerFactory(taskService, advisor);
 		scaler = opFactory.getOperation();
 

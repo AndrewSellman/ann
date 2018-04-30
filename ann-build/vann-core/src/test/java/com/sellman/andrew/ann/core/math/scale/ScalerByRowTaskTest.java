@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sellman.andrew.ann.core.math.FixedValueFunction;
 import com.sellman.andrew.ann.core.math.Matrix;
+import com.sellman.andrew.ann.core.math.function.FixedValueFunction;
 import com.sellman.andrew.ann.core.math.scale.ScalerByRowTask;
 
 public class ScalerByRowTaskTest {

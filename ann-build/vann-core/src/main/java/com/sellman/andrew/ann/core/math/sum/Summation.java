@@ -12,7 +12,7 @@ class Summation extends AdvisableParallelizableOperation4<SummationByRowTask, Su
 	}
 
 	@Override
-	protected double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount, Matrix target) {
+	protected double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount) {
 		double result = 0;
 		for (int rowIndex = 0; rowIndex < targetRowCount; rowIndex++) {
 			for (int columnIndex = 0; columnIndex < targetColumnCount; columnIndex++) {

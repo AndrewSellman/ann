@@ -1,5 +1,5 @@
 package com.sellman.andrew.ann.core.math.advice;
 
-class AdviceKey {
+public abstract class AdviceKey {
 
 }

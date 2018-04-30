@@ -7,19 +7,22 @@ import org.junit.Test;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.concurrent.TaskServiceBuilder;
 import com.sellman.andrew.ann.core.math.Matrix;
-import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation1Factory;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
+import com.sellman.andrew.vann.core.cache.Cache;
+import com.sellman.andrew.vann.core.cache.CacheBuilder;
 
 public abstract class AdvisableParallelizableOperation1Experiment extends AdvisableParallelizableOperationExperiment {
 	private ParallelizableOperation1Advisor advisor;
 	private AdvisableParallelizabeOperation1Factory opFactory;
 	private AdvisableParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> op;
+	private Cache<AdviceKey, Boolean> cache;
 	
 	@Before
 	public void prepareTest() {
 		taskService = new TaskServiceBuilder().highPriority().setThreadCount(Runtime.getRuntime().availableProcessors()).build();
-		advisor = new ParallelizableOperation1Advisor();
+		cache = new CacheBuilder<AdviceKey, Boolean>("op1").build();
+		advisor = new ParallelizableOperation1Advisor(cache);
 		opFactory = getOpFactory(taskService, advisor);
 		op = opFactory.getOperation();
 	}

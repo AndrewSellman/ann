@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 class StandardMultiplicationByColumnTaskFactory extends BasePooledObjectFactory<StandardMultiplicationByColumnTask> {
 
 	@Override
-	public StandardMultiplicationByColumnTask create() throws Exception {
+	public StandardMultiplicationByColumnTask create() {
 		return new StandardMultiplicationByColumnTask();
 	}
 
@@ -16,7 +16,8 @@ class StandardMultiplicationByColumnTaskFactory extends BasePooledObjectFactory<
 		return new DefaultPooledObject<StandardMultiplicationByColumnTask>(task);
 	}
 
-	public void passivateObject(PooledObject<StandardMultiplicationByColumnTask> po) throws Exception {
+	@Override
+	public void passivateObject(PooledObject<StandardMultiplicationByColumnTask> po) {
 		po.getObject().recycle();
 	}
 	

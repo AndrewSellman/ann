@@ -1,31 +1,30 @@
 package com.sellman.andrew.ann.core.math.advice;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.sellman.andrew.ann.core.math.Matrix;
+import com.sellman.andrew.vann.core.cache.Cache;
 
 class ParallelizableOperationAdvisor {
 	private static final int DEFAULT_TEST_COUNT = 100;
 	private final int testCount;
-	private final Map<AdviceKey, Boolean> parallelOpAdvice;
+	private final Cache<AdviceKey, Boolean> cache;
 
-	public ParallelizableOperationAdvisor(final int testCount) {
+	public ParallelizableOperationAdvisor(final int testCount, Cache<AdviceKey, Boolean> cache) {
 		this.testCount = testCount;
-		parallelOpAdvice = new ConcurrentHashMap<>();
+		this.cache = cache;
 	}
 
-	public ParallelizableOperationAdvisor() {
-		this(DEFAULT_TEST_COUNT);
+	public ParallelizableOperationAdvisor(Cache<AdviceKey, Boolean> cache) {
+		this(DEFAULT_TEST_COUNT, cache);
 	}
 
 	protected final Boolean getAdvice(final AdviceKey key) {
-		return parallelOpAdvice.get(key);
+		return cache.retrieve(key);
 	}
 
 	protected final void storeAdvice(final AdviceKey key, final boolean advice) {
-		parallelOpAdvice.put(key, advice);
+		cache.store(key, advice);
 	}
 
 	protected final int getOpTestCount() {

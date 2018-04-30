@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 class UpdationByRowTaskFactory extends BasePooledObjectFactory<UpdationByRowTask> {
 
 	@Override
-	public UpdationByRowTask create() throws Exception {
+	public UpdationByRowTask create() {
 		return new UpdationByRowTask();
 	}
 
@@ -16,7 +16,8 @@ class UpdationByRowTaskFactory extends BasePooledObjectFactory<UpdationByRowTask
 		return new DefaultPooledObject<UpdationByRowTask>(task);
 	}
 
-	public void passivateObject(PooledObject<UpdationByRowTask> po) throws Exception {
+	@Override
+	public void passivateObject(PooledObject<UpdationByRowTask> po) {
 		po.getObject().recycle();
 	}
 

@@ -3,8 +3,6 @@ package com.sellman.andrew.ann.core.math;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import com.sellman.andrew.ann.core.concurrent.AbstractTask;
-import com.sellman.andrew.ann.core.concurrent.TaskPool;
 import com.sellman.andrew.ann.core.concurrent.TaskService;
 import com.sellman.andrew.ann.core.math.function.Function;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByColumnTask;
@@ -13,7 +11,7 @@ import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTask;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationByRowTaskPool;
 import com.sellman.andrew.ann.core.math.task.AbstractOperationTask;
 
-public abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> implements AutoCloseable {
+abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C extends AbstractOperationByColumnTask> implements AutoCloseable {
 	private final TaskService taskService;
 	private final AbstractOperationByRowTaskPool<R> opByRowTaskPool;
 	private final AbstractOperationByColumnTaskPool<C> opByColumnTaskPool;
@@ -29,36 +27,30 @@ public abstract class ParallelizableOperation<R extends AbstractOperationByRowTa
 		task.setRowIndex(rowIndex);
 	}
 
-	protected final void populateTask(final C task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, Function f, Matrix matrixTarget, Vector vectorTarget, int columnIndex) {
+	protected void populateTask(final C task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, Function f, Matrix matrixTarget, Vector vectorTarget, int columnIndex) {
 		populateTask(task, taskGroup, a, b, f, matrixTarget, vectorTarget);
 		task.setColumnIndex(columnIndex);
 	}
 
-	protected final void runTasks(final List<? extends AbstractTask> tasks) {
+	protected final void runTasks(final List<? extends AbstractOperationTask> tasks) {
 		taskService.runTasks(tasks);
 	}
 
-	protected final Matrix runTasksAndGetTarget(final List<? extends AbstractTask> tasks, final Matrix target) {
+	protected final Matrix runTasksAndReturnTarget(final List<? extends AbstractOperationTask> tasks, final Matrix target) {
 		runTasks(tasks);
 		return target;
 	}
 
-	protected final Vector runTasksAndReturnTarget(final List<? extends AbstractTask> tasks, final Vector target) {
+	protected final Vector runTasksAndReturnTarget(final List<? extends AbstractOperationTask> tasks, final Vector target) {
 		runTasks(tasks);
 		return target;
 	}
 
-	protected final <T extends AbstractOperationTask> void recycle(final TaskPool<T> taskPool, final List<T> tasksToRecycle) {
-		if (tasksToRecycle != null) {
-			taskPool.recycle(tasksToRecycle);
-		}
-	}
-
-	protected AbstractOperationByRowTaskPool<R> getOperationByRowTaskPool() {
+	protected final AbstractOperationByRowTaskPool<R> getOperationByRowTaskPool() {
 		return opByRowTaskPool;
 	}
 
-	protected AbstractOperationByColumnTaskPool<C> getOperationByColumnTaskPool() {
+	protected final AbstractOperationByColumnTaskPool<C> getOperationByColumnTaskPool() {
 		return opByColumnTaskPool;
 	}
 
@@ -77,6 +69,51 @@ public abstract class ParallelizableOperation<R extends AbstractOperationByRowTa
 		task.setFunction(f);
 		task.setMatrixTarget(matrixTarget);
 		task.setVectorTarget(vectorTarget);
+	}
+
+	protected final String toStringByRow(Matrix a, Matrix b, Function f, int targetRowCount, Matrix matrixTarget, Vector vectorTarget) {
+		StringBuilder sb = toString(a, b, f, matrixTarget, vectorTarget);
+		sb.append("targetRowCount=");
+		sb.append(targetRowCount);
+		return sb.toString();
+	}
+
+	protected final String toStringByColumn(Matrix a, Matrix b, Function f, int targetColumnCount, Matrix matrixTarget, Vector vectorTarget) {
+		StringBuilder sb = toString(a, b, f, matrixTarget, vectorTarget);
+		sb.append("targetColumnCount=");
+		sb.append(targetColumnCount);
+		return sb.toString();
+	}
+
+	private StringBuilder toString(Matrix a, Matrix b, Function f, Matrix matrixTarget, Vector vectorTarget) {
+		StringBuilder sb = new StringBuilder();
+		if (a != null) {
+			sb.append("a=");
+			sb.append(a.toString());
+		}
+
+		if (b != null) {
+			sb.append("b=");
+			sb.append(b.toString());
+		}
+
+		if (f != null) {
+			sb.append("f=");
+			sb.append(f.toString());
+			sb.append("\n");
+		}
+
+		if (matrixTarget != null) {
+			sb.append("target=");
+			sb.append(matrixTarget.toString());
+		}
+
+		if (vectorTarget != null) {
+			sb.append("target=");
+			sb.append(vectorTarget.toString());
+		}
+
+		return sb;
 	}
 
 }

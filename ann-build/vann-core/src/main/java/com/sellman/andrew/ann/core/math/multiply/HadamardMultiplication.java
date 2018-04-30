@@ -12,7 +12,7 @@ class HadamardMultiplication extends AdvisableParallelizableOperation1<HadamardM
 	}
 
 	@Override
-	protected Matrix doSequentialOp(Matrix a, Matrix b, int targetRowCount, int targetColumnCount, Matrix target) {
+	protected final Matrix doSequentialOp(Matrix a, Matrix b, int targetRowCount, int targetColumnCount, Matrix target) {
 		for (int rowIndex = 0; rowIndex < targetRowCount; rowIndex++) {
 			for (int columnIndex = 0; columnIndex < targetColumnCount; columnIndex++) {
 				target.setValue(rowIndex, columnIndex, a.getValue(rowIndex, columnIndex) * b.getValue(rowIndex, columnIndex));

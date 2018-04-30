@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 class HadamardMultiplicationByRowTaskFactory extends BasePooledObjectFactory<HadamardMultiplicationByRowTask> {
 
 	@Override
-	public HadamardMultiplicationByRowTask create() throws Exception {
+	public HadamardMultiplicationByRowTask create() {
 		return new HadamardMultiplicationByRowTask();
 	}
 
@@ -16,7 +16,8 @@ class HadamardMultiplicationByRowTaskFactory extends BasePooledObjectFactory<Had
 		return new DefaultPooledObject<HadamardMultiplicationByRowTask>(task);
 	}
 
-	public void passivateObject(PooledObject<HadamardMultiplicationByRowTask> po) throws Exception {
+	@Override
+	public void passivateObject(PooledObject<HadamardMultiplicationByRowTask> po) {
 		po.getObject().recycle();
 	}
 

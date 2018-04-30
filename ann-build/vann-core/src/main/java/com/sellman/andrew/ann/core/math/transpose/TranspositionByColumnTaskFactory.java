@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 class TranspositionByColumnTaskFactory extends BasePooledObjectFactory<TranspositionByColumnTask> {
 
 	@Override
-	public TranspositionByColumnTask create() throws Exception {
+	public TranspositionByColumnTask create() {
 		return new TranspositionByColumnTask();
 	}
 
@@ -16,7 +16,8 @@ class TranspositionByColumnTaskFactory extends BasePooledObjectFactory<Transposi
 		return new DefaultPooledObject<TranspositionByColumnTask>(task);
 	}
 
-	public void passivateObject(PooledObject<TranspositionByColumnTask> po) throws Exception {
+	@Override
+	public void passivateObject(PooledObject<TranspositionByColumnTask> po) {
 		po.getObject().recycle();
 	}
 

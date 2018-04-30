@@ -4,9 +4,9 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import com.sellman.andrew.ann.core.concurrent.TaskService;
+import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizabeOperation3Factory;
 import com.sellman.andrew.ann.core.math.advice.AdvisableParallelizableOperation3;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation3Advisor;
-import com.sellman.andrew.ann.core.math.factory.AdvisableParallelizabeOperation3Factory;
 
 public class TranspositionFactory extends AdvisableParallelizabeOperation3Factory {
 

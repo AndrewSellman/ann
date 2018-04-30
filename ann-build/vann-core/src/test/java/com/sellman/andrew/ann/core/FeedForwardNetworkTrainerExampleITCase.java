@@ -25,6 +25,7 @@ import com.sellman.andrew.ann.core.math.MathOperations;
 import com.sellman.andrew.ann.core.math.MathOperationsFactory;
 import com.sellman.andrew.ann.core.math.Vector;
 import com.sellman.andrew.ann.core.math.add.AdditionFactory;
+import com.sellman.andrew.ann.core.math.advice.AdviceKey;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation1Advisor;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation2Advisor;
 import com.sellman.andrew.ann.core.math.advice.ParallelizableOperation3Advisor;
@@ -44,6 +45,8 @@ import com.sellman.andrew.ann.core.training.evaluator.LearningRateEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.MaximumEpochsEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.MinimumEpochErrorEvaluator;
 import com.sellman.andrew.ann.core.training.evaluator.TrainingEvaluator;
+import com.sellman.andrew.vann.core.cache.Cache;
+import com.sellman.andrew.vann.core.cache.CacheBuilder;
 
 public class FeedForwardNetworkTrainerExampleITCase {
 	private AdditionFactory additionFactory;
@@ -68,19 +71,20 @@ public class FeedForwardNetworkTrainerExampleITCase {
 	private EventManager eventManager;
 	private List<Double> epochErrors;
 	private LearningRateEvaluator learningRateEvaluator;
+	private Cache<AdviceKey, Boolean> cache;
 
 	@Before
 	public void prepareTest() {
 		highPriorityTaskService = new TaskServiceBuilder().highPriority().build();
-		
-		additionFactory = new AdditionFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
-		summationFactory = new SummationFactory(highPriorityTaskService, new ParallelizableOperation4Advisor());
-		subtractionFactory = new SubtractionFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
-		scalerFactory = new ScalerFactory(highPriorityTaskService, new ParallelizableOperation2Advisor());
-		transpositionFactory = new TranspositionFactory(highPriorityTaskService, new ParallelizableOperation3Advisor());
-		standardMultiplicationFactory = new StandardMultiplicationFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
-		hadamardMultiplicationFactory = new HadamardMultiplicationFactory(highPriorityTaskService, new ParallelizableOperation1Advisor());
-		updationFactory = new UpdationFactory(highPriorityTaskService, new ParallelizableOperation5Advisor());
+		cache = new CacheBuilder<AdviceKey, Boolean>("op").build();
+		additionFactory = new AdditionFactory(highPriorityTaskService, new ParallelizableOperation1Advisor(cache));
+		summationFactory = new SummationFactory(highPriorityTaskService, new ParallelizableOperation4Advisor(cache));
+		subtractionFactory = new SubtractionFactory(highPriorityTaskService, new ParallelizableOperation1Advisor(cache));
+		scalerFactory = new ScalerFactory(highPriorityTaskService, new ParallelizableOperation2Advisor(cache));
+		transpositionFactory = new TranspositionFactory(highPriorityTaskService, new ParallelizableOperation3Advisor(cache));
+		standardMultiplicationFactory = new StandardMultiplicationFactory(highPriorityTaskService, new ParallelizableOperation1Advisor(cache));
+		hadamardMultiplicationFactory = new HadamardMultiplicationFactory(highPriorityTaskService, new ParallelizableOperation1Advisor(cache));
+		updationFactory = new UpdationFactory(highPriorityTaskService, new ParallelizableOperation5Advisor(cache));
 		operationsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
 		
 		ops = operationsFactory.getOperations();

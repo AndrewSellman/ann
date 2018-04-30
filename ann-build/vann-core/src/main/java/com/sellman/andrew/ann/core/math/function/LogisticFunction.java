@@ -1,6 +1,10 @@
 package com.sellman.andrew.ann.core.math.function;
 
-class LogisticFunction implements Function {
+class LogisticFunction extends AbstractFunction {
+
+	public LogisticFunction() {
+		super(LogisticFunction.class.toString());
+	}
 
 	@Override
 	public double evaluate(double x) {

@@ -36,11 +36,10 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 	protected final double doSequentialOp(final Matrix m) {
 		int targetRowCount = m.getRowCount();
 		int targetColumnCount = m.getColumnCount();
-		Matrix target = new Matrix(targetRowCount, targetColumnCount);
-		return doSequentialOp(m, targetRowCount, targetColumnCount, target);
+		return doSequentialOp(m, targetRowCount, targetColumnCount);
 	}
 
-	protected abstract double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount, Matrix target);
+	protected abstract double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount);
 
 	protected abstract boolean doAsParallelOp(final Matrix m);
 
@@ -69,7 +68,7 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 			return doSequentialOp(target.getMatrix());
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(getByColumnExceptionContext(m, targetColumnCount, target), e);
 		} finally {
 			getOperationByColumnTaskPool().recycle(tasks);
 		}
@@ -90,7 +89,7 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 			return doSequentialOp(target.getMatrix());
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(getByRowExceptionContext(m, targetRowCount, target), e);
 		} finally {
 			getOperationByRowTaskPool().recycle(tasks);
 		}
@@ -102,6 +101,20 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 
 	private void populateTask(C task, CountDownLatch taskGroup, Matrix m, Vector target, int columnIndex) {
 		populateTask(task, taskGroup, m, null, null, null, target, columnIndex);
+	}
+
+
+	private String getByRowExceptionContext(Matrix m, int targetRowCount, Vector target) {
+		return toStringByRow(m, null, null, targetRowCount, null, target);
+	}
+
+	private String getByColumnExceptionContext(Matrix m, int targetColumnCount, Vector target) {
+		return toStringByColumn(m, null, null, targetColumnCount, null, target);
+	}
+
+	@Override
+	public void close() {
+		super.close();
 	}
 
 }

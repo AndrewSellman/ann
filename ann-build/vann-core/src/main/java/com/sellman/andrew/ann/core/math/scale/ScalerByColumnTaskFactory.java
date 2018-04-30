@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 class ScalerByColumnTaskFactory extends BasePooledObjectFactory<ScalerByColumnTask> {
 
 	@Override
-	public ScalerByColumnTask create() throws Exception {
+	public ScalerByColumnTask create() {
 		return new ScalerByColumnTask();
 	}
 
@@ -16,7 +16,8 @@ class ScalerByColumnTaskFactory extends BasePooledObjectFactory<ScalerByColumnTa
 		return new DefaultPooledObject<ScalerByColumnTask>(task);
 	}
 
-	public void passivateObject(PooledObject<ScalerByColumnTask> po) throws Exception {
+	@Override
+	public void passivateObject(PooledObject<ScalerByColumnTask> po) {
 		po.getObject().recycle();
 	}
 
