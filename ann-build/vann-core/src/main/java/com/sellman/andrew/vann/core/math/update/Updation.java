@@ -15,7 +15,7 @@ class Updation extends AdvisableParallelizableOperation5<UpdationByRowTask, Upda
 	protected void doSequentialOp(Matrix source, int rowCount, int columnCount, Matrix target) {
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-				target.setValue(columnIndex, rowIndex, source.getValue(rowIndex, columnIndex));
+				target.setValue(rowIndex, columnIndex, source.getValue(rowIndex, columnIndex));
 			}
 		}
 	}

@@ -18,6 +18,7 @@ public class SummationFactory extends AdvisableParallelizabeOperation4Factory {
 		super(taskService, advisor);
 	}
 
+	@Override
 	public AdvisableParallelizableOperation4<SummationByRowTask, SummationByColumnTask> getOperation() {
 		SummationByRowTaskPool opByRowTaskPool = getByRowTaskPool();
 		SummationByColumnTaskPool opByColumnTaskPool = getByColumnTaskPool();
