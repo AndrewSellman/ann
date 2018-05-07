@@ -3,75 +3,100 @@ package com.sellman.andrew.vann.core.event;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.concurrent.TaskServiceBuilder;
-import com.sellman.andrew.vann.core.event.Context;
-import com.sellman.andrew.vann.core.event.EpochChangeEvent;
-import com.sellman.andrew.vann.core.event.EpochErrorChangeEvent;
-import com.sellman.andrew.vann.core.event.Event;
-import com.sellman.andrew.vann.core.event.EventManager;
-import com.sellman.andrew.vann.core.event.Listener;
 
 public class EventManagerTest {
-	private TaskService eventDispatcher;
+	private TaskService taskService;
 	private EventManager manager;
-	private Listener<EpochChangeEvent> listener1;
-	private Listener<EpochErrorChangeEvent> listener2;
-	private Event event1;
-	private Event event2;
+	private ConsoleListener listener;
+	private Event epochChangeEvent;
+	private Event otherEvent;
 	private Context context;
-
+	
 	@Before
 	public void prepareTest() {
+		listener = new ConsoleListener();
+		listener = new ConsoleListener();
+
 		context = new Context("test");
-		eventDispatcher = new TaskServiceBuilder().fireAndForget().setThreadCount(1).lowPriority().build();
-		manager = new EventManager(eventDispatcher);
-		event1 = new EpochChangeEvent(context, 0, 1);
-		event2 = new EpochErrorChangeEvent(context, 0.0, 1.0);
-		listener1 = new ConsoleListener<EpochChangeEvent>();
-		listener2 = new ConsoleListener<EpochErrorChangeEvent>();
+		taskService = new TaskServiceBuilder().fireAndForget().setThreadCount(1).lowPriority().build();
+		
+		EventListenerAdapterFactory eventListenerAdapterFactory = new EventListenerAdapterFactory();
+		eventListenerAdapterFactory.register(new EpochChangeListenerAdapterFactory());
+		manager = new EventManager(taskService, eventListenerAdapterFactory);
+		
+
+		epochChangeEvent = new EpochChangeEvent(context, 0, 1);
+		otherEvent = new EpochErrorChangeEvent(context, 0, 1);
+	}
+	
+	@After
+	public void cleanUpTest() throws Exception {
+		manager.close();
+		taskService.close();
 	}
 
 	@Test
-	public void fire() {
-		assertFalse(manager.fire(event1));
-		manager.register(listener1, EpochChangeEvent.class);
-		assertTrue(manager.fire(event1));
+	public void fireForDispatchedNotification() throws InterruptedException {
+		assertFalse(manager.fire(epochChangeEvent));
+		assertFalse(manager.fire(otherEvent));
+		manager.registerForDispatchedNotification(listener, epochChangeEvent.getClass());
+		assertTrue(manager.fire(epochChangeEvent));
+		assertFalse(manager.fire(otherEvent));
 
-		assertFalse(manager.fire(event2));
-		manager.register(listener2, EpochErrorChangeEvent.class);
-		assertTrue(manager.fire(event2));
-
-		manager.unregister(listener1, EpochChangeEvent.class);
-		assertFalse(manager.fire(event1));
-
-		manager.unregister(listener2, EpochErrorChangeEvent.class);
-		assertFalse(manager.fire(event2));
+		manager.unregister(listener, epochChangeEvent.getClass());
+		assertFalse(manager.fire(epochChangeEvent));
+		assertFalse(manager.fire(otherEvent));
 	}
 
 	@Test
-	public void registerAndUnregister() {
-		assertFalse(manager.isAnyRegisteredListenerFor(event1.getClass()));
-		assertFalse(manager.isAnyRegisteredListenerFor(event2.getClass()));
+	public void fireForImmediateNotification() throws InterruptedException {
+		assertFalse(manager.fire(epochChangeEvent));
+		assertFalse(manager.fire(otherEvent));
+		manager.registerForImmediateNotification(listener, epochChangeEvent.getClass());
+		assertTrue(manager.fire(epochChangeEvent));
+		assertFalse(manager.fire(otherEvent));
 
-		assertTrue(manager.register(listener1, EpochChangeEvent.class));
-		assertFalse(manager.register(listener1, EpochChangeEvent.class));
+		manager.unregister(listener, epochChangeEvent.getClass());
+		assertFalse(manager.fire(epochChangeEvent));
+		assertFalse(manager.fire(otherEvent));
+	}
 
-		assertTrue(manager.register(listener2, EpochErrorChangeEvent.class));
-		assertFalse(manager.register(listener2, EpochErrorChangeEvent.class));
+	@Test
+	public void registerForDispatchedNotificationAndUnregister() {
+		assertFalse(manager.isAnyRegisteredListenerFor(epochChangeEvent.getClass()));
+		assertFalse(manager.isAnyRegisteredListenerFor(otherEvent.getClass()));
 
-		assertTrue(manager.isAnyRegisteredListenerFor(event1.getClass()));
-		assertTrue(manager.unregister(listener1, EpochChangeEvent.class));
-		assertFalse(manager.unregister(listener1, EpochChangeEvent.class));
-		assertFalse(manager.isAnyRegisteredListenerFor(event1.getClass()));
+		assertTrue(manager.registerForDispatchedNotification(listener, epochChangeEvent.getClass()));
+		assertFalse(manager.registerForDispatchedNotification(listener, epochChangeEvent.getClass()));
+		assertTrue(manager.isAnyRegisteredListenerFor(epochChangeEvent.getClass()));
 
-		assertTrue(manager.isAnyRegisteredListenerFor(event2.getClass()));
-		assertTrue(manager.unregister(listener2, EpochErrorChangeEvent.class));
-		assertFalse(manager.unregister(listener2, EpochErrorChangeEvent.class));
-		assertFalse(manager.isAnyRegisteredListenerFor(event2.getClass()));
+		assertTrue(manager.unregister(listener, epochChangeEvent.getClass()));
+		assertFalse(manager.unregister(listener, epochChangeEvent.getClass()));
+		assertFalse(manager.unregister(listener, otherEvent.getClass()));
+		assertFalse(manager.isAnyRegisteredListenerFor(epochChangeEvent.getClass()));
+		assertFalse(manager.isAnyRegisteredListenerFor(otherEvent.getClass()));
+	}
+
+	@Test
+	public void registerForImmediateNotificationAndUnregister() {
+		assertFalse(manager.isAnyRegisteredListenerFor(epochChangeEvent.getClass()));
+		assertFalse(manager.isAnyRegisteredListenerFor(otherEvent.getClass()));
+
+		assertTrue(manager.registerForImmediateNotification(listener, epochChangeEvent.getClass()));
+		assertFalse(manager.registerForImmediateNotification(listener, epochChangeEvent.getClass()));
+		assertTrue(manager.isAnyRegisteredListenerFor(epochChangeEvent.getClass()));
+
+		assertTrue(manager.unregister(listener, epochChangeEvent.getClass()));
+		assertFalse(manager.unregister(listener, epochChangeEvent.getClass()));
+		assertFalse(manager.unregister(listener, otherEvent.getClass()));
+		assertFalse(manager.isAnyRegisteredListenerFor(epochChangeEvent.getClass()));
+		assertFalse(manager.isAnyRegisteredListenerFor(otherEvent.getClass()));
 	}
 
 }

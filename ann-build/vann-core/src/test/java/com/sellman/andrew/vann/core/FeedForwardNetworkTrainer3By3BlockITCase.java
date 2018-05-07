@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -28,6 +29,8 @@ import com.sellman.andrew.vann.core.event.ConsoleListener;
 import com.sellman.andrew.vann.core.event.Context;
 import com.sellman.andrew.vann.core.event.EpochChangeEvent;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeEvent;
+import com.sellman.andrew.vann.core.event.Event;
+import com.sellman.andrew.vann.core.event.EventListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.ValidationErrorChangeEvent;
 import com.sellman.andrew.vann.core.math.MathOperations;
@@ -65,7 +68,7 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 	private TranspositionFactory transpositionFactory;
 	private HadamardMultiplicationFactory hadamardMultiplicationFactory;
 	private StandardMultiplicationFactory standardMultiplicationFactory;
-		private UpdationFactory updationFactory;
+	private UpdationFactory updationFactory;
 	private MathOperationsFactory operationsFactory;
 	private TaskService highPriorityTaskService;
 	private TaskService eventDispatcher;
@@ -81,6 +84,7 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 	private EventManager eventManager;
 	private LearningRateEvaluator learningRateEvaluator;
 	private Cache<AdviceKey, Boolean> cache;
+	private AtomicBoolean keepRoutingEvents;
 
 	@Before
 	public void prepareTest() {
@@ -95,7 +99,7 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 		hadamardMultiplicationFactory = new HadamardMultiplicationFactory(highPriorityTaskService, new ParallelizableOperation1Advisor(cache));
 		updationFactory = new UpdationFactory(highPriorityTaskService, new ParallelizableOperation5Advisor(cache));
 		operationsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
-		
+
 		ops = operationsFactory.getOperations();
 
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();
@@ -104,15 +108,16 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 		trainingEvaluators.add(new MinimumValidationErrorEvaluator(0.01));
 
 		eventDispatcher = new TaskServiceBuilder().lowPriority().setThreadCount(1).fireAndForget().build();
-		eventManager = new EventManager(eventDispatcher);
-		ConsoleListener<EpochChangeEvent> listener1 = new ConsoleListener<EpochChangeEvent>();
-		eventManager.register(listener1, EpochChangeEvent.class);
+		keepRoutingEvents = new AtomicBoolean(true);
+		eventManager = new EventManager(eventDispatcher, new EventListenerAdapterFactory());
+		ConsoleListener listener1 = new ConsoleListener();
+		eventManager.registerForDispatchedNotification(listener1, Event.class);
 
-		ConsoleListener<EpochErrorChangeEvent> listener2 = new ConsoleListener<EpochErrorChangeEvent>();
-		eventManager.register(listener2, EpochErrorChangeEvent.class);
+		ConsoleListener listener2 = new ConsoleListener();
+		eventManager.registerForDispatchedNotification(listener2, Event.class);
 
-		ConsoleListener<ValidationErrorChangeEvent> listener3 = new ConsoleListener<ValidationErrorChangeEvent>();
-		eventManager.register(listener3, ValidationErrorChangeEvent.class);
+		ConsoleListener listener3 = new ConsoleListener();
+		eventManager.registerForDispatchedNotification(listener3, Event.class);
 
 		learningRateEvaluator = new BoldDriverLearningRateEvaluator(0.2, 0.05, 0.5);
 
@@ -131,13 +136,11 @@ public class FeedForwardNetworkTrainer3By3BlockITCase {
 	@Test
 	public void trainStochasitc() {
 		List<FeedForwardNetworkLayer> layers = new ArrayList<FeedForwardNetworkLayer>();
-		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, ops, FunctionType.LOGISTIC, buildWeights(11, 9),
-		        buildBias(11));
+		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(new Context("test", 0), eventManager, ops, FunctionType.LOGISTIC, buildWeights(11, 9), buildBias(11));
 		layer0 = new FeedForwardNetworkLayer(layer0Config);
 		layers.add(layer0);
 
-		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(new Context("test", 1), eventManager, ops, FunctionType.LOGISTIC, buildWeights(1, 11),
-		        buildBias(1));
+		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(new Context("test", 1), eventManager, ops, FunctionType.LOGISTIC, buildWeights(1, 11), buildBias(1));
 		layer1 = new FeedForwardNetworkLayer(layer1Config);
 		layers.add(layer1);
 

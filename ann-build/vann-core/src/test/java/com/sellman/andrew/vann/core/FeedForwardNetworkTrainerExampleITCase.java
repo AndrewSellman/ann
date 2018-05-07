@@ -4,31 +4,24 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sellman.andrew.vann.core.AbstractFeedForwardNetworkTrainer;
-import com.sellman.andrew.vann.core.FeedForwardNetwork;
-import com.sellman.andrew.vann.core.FeedForwardNetworkConfig;
-import com.sellman.andrew.vann.core.FeedForwardNetworkLayer;
-import com.sellman.andrew.vann.core.FeedForwardNetworkLayerConfig;
-import com.sellman.andrew.vann.core.StochasticGradientDescentFeedForwardNetworkTrainer;
-import com.sellman.andrew.vann.core.TrainingItem;
 import com.sellman.andrew.vann.core.cache.Cache;
 import com.sellman.andrew.vann.core.cache.CacheBuilder;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.concurrent.TaskServiceBuilder;
+import com.sellman.andrew.vann.core.event.BatchErrorChangeEvent;
 import com.sellman.andrew.vann.core.event.ConsoleListener;
 import com.sellman.andrew.vann.core.event.Context;
-import com.sellman.andrew.vann.core.event.DoNothingListener;
 import com.sellman.andrew.vann.core.event.EpochChangeEvent;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeEvent;
-import com.sellman.andrew.vann.core.event.EpochErrorTrackingListener;
+import com.sellman.andrew.vann.core.event.Event;
+import com.sellman.andrew.vann.core.event.EventListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EventManager;
-import com.sellman.andrew.vann.core.event.MatrixChangeEvent;
-import com.sellman.andrew.vann.core.event.MatrixPollEvent;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.MathOperationsFactory;
 import com.sellman.andrew.vann.core.math.Matrix;
@@ -66,7 +59,7 @@ public class FeedForwardNetworkTrainerExampleITCase {
 	private UpdationFactory updationFactory;
 	private MathOperationsFactory operationsFactory;
 	private TaskService highPriorityTaskService;
-	private TaskService eventsService;
+	private TaskService eventDispatcher;
 	private MathOperations ops;
 	private FeedForwardNetworkLayer layer0;
 	private FeedForwardNetworkLayer layer1;
@@ -79,6 +72,7 @@ public class FeedForwardNetworkTrainerExampleITCase {
 	private List<Double> epochErrors;
 	private LearningRateEvaluator learningRateEvaluator;
 	private Cache<AdviceKey, Boolean> cache;
+	private AtomicBoolean keepRoutingEvents;
 
 	@Before
 	public void prepareTest() {
@@ -96,24 +90,14 @@ public class FeedForwardNetworkTrainerExampleITCase {
 		
 		ops = operationsFactory.getOperations();
 
-		eventsService = new TaskServiceBuilder().lowPriority().fireAndForget().setThreadCount(1).build();
-		eventManager = new EventManager(eventsService);
+		eventDispatcher = new TaskServiceBuilder().lowPriority().fireAndForget().setThreadCount(1).build();
+		keepRoutingEvents = new AtomicBoolean(true);
+		eventManager = new EventManager(eventDispatcher, new EventListenerAdapterFactory());
 		
-		ConsoleListener<EpochChangeEvent> listener1 = new ConsoleListener<EpochChangeEvent>();
-		eventManager.register(listener1, EpochChangeEvent.class);
+		ConsoleListener listener = new ConsoleListener();
+		eventManager.registerForDispatchedNotification(listener, EpochChangeEvent.class);
+		eventManager.registerForDispatchedNotification(listener, BatchErrorChangeEvent.class);
 		
-		ConsoleListener<EpochErrorChangeEvent> listener2 = new ConsoleListener<EpochErrorChangeEvent>();
-		eventManager.register(listener2, EpochErrorChangeEvent.class);
-
-		epochErrors = new ArrayList<Double>();
-		eventManager.register(new EpochErrorTrackingListener(epochErrors), EpochErrorChangeEvent.class);
-
-		DoNothingListener<MatrixPollEvent> listener3 = new DoNothingListener<MatrixPollEvent>();
-		eventManager.register(listener3, MatrixPollEvent.class);
-
-		DoNothingListener<MatrixChangeEvent> listener4 = new DoNothingListener<MatrixChangeEvent>();
-		eventManager.register(listener4, MatrixChangeEvent.class);
-
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();
 		trainingEvaluators.add(new MaximumEpochsEvaluator(100000));
 		trainingEvaluators.add(new MinimumEpochErrorEvaluator(0.000001));
@@ -130,7 +114,7 @@ public class FeedForwardNetworkTrainerExampleITCase {
 	public void completeTest() throws Exception {
 		eventManager.close();
 		highPriorityTaskService.close();
-		eventsService.close();
+		eventDispatcher.close();
 	}
 
 	@Test

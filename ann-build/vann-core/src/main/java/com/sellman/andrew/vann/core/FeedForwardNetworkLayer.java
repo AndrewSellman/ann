@@ -21,6 +21,8 @@ public class FeedForwardNetworkLayer {
 	}
 
 	public Vector evaluate(Vector input) {
+//TODO fire input/output events
+		
 		Vector biasedWeightedInput = add(multiply(config.getWeights(), input), config.getBias());
 		Vector output = scale(biasedWeightedInput, config.getActivationFunction());
 
