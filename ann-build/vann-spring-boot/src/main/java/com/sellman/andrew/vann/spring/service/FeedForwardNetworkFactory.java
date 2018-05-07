@@ -19,7 +19,7 @@ import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.Vector;
 import com.sellman.andrew.vann.core.math.util.IntervalScale;
-import com.sellman.andrew.vann.spring.config.EventManagerBeanNames;
+import com.sellman.andrew.vann.spring.config.EventBeanNames;
 import com.sellman.andrew.vann.spring.config.MathOperationsBeanNames;
 import com.sellman.andrew.vann.spring.controller.network.NetworkConfigRequest;
 
@@ -31,7 +31,7 @@ public class FeedForwardNetworkFactory {
 	private MathOperations mathOps;
 
 	@Autowired
-	@Qualifier(value = EventManagerBeanNames.EVENT_MANAGER)
+	@Qualifier(value = EventBeanNames.EVENT_MANAGER)
 	private EventManager eventManager;
 
 	public FeedForwardNetwork create(NetworkConfigRequest request, String networkName) {

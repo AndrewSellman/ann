@@ -1,6 +1,6 @@
 package com.sellman.andrew.vann.spring.config;
 
-public class EventManagerBeanNames {
+public class EventBeanNames {
 
 	public static final String EVENT_MANAGER = "eventManagerBean";
 	public static final String EVENT_LISTENER_ADAPATER_FACTORY = "eventListenerAdapterFactoryBean";

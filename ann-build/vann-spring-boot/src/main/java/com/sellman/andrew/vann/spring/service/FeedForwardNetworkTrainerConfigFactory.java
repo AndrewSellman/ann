@@ -18,7 +18,7 @@ import com.sellman.andrew.vann.core.training.evaluator.MaximumEpochsEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.MinimumEpochErrorEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.MinimumValidationErrorEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.TrainingEvaluator;
-import com.sellman.andrew.vann.spring.config.EventManagerBeanNames;
+import com.sellman.andrew.vann.spring.config.EventBeanNames;
 import com.sellman.andrew.vann.spring.config.MathOperationsBeanNames;
 import com.sellman.andrew.vann.spring.config.TaskServiceBeanNames;
 import com.sellman.andrew.vann.spring.controller.network.trainer.LearningRateEvaluatorRequest;
@@ -37,7 +37,7 @@ public class FeedForwardNetworkTrainerConfigFactory {
 	private MathOperations mathOps;
 
 	@Autowired
-	@Qualifier(value = EventManagerBeanNames.EVENT_MANAGER)
+	@Qualifier(value = EventBeanNames.EVENT_MANAGER)
 	private EventManager eventManager;
 
 	public FeedForwardNetworkTrainerConfig create(NetworkTrainerConfigRequest request) {
