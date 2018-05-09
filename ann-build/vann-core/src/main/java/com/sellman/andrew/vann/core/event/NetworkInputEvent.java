@@ -1,21 +1,19 @@
 package com.sellman.andrew.vann.core.event;
 
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.Matrix;
 
-public class NetworkInputEvent extends Event {
-	private final Vector input;
+public class NetworkInputEvent extends MatrixEvent {
 
-	public NetworkInputEvent(final Context context, final Vector input) {
-		super(context);
-		this.input = input;
+	public NetworkInputEvent(final Context context, final Matrix input) {
+		super(context, input);
 	}
 
-	public final Vector getInput() {
-		return input;
+	public final Matrix getInput() {
+		return getEventMatrix();
 	}
 
 	public final String toString() {
-		return "Input" + super.toString() + " is:\n" + input.toString();
+		return "Network input" + super.toString();
 	}
 
 }

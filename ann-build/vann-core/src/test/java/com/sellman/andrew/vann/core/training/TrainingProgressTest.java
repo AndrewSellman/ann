@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,15 +17,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.sellman.andrew.vann.core.event.BatchChangeEvent;
 import com.sellman.andrew.vann.core.event.BatchErrorChangeEvent;
+import com.sellman.andrew.vann.core.event.BatchIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.Context;
-import com.sellman.andrew.vann.core.event.EpochChangeEvent;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeEvent;
+import com.sellman.andrew.vann.core.event.EpochIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.ResetBatchErrorEvent;
 import com.sellman.andrew.vann.core.event.ResetEpochErrorEvent;
-import com.sellman.andrew.vann.core.training.TrainingProgress;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TrainingProgressTest {
@@ -45,8 +46,9 @@ public class TrainingProgressTest {
 		when(eventManager.isAnyRegisteredListenerFor(eq(ResetBatchErrorEvent.class))).thenReturn(true);
 
 		assertBatchErrorOperations();
-		verify(eventManager).fire(isA(BatchErrorChangeEvent.class));
-		verify(eventManager).fire(isA(BatchErrorChangeEvent.class));
+		verify(eventManager, atLeast(1)).fire(isA(BatchErrorChangeEvent.class));
+		verify(eventManager, atMost(2)).fire(isA(BatchErrorChangeEvent.class));
+		verify(eventManager).fire(isA(ResetBatchErrorEvent.class));
 	}
 
 	@Test
@@ -61,7 +63,8 @@ public class TrainingProgressTest {
 		when(eventManager.isAnyRegisteredListenerFor(eq(ResetEpochErrorEvent.class))).thenReturn(true);
 
 		assertEpochErrorOperations();
-		verify(eventManager).fire(isA(EpochErrorChangeEvent.class));
+		verify(eventManager, atLeast(1)).fire(isA(EpochErrorChangeEvent.class));
+		verify(eventManager, atMost(2)).fire(isA(EpochErrorChangeEvent.class));
 		verify(eventManager).fire(isA(ResetEpochErrorEvent.class));
 	}
 
@@ -73,10 +76,10 @@ public class TrainingProgressTest {
 
 	@Test
 	public void batchIndexOperationsWithListener() {
-		when(eventManager.isAnyRegisteredListenerFor(eq(BatchChangeEvent.class))).thenReturn(true);
+		when(eventManager.isAnyRegisteredListenerFor(eq(BatchIndexChangeEvent.class))).thenReturn(true);
 
 		assertBatchIndexOperations();
-		verify(eventManager, times(2)).fire(isA(BatchChangeEvent.class));
+		verify(eventManager, times(2)).fire(isA(BatchIndexChangeEvent.class));
 	}
 
 	@Test
@@ -87,10 +90,10 @@ public class TrainingProgressTest {
 
 	@Test
 	public void epochIndexOperationsWithListener() {
-		when(eventManager.isAnyRegisteredListenerFor(eq(EpochChangeEvent.class))).thenReturn(true);
+		when(eventManager.isAnyRegisteredListenerFor(eq(EpochIndexChangeEvent.class))).thenReturn(true);
 
 		assertEpochIndexOperations();
-		verify(eventManager, times(2)).fire(isA(EpochChangeEvent.class));
+		verify(eventManager, times(2)).fire(isA(EpochIndexChangeEvent.class));
 	}
 
 	@Test

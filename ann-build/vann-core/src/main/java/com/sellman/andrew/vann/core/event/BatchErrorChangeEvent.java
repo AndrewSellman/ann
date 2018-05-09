@@ -1,25 +1,17 @@
 package com.sellman.andrew.vann.core.event;
 
-public class BatchErrorChangeEvent extends Event {
-	private final double originalError;
-	private final double newError;
+public class BatchErrorChangeEvent extends DoubleValueEvent {
 
-	public BatchErrorChangeEvent(final Context context, final double originalError, final double newError) {
-		super(context);
-		this.originalError = originalError;
-		this.newError = newError;
+	public BatchErrorChangeEvent(final Context context, final double error) {
+		super(context, error);
 	}
 
-	public final double getOriginalError() {
-		return originalError;
+	public final double getError() {
+		return getEventValue();
 	}
 
-	public final double getNewError() {
-		return newError;
-	}
-	
 	public final String toString() {
-		return "Batch error was: <" + originalError + ">; and is now: <" + newError + ">" + super.toString();
+		return "Batch error is " + getError() + " " + super.toString();
 	}
 
 }

@@ -1,13 +1,13 @@
 package com.sellman.andrew.vann.spring.controller.network;
 
 public class NetworkEvaluationRequest {
-	private double[] input;
+	private double[][] input;
 
-	public double[] getInput() {
+	public double[][] getInput() {
 		return input;
 	}
 
-	public void setInputs(double[] input) {
+	public void setInputs(double[][] input) {
 		this.input = input;
 	}
 

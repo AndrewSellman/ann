@@ -1,19 +1,21 @@
 package com.sellman.andrew.vann.core.event;
 
-public abstract class VectorEvent extends Event {
-	private final int rowIndex;
+import com.sellman.andrew.vann.core.math.Vector;
 
-	public VectorEvent(final Context context, final int rowIndex) {
+abstract class VectorEvent extends Event {
+	private final Vector v;
+
+	public VectorEvent(final Context context, final Vector v) {
 		super(context);
-		this.rowIndex = rowIndex;
+		this.v = v;
 	}
 
-	public final int getRowIndex() {
-		return rowIndex;
+	protected Vector getEventVector() {
+		return v;
 	}
 
 	public String toString() {
-		return " for rowIndex: <" + getRowIndex() + ">" + super.toString();
+		return " vector " + getEventVector().toString() + super.toString();
 	}
 
 }

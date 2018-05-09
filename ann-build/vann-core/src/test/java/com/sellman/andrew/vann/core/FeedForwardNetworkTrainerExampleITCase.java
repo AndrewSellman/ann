@@ -17,7 +17,7 @@ import com.sellman.andrew.vann.core.concurrent.TaskServiceBuilder;
 import com.sellman.andrew.vann.core.event.BatchErrorChangeEvent;
 import com.sellman.andrew.vann.core.event.ConsoleListener;
 import com.sellman.andrew.vann.core.event.Context;
-import com.sellman.andrew.vann.core.event.EpochChangeEvent;
+import com.sellman.andrew.vann.core.event.EpochIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeEvent;
 import com.sellman.andrew.vann.core.event.Event;
 import com.sellman.andrew.vann.core.event.EventListenerAdapterFactory;
@@ -95,7 +95,7 @@ public class FeedForwardNetworkTrainerExampleITCase {
 		eventManager = new EventManager(eventDispatcher, new EventListenerAdapterFactory());
 		
 		ConsoleListener listener = new ConsoleListener();
-		eventManager.registerForDispatchedNotification(listener, EpochChangeEvent.class);
+		eventManager.registerForDispatchedNotification(listener, EpochIndexChangeEvent.class);
 		eventManager.registerForDispatchedNotification(listener, BatchErrorChangeEvent.class);
 		
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();

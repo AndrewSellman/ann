@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sellman.andrew.vann.core.FeedForwardNetwork;
+import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.Vector;
 import com.sellman.andrew.vann.spring.config.FeedForwardNetworkHarness;
 
@@ -22,14 +23,17 @@ public class NetworkEvaluationController {
 	@RequestMapping(value = "/ann/network/feed/forward/evaluate/manual", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<NetworkEvaluationResponse> evaluateNetwork(@RequestBody NetworkEvaluationRequest request) {
 
-		Vector input = new Vector(request.getInput());
+		Matrix input = new Matrix(request.getInput());
 		FeedForwardNetwork network = harness.getNetwork();
 
-		Vector networkOutput = network.evaluate(input);
+		Matrix networkOutput = network.evaluate(input);
 		int outputRowCount = networkOutput.getRowCount();
-		double[] output = new double[outputRowCount];
+		int outputColumnCount = networkOutput.getColumnCount();
+		double[][] output = new double[outputRowCount][outputColumnCount];
 		for (int r = 0; r < outputRowCount; r++) {
-			output[r] = networkOutput.getValue(r);
+			for (int c = 0; c < outputColumnCount; c++) {
+				output[r][c] = networkOutput.getValue(r, c);
+			}
 		}
 
 		return new ResponseEntity<NetworkEvaluationResponse>(new NetworkEvaluationResponse(output), HttpStatus.OK);

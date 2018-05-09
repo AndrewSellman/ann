@@ -1,25 +1,21 @@
 package com.sellman.andrew.vann.core.event;
 
-public abstract class MatrixEvent extends Event {
-	private final int rowIndex;
-	private final int columnIndex;
+import com.sellman.andrew.vann.core.math.Matrix;
 
-	public MatrixEvent(final Context context, final int rowIndex, final int columnIndex) {
+abstract class MatrixEvent extends Event {
+	private final Matrix m;
+
+	public MatrixEvent(final Context context, final Matrix m) {
 		super(context);
-		this.rowIndex = rowIndex;
-		this.columnIndex = columnIndex;
+		this.m = m;
 	}
 
-	public final int getRowIndex() {
-		return rowIndex;
+	protected Matrix getEventMatrix() {
+		return m;
 	}
-
-	public final int getColumnIndex() {
-		return columnIndex;
-	}
-
+	
 	public String toString() {
-		return " for rowIndex: <" + getRowIndex() + "> and columnIndex: <" + getColumnIndex() + ">" + super.toString();
+		return " matrix " + getEventMatrix().toString() + super.toString();
 	}
 
 }

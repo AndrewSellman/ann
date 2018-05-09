@@ -72,6 +72,19 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
+	public Matrix add(final Matrix m, final Vector v) {
+		//TOOD optimize...
+		Matrix result = new Matrix(m.getRowCount(), m.getColumnCount());
+		for (int r = 0; r < m.getRowCount(); r++) {
+			for (int c = 0; r < m.getColumnCount(); c++) {
+				result.setValue(r, c, m.getValue(r, c) + v.getValue(r));
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
 	public Matrix subtract(final Matrix left, final Matrix right) {
 		return subtraction.doOperation(left, right);
 	}

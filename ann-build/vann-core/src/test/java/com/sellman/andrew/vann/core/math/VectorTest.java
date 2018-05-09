@@ -59,8 +59,7 @@ public class VectorTest {
 		verify(eventManager).fire(eventCaptor.capture());
 		VectorChangeEvent event = eventCaptor.getValue();
 		assertEquals(1, event.getRowIndex());
-		assertEquals(0.0, event.getOriginalValue(), 0.0);
-		assertEquals(newValue, event.getNewValue(), 0.0);
+		assertEquals(newValue, event.getValue(), 0.0);
 		assertEquals(NETWORK_NAME, event.getNetworkName());
 		assertEquals(LAYER_INDEX, event.getNetworkLayerIndex());
 		assertEquals(REPRESENTS, event.getRepresentation());
@@ -79,7 +78,7 @@ public class VectorTest {
 		verify(eventManager).fire(eventCaptor.capture());
 		VectorPollEvent event = eventCaptor.getValue();
 		assertEquals(1, event.getRowIndex());
-		assertEquals(newValue, event.getCurrentValue(), 0.0);
+		assertEquals(newValue, event.getValue(), 0.0);
 		assertEquals(NETWORK_NAME, event.getNetworkName());
 		assertEquals(LAYER_INDEX, event.getNetworkLayerIndex());
 		assertEquals(REPRESENTS, event.getRepresentation());

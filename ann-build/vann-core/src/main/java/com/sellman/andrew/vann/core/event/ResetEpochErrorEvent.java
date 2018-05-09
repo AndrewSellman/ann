@@ -1,19 +1,9 @@
 package com.sellman.andrew.vann.core.event;
 
-public class ResetEpochErrorEvent extends Event {
-	private final double originalEpochError;
+public class ResetEpochErrorEvent extends EpochErrorChangeEvent {
 
-	public ResetEpochErrorEvent(final Context context, final double originalEpochError) {
-		super(context);
-		this.originalEpochError = originalEpochError;
-	}
-
-	public final String toString() {
-		return "Epoch error was: <" + originalEpochError + "> and is now <0.0>" + super.toString();
-	}
-
-	public final double getOriginalEpochError() {
-		return originalEpochError;
+	public ResetEpochErrorEvent(final Context context) {
+		super(context, 0);
 	}
 
 }

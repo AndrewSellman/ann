@@ -27,11 +27,11 @@ public class FeedForwardNetworkConfig {
 		return layers;
 	}
 
-	protected Vector getOutput(int layerIndex) {
+	protected Matrix getOutput(int layerIndex) {
 		return layers.get(layerIndex).getOutput();
 	}
 
-	protected Vector getBiasedPrimeOutput(int layerIndex) {
+	protected Matrix getBiasedPrimeOutput(int layerIndex) {
 		return layers.get(layerIndex).getBiasedPrimeOutput();
 	}
 
@@ -51,15 +51,15 @@ public class FeedForwardNetworkConfig {
 		return layers.get(layerIndex).getActivationPrimeFunction();
 	}
 
-	protected Vector getOutputDelta(int layerIndex) {
+	protected Matrix getOutputDelta(int layerIndex) {
 		return layers.get(layerIndex).getOutputDelta();
 	}
 
-	protected void setOutputDelta(int layerIndex, Vector outputDelta) {
+	protected void setOutputDelta(int layerIndex, Matrix outputDelta) {
 		layers.get(layerIndex).setOutputDelta(outputDelta);
 	}
 
-	public Vector getInput(int layerIndex) {
+	public Matrix getInput(int layerIndex) {
 		return layers.get(layerIndex).getInput();
 	}
 

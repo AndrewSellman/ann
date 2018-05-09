@@ -18,11 +18,11 @@ public class FeedForwardNetwork {
 		this.config = config;
 	}
 
-	public Vector evaluate(final Vector input) {
+	public Matrix evaluate(final Matrix input) {
 		fireNetworkInputEvent(input);
 
-		Vector nextLayerInput = input;
-		Vector output = null;
+		Matrix nextLayerInput = input;
+		Matrix output = null;
 		for (FeedForwardNetworkLayer layer : getLayers()) {
 			output = layer.evaluate(nextLayerInput);
 			nextLayerInput = output;
@@ -36,11 +36,11 @@ public class FeedForwardNetwork {
 		return config.getLayerCount();
 	}
 
-	protected Vector getOutput(int layerIndex) {
+	protected Matrix getOutput(int layerIndex) {
 		return getLayers().get(layerIndex).getOutput();
 	}
 
-	protected Vector getBiasedPrimeOutput(int layerIndex) {
+	protected Matrix getBiasedPrimeOutput(int layerIndex) {
 		return getLayers().get(layerIndex).getBiasedPrimeOutput();
 	}
 
@@ -68,11 +68,11 @@ public class FeedForwardNetwork {
 		return getLayers().get(layerIndex).getActivationPrimeFunction();
 	}
 
-	protected Vector getOutputDelta(int layerIndex) {
+	protected Matrix getOutputDelta(int layerIndex) {
 		return getLayers().get(layerIndex).getOutputDelta();
 	}
 
-	protected void setOutputDelta(int layerIndex, Vector outputDelta) {
+	protected void setOutputDelta(int layerIndex, Matrix outputDelta) {
 		getLayers().get(layerIndex).setOutputDelta(outputDelta);
 	}
 
@@ -88,7 +88,7 @@ public class FeedForwardNetwork {
 		}
 	}
 	
-	public Vector getInput(int layerIndex) {
+	public Matrix getInput(int layerIndex) {
 		return getLayers().get(layerIndex).getInput();
 	}
 
@@ -98,7 +98,7 @@ public class FeedForwardNetwork {
 		}
 	}
 
-	private void fireNetworkInputEvent(Vector input) {
+	private void fireNetworkInputEvent(Matrix input) {
 		if (!isAnyListener(NetworkInputEvent.class)) {
 			return;
 		}
@@ -107,7 +107,7 @@ public class FeedForwardNetwork {
 		fire(event);
 	}
 
-	private void fireNetworkOutputEvent(Vector output) {
+	private void fireNetworkOutputEvent(Matrix output) {
 		if (!isAnyListener(NetworkOutputEvent.class)) {
 			return;
 		}

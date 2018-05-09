@@ -27,12 +27,12 @@ public class EventManagerTest {
 		taskService = new TaskServiceBuilder().fireAndForget().setThreadCount(1).lowPriority().build();
 		
 		EventListenerAdapterFactory eventListenerAdapterFactory = new EventListenerAdapterFactory();
-		eventListenerAdapterFactory.register(new EpochChangeListenerAdapterFactory());
+		eventListenerAdapterFactory.register(new EpochIndexChangeListenerAdapterFactory());
 		manager = new EventManager(taskService, eventListenerAdapterFactory);
 		
 
-		epochChangeEvent = new EpochChangeEvent(context, 0, 1);
-		otherEvent = new EpochErrorChangeEvent(context, 0, 1);
+		epochChangeEvent = new EpochIndexChangeEvent(context, 1);
+		otherEvent = new EpochErrorChangeEvent(context, 1.0);
 	}
 	
 	@After

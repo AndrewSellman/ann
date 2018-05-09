@@ -4,9 +4,9 @@ import com.sellman.andrew.vann.spring.controller.Response;
 import com.sellman.andrew.vann.spring.controller.Status;
 
 public class NetworkEvaluationResponse extends Response {
-	private final double[] output;
+	private final double[][] output;
 
-	public NetworkEvaluationResponse(double[] output) {
+	public NetworkEvaluationResponse(double[][] output) {
 		super(Status.SUCCESS, null);
 		this.output = output;
 	}
@@ -16,7 +16,7 @@ public class NetworkEvaluationResponse extends Response {
 		this.output = null;
 	}
 
-	public double[] getOutput() {
+	public double[][] getOutput() {
 		return output;
 	}
 

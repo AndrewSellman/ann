@@ -18,6 +18,8 @@ public interface MathOperations {
 	
 	public Vector add(final Vector a, final Vector b);
 	
+	public Matrix add(final Matrix m, final Vector v);
+	
 	public Matrix subtract(final Matrix left, final Matrix right);
 	
 	public Vector subtract(final Vector left, final Vector right);

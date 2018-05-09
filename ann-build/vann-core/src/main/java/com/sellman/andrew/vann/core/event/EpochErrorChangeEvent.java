@@ -1,25 +1,17 @@
 package com.sellman.andrew.vann.core.event;
 
-public class EpochErrorChangeEvent extends Event {
-	private final double originalError;
-	private final double newError;
+public class EpochErrorChangeEvent extends DoubleValueEvent {
 
-	public EpochErrorChangeEvent(final Context context, final double originalError, final double newError) {
-		super(context);
-		this.originalError = originalError;
-		this.newError = newError;
+	public EpochErrorChangeEvent(final Context context, final double error) {
+		super(context, error);
 	}
 
-	public final double getOriginalError() {
-		return originalError;
+	public final double getError() {
+		return getEventValue();
 	}
 
-	public final double getNewError() {
-		return newError;
-	}
-	
 	public final String toString() {
-		return "Epoch error was: <" + originalError + "> and is now: <" + newError + ">" + super.toString();
+		return "Epoch error is " + getError() + " " + super.toString();
 	}
 
 }

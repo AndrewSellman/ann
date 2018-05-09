@@ -1,9 +1,9 @@
 package com.sellman.andrew.vann.core.training;
 
-import com.sellman.andrew.vann.core.event.BatchChangeEvent;
+import com.sellman.andrew.vann.core.event.BatchIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.BatchErrorChangeEvent;
 import com.sellman.andrew.vann.core.event.Context;
-import com.sellman.andrew.vann.core.event.EpochChangeEvent;
+import com.sellman.andrew.vann.core.event.EpochIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeEvent;
 import com.sellman.andrew.vann.core.event.Event;
 import com.sellman.andrew.vann.core.event.EventManager;
@@ -37,15 +37,13 @@ public class TrainingProgress {
 	}
 
 	public void incrementEpochIndex() {
-		int originalEpochIndex = epochIndex;
 		epochIndex++;
-		fireEpochChange(originalEpochIndex);
+		fireEpochChange();
 	}
 
 	public void resetEpochIndex() {
-		int originalEpochIndex = epochIndex;
 		epochIndex = 0;
-		fireEpochChange(originalEpochIndex);
+		fireEpochChange();
 	}
 
 	public int getBatchIndex() {
@@ -53,15 +51,13 @@ public class TrainingProgress {
 	}
 
 	public void incrementBatchIndex() {
-		int originalBatchIndex = batchIndex;
 		batchIndex++;
-		fireBatchChange(originalBatchIndex);
+		fireBatchChange();
 	}
 
 	public void resetBatchIndex() {
-		int originalBatchIndex = batchIndex;
 		batchIndex = 0;
-		fireBatchChange(originalBatchIndex);
+		fireBatchChange();
 	}
 
 	public double getEpochError() {
@@ -69,10 +65,9 @@ public class TrainingProgress {
 	}
 
 	public void setEpochError(double epochError) {
-		double originalEpochError = this.epochError;
+		lastEpochError = this.epochError;
 		this.epochError = epochError;
-		fireEpochErrorChange(originalEpochError);
-		lastEpochError = originalEpochError;
+		fireEpochErrorChange();
 	}
 
 	public double getLastEpochError() {
@@ -80,9 +75,8 @@ public class TrainingProgress {
 	}
 
 	public void resetEpochError() {
-		double originalEpochError = epochError;
 		epochError = 0;
-		fireResetEpochError(originalEpochError);
+		fireResetEpochError();
 	}
 
 	public double getBatchError() {
@@ -90,21 +84,18 @@ public class TrainingProgress {
 	}
 
 	public void resetBatchError() {
-		double originalBatchError = batchError;
 		this.batchError = 0;
-		fireResetBatchError(originalBatchError);
+		fireResetBatchError();
 	}
 
 	public void accumulateBatchError(double batchError) {
-		double originalBatchError = batchError;
 		this.batchError += batchError;
-		fireBatchErrorChange(originalBatchError);
+		fireBatchErrorChange();
 	}
 
 	public void setValidationError(double validationError) {
-		double originalValidationError = this.validationError;
 		this.validationError = validationError;
-		fireValidationErrorChange(originalValidationError);
+		fireValidationErrorChange();
 	}
 
 	public void resetValidationError() {
@@ -113,66 +104,66 @@ public class TrainingProgress {
 //		fireResetEpochError(originalEpochError);
 	}
 
-	private void fireEpochChange(int originalEpochIndex) {
-		if (!isAnyListener(EpochChangeEvent.class)) {
+	private void fireEpochChange() {
+		if (!isAnyListener(EpochIndexChangeEvent.class)) {
 			return;
 		}
 
-		Event event = new EpochChangeEvent(context, originalEpochIndex, epochIndex);
+		Event event = new EpochIndexChangeEvent(context, epochIndex);
 		fire(event);
 	}
 
-	private void fireResetEpochError(double originalEpochError) {
+	private void fireResetEpochError() {
 		if (!isAnyListener(ResetEpochErrorEvent.class)) {
 			return;
 		}
 
-		Event event = new ResetEpochErrorEvent(context, originalEpochError);
+		Event event = new ResetEpochErrorEvent(context);
 		fire(event);
 	}
 
-	private void fireResetBatchError(double originalBatchError) {
+	private void fireResetBatchError() {
 		if (!isAnyListener(ResetBatchErrorEvent.class)) {
 			return;
 		}
 
-		Event event = new ResetBatchErrorEvent(context, originalBatchError);
+		Event event = new ResetBatchErrorEvent(context);
 		fire(event);
 	}
 
-	private void fireValidationErrorChange(double originalValidationError) {
+	private void fireValidationErrorChange() {
 		if (!isAnyListener(ValidationErrorChangeEvent.class)) {
 			return;
 		}
 
-		Event event = new ValidationErrorChangeEvent(context, originalValidationError, validationError);
+		Event event = new ValidationErrorChangeEvent(context, validationError);
 		fire(event);
 	}
 
-	private void fireEpochErrorChange(double originalEpochError) {
+	private void fireEpochErrorChange() {
 		if (!isAnyListener(EpochErrorChangeEvent.class)) {
 			return;
 		}
 
-		Event event = new EpochErrorChangeEvent(context, originalEpochError, epochError);
+		Event event = new EpochErrorChangeEvent(context, epochError);
 		fire(event);
 	}
 
-	private void fireBatchErrorChange(double originalBatchError) {
+	private void fireBatchErrorChange() {
 		if (!isAnyListener(BatchErrorChangeEvent.class)) {
 			return;
 		}
 
-		Event event = new BatchErrorChangeEvent(context, originalBatchError, batchError);
+		Event event = new BatchErrorChangeEvent(context, batchError);
 		fire(event);
 	}
 
-	private void fireBatchChange(int originalBatchIndex) {
-		if (!isAnyListener(BatchChangeEvent.class)) {
+	private void fireBatchChange() {
+		if (!isAnyListener(BatchIndexChangeEvent.class)) {
 			return;
 		}
 
-		Event event = new BatchChangeEvent(context, originalBatchIndex, batchIndex);
+		Event event = new BatchIndexChangeEvent(context, batchIndex);
 		fire(event);
 	}
 

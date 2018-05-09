@@ -52,9 +52,8 @@ public class Vector {
 	}
 
 	public void setValue(int rowIndex, double value) {
-		double originalValue = matrix.getValue(rowIndex, COLUMN_INDEX);
 		matrix.setValue(rowIndex, COLUMN_INDEX, value);
-		fireChangeEvent(rowIndex, originalValue, value);
+		fireChangeEvent(rowIndex, value);
 	}
 
 	protected Matrix getMatrix() {
@@ -72,12 +71,12 @@ public class Vector {
 		}
 	}
 
-	private void fireChangeEvent(int rowIndex, double originalValue, double newValue) {
+	private void fireChangeEvent(int rowIndex, double newValue) {
 		if (!isAnyListener(VectorChangeEvent.class)) {
 			return;
 		}
 
-		VectorChangeEvent event = new VectorChangeEvent(context, rowIndex, originalValue, newValue);
+		VectorChangeEvent event = new VectorChangeEvent(context, rowIndex, newValue);
 		fire(event);
 	}
 

@@ -61,8 +61,7 @@ public class MatrixTest {
 		MatrixChangeEvent event = eventCaptor.getValue();
 		assertEquals(1, event.getRowIndex());
 		assertEquals(2, event.getColumnIndex());
-		assertEquals(0.0, event.getOriginalValue(), 0.0);
-		assertEquals(newValue, event.getNewValue(), 0.0);
+		assertEquals(newValue, event.getValue(), 0.0);
 		assertEquals(NETWORK_NAME, event.getNetworkName());
 		assertEquals(LAYER_INDEX, event.getNetworkLayerIndex());
 		assertEquals(REPRESENTS, event.getRepresentation());
@@ -82,7 +81,7 @@ public class MatrixTest {
 		MatrixPollEvent event = eventCaptor.getValue();
 		assertEquals(1, event.getRowIndex());
 		assertEquals(2, event.getColumnIndex());
-		assertEquals(newValue, event.getCurrentValue(), 0.0);
+		assertEquals(newValue, event.getValue(), 0.0);
 		assertEquals(NETWORK_NAME, event.getNetworkName());
 		assertEquals(LAYER_INDEX, event.getNetworkLayerIndex());
 		assertEquals(REPRESENTS, event.getRepresentation());

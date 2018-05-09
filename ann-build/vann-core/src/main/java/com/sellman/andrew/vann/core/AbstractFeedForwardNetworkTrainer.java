@@ -30,25 +30,34 @@ public abstract class AbstractFeedForwardNetworkTrainer {
 		int batchCount = getBatchCount(trainingData.size(), getBatchSize());
 		TrainingProgress progress = new TrainingProgress(network.getContext(), config.getEventManager(), batchCount);
 
+		
+		int validationBatchSize = validationData.size();
+		int validationInputFeatureCount = validationData.get(0).getInput().getRowCount();
+		Matrix validationInput = new Matrix(validationBatchSize, validationInputFeatureCount);
+		//TODO populate...
+		
+		int validationOutputColumnCount = validationData.get(0).getExpectedOutput().getRowCount();
+		Matrix validationExpectedOutput = new Matrix(validationBatchSize, validationOutputColumnCount);
+		//TODO populate...
+		
+		TrainingBatch validationBatch = new TrainingBatch(validationInput, validationExpectedOutput);
+		
 		do {
 			network.setTraining(true);
 			trainEpoch(trainingData, progress);
 			network.setTraining(false);
 
-			validateEpoch(validationData, progress);
+			validateEpoch(validationBatch, progress);
 
 		} while (!isFinishedTraining(progress));
 	}
 
-	private void validateEpoch(List<TrainingItem> validationData, TrainingProgress progress) {
+	private void validateEpoch(TrainingBatch validationBatch, TrainingProgress progress) {
 		progress.resetValidationError();
-		double outputError = 0;
-		for (TrainingItem validationExample : validationData) {
-			Vector actualOutput = network.evaluate(validationExample.getInput());
-			Vector outputDifference = subtract(actualOutput, validationExample.getExpectedOutput());
-			Vector absoluteOutputDifference = absolute(outputDifference);
-			outputError += sum(absoluteOutputDifference);
-		}
+		Matrix actualOutput = network.evaluate(validationBatch.getInput());
+		Matrix outputDifference = subtract(actualOutput, validationBatch.getExpectedOutput());
+		Matrix absoluteOutputDifference = absolute(outputDifference);
+		double outputError = sum(absoluteOutputDifference);
 		progress.setValidationError(outputError);
 	}
 
@@ -61,8 +70,8 @@ public abstract class AbstractFeedForwardNetworkTrainer {
 
 		while (progress.getBatchIndex() < progress.getBatchCount()) {
 			progress.resetBatchError();
-			List<TrainingItem> batchTrainingItems = getBatchTrainingItems(trainingData, progress);
-			trainBatch(batchTrainingItems, progress);
+			TrainingBatch batch = getBatchTrainingItems(trainingData, progress);
+			trainBatch(batch, progress);
 			progress.incrementBatchIndex();
 		}
 
@@ -70,16 +79,27 @@ public abstract class AbstractFeedForwardNetworkTrainer {
 		progress.incrementEpochIndex();
 	}
 
-	protected List<TrainingItem> getBatchTrainingItems(List<TrainingItem> trainingData, TrainingProgress progress) {
+	protected TrainingBatch getBatchTrainingItems(List<TrainingItem> trainingData, TrainingProgress progress) {
 		int fromIndex = progress.getBatchIndex() * getBatchSize();
 		int toIndex = fromIndex + getBatchSize();
 		if (toIndex > trainingData.size()) {
 			toIndex = trainingData.size();
 		}
-		return trainingData.subList(fromIndex, toIndex);
+		
+		List<TrainingItem> batchTrainingData = trainingData.subList(fromIndex, toIndex);
+		int actualBatchSize = toIndex - fromIndex;
+		int inputColumnCount = trainingData.get(0).getInput().getRowCount();
+		Matrix inputBatch = new Matrix(actualBatchSize, inputColumnCount);
+		//TODO populate...
+				
+		int expectedOutputColumnCount = trainingData.get(0).getExpectedOutput().getRowCount();
+		Matrix expectedOutputBatch = new Matrix(actualBatchSize, expectedOutputColumnCount);
+		//TODO populate...
+		
+		return new TrainingBatch(inputBatch, expectedOutputBatch);
 	}
 
-	protected abstract void trainBatch(List<TrainingItem> batchTrainingItems, TrainingProgress progress);
+	protected abstract void trainBatch(TrainingBatch batch, TrainingProgress progress);
 	
 	private boolean isFinishedTraining(TrainingProgress progress) {
 		List<TrainingEvaluator> trainingEvaluations = config.getTrainingEvaluators();
@@ -101,23 +121,23 @@ public abstract class AbstractFeedForwardNetworkTrainer {
 		return batchCount;
 	}
 
-	protected final Vector feedForward(Vector input) {
+	protected final Matrix feedForward(Matrix input) {
 		return network.evaluate(input);
 	}
 	
-	protected final Vector getNetworkInput(int layerIndex) {
+	protected final Matrix getNetworkInput(int layerIndex) {
 		return network.getInput(layerIndex);
 	}
 
-	protected final Vector getNetworkBiasedPrimeOutput(int layerIndex) {
+	protected final Matrix getNetworkBiasedPrimeOutput(int layerIndex) {
 		return network.getBiasedPrimeOutput(layerIndex);
 	}
 
-	protected final void setNetworkOutputDelta(int layerIndex, Vector outputDelta) {
+	protected final void setNetworkOutputDelta(int layerIndex, Matrix outputDelta) {
 		network.setOutputDelta(layerIndex, outputDelta);
 	}
 	
-	protected final Vector getNetworkOutputDelta(int layerIndex) {
+	protected final Matrix getNetworkOutputDelta(int layerIndex) {
 		return network.getOutputDelta(layerIndex);
 	}
 
@@ -193,6 +213,10 @@ public abstract class AbstractFeedForwardNetworkTrainer {
 		return getMathOps().absolute(v);
 	}
 
+	protected final Matrix absolute(Matrix m) {
+		return getMathOps().absolute(m);
+	}
+
 	protected final Vector subtract(Vector left, Vector right) {
 		return getMathOps().subtract(left, right);
 	}
@@ -201,5 +225,8 @@ public abstract class AbstractFeedForwardNetworkTrainer {
 		return getMathOps().sum(v);
 	}
 
+	protected final double sum(Matrix m) {
+		return getMathOps().sum(m);
+	}
 
 }

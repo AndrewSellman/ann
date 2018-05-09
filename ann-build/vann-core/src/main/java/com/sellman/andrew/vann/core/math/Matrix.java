@@ -30,7 +30,7 @@ public class Matrix {
 	public Matrix(int rowCount, int columnCount) {
 		this(new double[rowCount][columnCount]);
 	}
-
+	
 	public int getRowCount() {
 		return data.length;
 	}
@@ -50,9 +50,8 @@ public class Matrix {
 	}
 
 	public void setValue(int rowIndex, int columnIndex, double value) {
-		double originalValue = data[rowIndex][columnIndex];
 		data[rowIndex][columnIndex] = value;
-		fireChangeEvent(rowIndex, columnIndex, originalValue, value);
+		fireChangeEvent(rowIndex, columnIndex, value);
 	}
 
 	public String toString() {
@@ -71,12 +70,12 @@ public class Matrix {
 		return sb.toString();
 	}
 
-	private void fireChangeEvent(int rowIndex, int columnIndex, double originalValue, double newValue) {
+	private void fireChangeEvent(int rowIndex, int columnIndex, double newValue) {
 		if (!isAnyListener(MatrixChangeEvent.class)) {
 			return;
 		}
 
-		MatrixChangeEvent event = new MatrixChangeEvent(context, rowIndex, columnIndex, originalValue, newValue);
+		MatrixChangeEvent event = new MatrixChangeEvent(context, rowIndex, columnIndex, newValue);
 		fire(event);
 	}
 

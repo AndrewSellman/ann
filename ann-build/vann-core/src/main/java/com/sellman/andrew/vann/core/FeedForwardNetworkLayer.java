@@ -1,5 +1,12 @@
 package com.sellman.andrew.vann.core;
 
+import com.sellman.andrew.vann.core.event.Context;
+import com.sellman.andrew.vann.core.event.Event;
+import com.sellman.andrew.vann.core.event.EventManager;
+import com.sellman.andrew.vann.core.event.NetworkLayerBiasedWeightedInputEvent;
+import com.sellman.andrew.vann.core.event.NetworkLayerInputEvent;
+import com.sellman.andrew.vann.core.event.NetworkLayerOutputEvent;
+import com.sellman.andrew.vann.core.event.NetworkLayerWeightedInputEvent;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.Vector;
@@ -7,25 +14,31 @@ import com.sellman.andrew.vann.core.math.function.Function;
 
 public class FeedForwardNetworkLayer {
 	private final FeedForwardNetworkLayerConfig config;
-	private Vector input;
-	private Vector output;
-	private Vector biasedPrimeOutput;
-	private Vector outputDelta;
+	private Matrix input;
+	private Matrix output;
+	private Matrix biasedPrimeOutput;
+	private Matrix outputDelta;
 	private boolean training;
 	private boolean accumulateDuringTraining;
-	private Vector accumulatedOutputDelta;
-	private Vector accumulatedBiasedPrimeOutput;
+	private Matrix accumulatedOutputDelta;
+	private Matrix accumulatedBiasedPrimeOutput;
 	
 	public FeedForwardNetworkLayer(final FeedForwardNetworkLayerConfig config) {
 		this.config = config;
 	}
 
-	public Vector evaluate(Vector input) {
-//TODO fire input/output events
+	public Matrix evaluate(Matrix input) {
+		fireNetworkLayerInputEvent(input);
 		
-		Vector biasedWeightedInput = add(multiply(config.getWeights(), input), config.getBias());
-		Vector output = scale(biasedWeightedInput, config.getActivationFunction());
+		Matrix weightedInput = multiply(input, config.getWeights());
+		fireNetworkLayerWeightedInputEvent(weightedInput);
+		
+		Matrix biasedWeightedInput = add(weightedInput, config.getBias());
+		fireNetworkLayerBiasedWeightedInputEvent(biasedWeightedInput);
+		
+		Matrix output = scale(biasedWeightedInput, config.getActivationFunction());
 
+		//TODO move to relevant listeners	
 		if (isTraining()) {
 			this.input = input;
 			this.output = output;
@@ -35,14 +48,69 @@ public class FeedForwardNetworkLayer {
 			}
 		}
 
+		fireNetworkLayerOutputEvent(input);
 		return output;
 	}
 
-	protected Vector getOutput() {
+	private void fireNetworkLayerBiasedWeightedInputEvent(Matrix biasedWeightedInput) {
+		if (!isAnyListener(NetworkLayerBiasedWeightedInputEvent.class)) {
+			return;
+		}
+
+		NetworkLayerBiasedWeightedInputEvent event = new NetworkLayerBiasedWeightedInputEvent(getContext(), biasedWeightedInput);
+		fire(event);
+	}
+
+	private void fireNetworkLayerWeightedInputEvent(Matrix weightedInput) {
+		if (!isAnyListener(NetworkLayerWeightedInputEvent.class)) {
+			return;
+		}
+
+		NetworkLayerWeightedInputEvent event = new NetworkLayerWeightedInputEvent(getContext(), weightedInput);
+		fire(event);
+	}
+
+	private void fireNetworkLayerInputEvent(Matrix input) {
+		if (!isAnyListener(NetworkLayerInputEvent.class)) {
+			return;
+		}
+
+		NetworkLayerInputEvent event = new NetworkLayerInputEvent(getContext(), input);
+		fire(event);
+	}
+	
+	private void fireNetworkLayerOutputEvent(Matrix output) {
+		if (!isAnyListener(NetworkLayerOutputEvent.class)) {
+			return;
+		}
+
+		NetworkLayerOutputEvent event = new NetworkLayerOutputEvent(getContext(), output);
+		fire(event);
+	}
+
+	private void fire(Event event) {
+		getEventManager().fire(event);
+	}
+	
+	private boolean isAnyListener(Class<? extends Event> eventType) {
+		return getEventManager().isAnyRegisteredListenerFor(eventType);
+	}
+	
+	private Context getContext() {
+		return config.getContext();
+	}
+
+	
+	private EventManager getEventManager() {
+		return config.getEventManager();
+	}
+
+
+	protected Matrix getOutput() {
 		return output;
 	}
 
-	protected Vector getBiasedPrimeOutput() {
+	protected Matrix getBiasedPrimeOutput() {
 		return biasedPrimeOutput;
 	}
 
@@ -54,7 +122,7 @@ public class FeedForwardNetworkLayer {
 		getMatrixOps().update(weights, getWeights());
 	}
 
-	protected Vector getInput() {
+	protected Matrix getInput() {
 		return input;
 	}
 
@@ -66,22 +134,22 @@ public class FeedForwardNetworkLayer {
 		return config.getActivationPrimeFunction();
 	}
 
-	protected Vector getOutputDelta() {
+	protected Matrix getOutputDelta() {
 		return outputDelta;
 	}
 
-	protected void setOutputDelta(Vector outputDelta) {
+	protected void setOutputDelta(Matrix outputDelta) {
 		this.outputDelta = outputDelta;
 		if (training && accumulateDuringTraining) {
 			accumulatedOutputDelta = add(accumulatedOutputDelta, outputDelta);
 		}
 	}
 
-	protected Vector getAccumulatedOutputDelta() {
+	protected Matrix getAccumulatedOutputDelta() {
 		return accumulatedOutputDelta;
 	}
 
-	protected Vector getAccumulatedBiasedPrimeOutput() {
+	protected Matrix getAccumulatedBiasedPrimeOutput() {
 		return accumulatedBiasedPrimeOutput;
 	}
 
@@ -113,16 +181,20 @@ public class FeedForwardNetworkLayer {
 		return config.getMatrixOps();
 	}
 
-	private Vector multiply(Matrix m, Vector v) {
-		return getMatrixOps().multiply(m, v);
+	private Matrix multiply(Matrix left, Matrix right) {
+		return getMatrixOps().multiply(left, right);
 	}
 
-	private Vector add(Vector a, Vector b) {
+	private Matrix add(Matrix a, Matrix b) {
 		return getMatrixOps().add(a, b);
 	}
 
-	private Vector scale(Vector v, Function f) {
-		return getMatrixOps().scale(v, f);
+	private Matrix add(Matrix m, Vector v) {
+		return getMatrixOps().add(m, v);
+	}
+
+	private Matrix scale(Matrix m, Function f) {
+		return getMatrixOps().scale(m, f);
 	}
 
 	protected void setAccumulateDuringTraining(boolean accumulateDuringTraining) {
@@ -134,8 +206,10 @@ public class FeedForwardNetworkLayer {
 	}
 
 	protected void resetAccumulationDuringTraining() {
-		accumulatedOutputDelta = new Vector(config.getWeights().getColumnCount());
-		accumulatedBiasedPrimeOutput = new Vector(config.getWeights().getColumnCount());
+		int rowCount = config.getWeights().getRowCount();
+		int columnCount = config.getWeights().getColumnCount();
+		accumulatedOutputDelta = new Matrix(rowCount, columnCount);
+		accumulatedBiasedPrimeOutput = new Matrix(rowCount, columnCount);
 	}
 
 }

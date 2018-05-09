@@ -20,7 +20,21 @@ public abstract class Event {
 	}
 
 	public String toString() {
-		return " representing " + getRepresentation() + " for network layer index: <" + getNetworkLayerIndex() + "> of network: <" + getNetworkName() + ">";
+		StringBuilder sb = new StringBuilder();
+		if(getRepresentation() != null) {
+			sb.append(" representing ");
+			sb.append(getRepresentation());
+		}
+		
+		if (getNetworkLayerIndex() >= 0) {
+			sb.append(" for network layer index ");
+			sb.append(getNetworkLayerIndex());
+		}
+		
+		sb.append(" of network ");
+		sb.append(getNetworkName());
+		
+		return sb.toString();
 	}
 
 }

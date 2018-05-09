@@ -7,17 +7,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.annotation.SessionScope;
 
 import com.sellman.andrew.vann.core.concurrent.TaskService;
-import com.sellman.andrew.vann.core.event.BatchChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.BatchErrorChangeListenerAdapterFactory;
-import com.sellman.andrew.vann.core.event.EpochChangeListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.BatchIndexChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.EpochIndexChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EventListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.MatrixChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.MatrixPollListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.NetworkInputListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.NetworkLayerBiasedWeightedInputListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.NetworkLayerInputListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.NetworkLayerOutputListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.NetworkLayerWeightedInputListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.NetworkOutputListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.ResetBatchErrorListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.ResetEpochErrorListenerAdapterFactory;
@@ -56,12 +58,16 @@ public class EventConfiguration {
 		factory.register(getValidationErrorChangeListenerAdapterFactory());
 		factory.register(getVectorChangeListenerAdapterFactory());
 		factory.register(getVectorPollListenerAdapterFactory());
+		
+		factory.register(getNetworkLayerWeightedInputListenerAdapterFactory());
+		factory.register(getNetworkLayerBiasedWeightedInputListenerAdapterFactory());
+
 		return factory;
 	}
 
 	@Bean(name = EventBeanNames.BATCH_CHANGE_LISTENER_ADAPTER_FACTORY)
-	public BatchChangeListenerAdapterFactory getBatchChangeListenerAdapterFactory() {
-		return new BatchChangeListenerAdapterFactory();
+	public BatchIndexChangeListenerAdapterFactory getBatchChangeListenerAdapterFactory() {
+		return new BatchIndexChangeListenerAdapterFactory();
 	}
 
 	@Bean(name = EventBeanNames.BATCH_ERROR_CHANGE_LISTENER_ADAPTER_FACTORY)
@@ -70,8 +76,8 @@ public class EventConfiguration {
 	}
 
 	@Bean(name = EventBeanNames.EPOCH_CHANGE_LISTENER_ADAPTER_FACTORY)
-	public EpochChangeListenerAdapterFactory getEpochChangeListenerAdapterFactory() {
-		return new EpochChangeListenerAdapterFactory();
+	public EpochIndexChangeListenerAdapterFactory getEpochChangeListenerAdapterFactory() {
+		return new EpochIndexChangeListenerAdapterFactory();
 	}
 
 	@Bean(name = EventBeanNames.EPOCH_ERROR_CHANGE_LISTENER_ADAPTER_FACTORY)
@@ -132,6 +138,16 @@ public class EventConfiguration {
 	@Bean(name = EventBeanNames.VECTOR_POLL_LISTENER_ADAPTER_FACTORY)
 	public VectorPollListenerAdapterFactory getVectorPollListenerAdapterFactory() {
 		return new VectorPollListenerAdapterFactory();
+	}
+
+	@Bean(name = EventBeanNames.NETWORK_LAYER_WEIGHTED_INPUT_LISTENER_ADAPTER_FACTORY)
+	public NetworkLayerWeightedInputListenerAdapterFactory getNetworkLayerWeightedInputListenerAdapterFactory() {
+		return new NetworkLayerWeightedInputListenerAdapterFactory();
+	}
+
+	@Bean(name = EventBeanNames.NETWORK_LAYER_BIASED_WEIGHTED_INPUT_LISTENER_ADAPTER_FACTORY)
+	public NetworkLayerBiasedWeightedInputListenerAdapterFactory getNetworkLayerBiasedWeightedInputListenerAdapterFactory() {
+		return new NetworkLayerBiasedWeightedInputListenerAdapterFactory();
 	}
 
 }
