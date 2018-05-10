@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.sellman.andrew.vann.core.concurrent.TaskService;
+import com.sellman.andrew.vann.core.math.InspectableMatrixFactory;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.MathOperationsFactory;
 import com.sellman.andrew.vann.core.math.add.AdditionFactory;
@@ -26,13 +27,13 @@ import com.sellman.andrew.vann.core.cache.Cache;
 import com.sellman.andrew.vann.core.cache.CacheBuilder;
 
 @Configuration
-public class MathOperationsConfiguration {
+public class MathConfiguration {
 
 	@Autowired
 	@Qualifier(TaskServiceBeanNames.HIGH_PRIORITY_WAIT_FOR_COMPLETION_MUTLI_THREADED)
 	private TaskService highPriorityWaitForCompletionMultiThreadedTaskService;
 
-	@Bean(name = MathOperationsBeanNames.HIGH_PRIORITY_WAIT_FOR_COMPLETION)
+	@Bean(name = MathBeanNames.HIGH_PRIORITY_WAIT_FOR_COMPLETION)
 	public MathOperations getHighPriorityWaitForCompletionMathOperations() {
 		AdditionFactory additionFactory = getAdditionFactory();
 		SummationFactory summationFactory = getSummationFactory();
@@ -45,7 +46,7 @@ public class MathOperationsConfiguration {
 		MathOperationsFactory opsFactory = new MathOperationsFactory(additionFactory, summationFactory, subtractionFactory, scalerFactory, transpositionFactory, standardMultiplicationFactory, hadamardMultiplicationFactory, updationFactory);
 		return opsFactory.getOperations();
 	}
-
+	
 	private SummationFactory getSummationFactory() {
 		return new SummationFactory(highPriorityWaitForCompletionMultiThreadedTaskService, new ParallelizableOperation4Advisor(getSummationAdviceCache()));
 	}
@@ -116,6 +117,11 @@ public class MathOperationsConfiguration {
 	@Bean
 	public Cache<AdviceKey, Boolean> getStandardMultiplicationAdviceCache() {
 		return new CacheBuilder<AdviceKey, Boolean>("standardMultiplcation").build();
+	}
+
+	@Bean(name = MathBeanNames.INSPECTABLE_MATRIX_FACTORY)
+	public InspectableMatrixFactory getInspectableMatrixFactory() {
+		return new InspectableMatrixFactory();
 	}
 
 }

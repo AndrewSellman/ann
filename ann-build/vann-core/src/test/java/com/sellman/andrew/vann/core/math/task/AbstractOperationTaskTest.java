@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.function.FixedValueFunction;
 import com.sellman.andrew.vann.core.math.function.Function;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationTask;
@@ -19,7 +19,7 @@ import com.sellman.andrew.vann.core.math.task.AbstractOperationTask;
 public class AbstractOperationTaskTest {
 	private static final Matrix M = new Matrix(1, 1);
 	private static final Function F = new FixedValueFunction();
-	private static final Vector V = new Vector(1);
+	private static final ColumnVector V = new ColumnVector(1);
 
 	@Mock(answer = Answers.CALLS_REAL_METHODS)
 	private AbstractOperationTask task;

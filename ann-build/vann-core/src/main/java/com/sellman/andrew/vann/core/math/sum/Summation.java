@@ -1,7 +1,7 @@
 package com.sellman.andrew.vann.core.math.sum;
 
 import com.sellman.andrew.vann.core.concurrent.TaskService;
-import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.advice.AdvisableParallelizableOperation4;
 import com.sellman.andrew.vann.core.math.advice.ParallelizableOperation4Advisor;
 
@@ -12,7 +12,7 @@ class Summation extends AdvisableParallelizableOperation4<SummationByRowTask, Su
 	}
 
 	@Override
-	protected double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount) {
+	protected double doSequentialOp(InspectableMatrix m, int targetRowCount, int targetColumnCount) {
 		double result = 0;
 		for (int rowIndex = 0; rowIndex < targetRowCount; rowIndex++) {
 			for (int columnIndex = 0; columnIndex < targetColumnCount; columnIndex++) {

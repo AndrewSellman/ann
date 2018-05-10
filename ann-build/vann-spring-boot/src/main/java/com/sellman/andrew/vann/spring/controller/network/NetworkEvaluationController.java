@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sellman.andrew.vann.core.FeedForwardNetwork;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
 import com.sellman.andrew.vann.spring.config.FeedForwardNetworkHarness;
 
 @RestController
@@ -26,7 +26,7 @@ public class NetworkEvaluationController {
 		Matrix input = new Matrix(request.getInput());
 		FeedForwardNetwork network = harness.getNetwork();
 
-		Matrix networkOutput = network.evaluate(input);
+		InspectableMatrix networkOutput = network.evaluate(input);
 		int outputRowCount = networkOutput.getRowCount();
 		int outputColumnCount = networkOutput.getColumnCount();
 		double[][] output = new double[outputRowCount][outputColumnCount];

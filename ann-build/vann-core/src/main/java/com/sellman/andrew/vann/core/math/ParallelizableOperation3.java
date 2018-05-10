@@ -15,7 +15,7 @@ public abstract class ParallelizableOperation3<R extends AbstractOperationByRowT
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
 	}
 
-	public Matrix doOperation(final Matrix m) {
+	public Matrix doOperation(final InspectableMatrix m) {
 		if (doAsParallelOp(m)) {
 			return doParallelOp(m);
 		}
@@ -23,29 +23,29 @@ public abstract class ParallelizableOperation3<R extends AbstractOperationByRowT
 		return doSequentialOp(m);
 	}
 
-	public Matrix doOperation(final Vector v) {
+	public Matrix doOperation(final ColumnVector v) {
 		return doOperation(v.getMatrix());
 	}
 
-	protected final Matrix doParallelOp(final Matrix m) {
+	protected final Matrix doParallelOp(final InspectableMatrix m) {
 		int sourceRowCount = m.getRowCount();
 		int sourceColumnCount = m.getColumnCount();
 		return doParallelOp(m, sourceRowCount, sourceColumnCount);
 	}
 
-	protected final Matrix doSequentialOp(final Matrix m) {
+	protected final Matrix doSequentialOp(final InspectableMatrix m) {
 		int sourceRowCount = m.getRowCount();
 		int sourceColumnCount = m.getColumnCount();
 		return doSequentialOp(m, sourceRowCount, sourceColumnCount);
 	}
 
-	protected abstract Matrix doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount);
+	protected abstract Matrix doSequentialOp(InspectableMatrix m, int targetRowCount, int targetColumnCount);
 	
 	protected abstract Matrix getTarget(int sourceRowCount, int sourceColumnCount);
 
-	protected abstract boolean doAsParallelOp(final Matrix m);
+	protected abstract boolean doAsParallelOp(final InspectableMatrix m);
 
-	private final Matrix doParallelOp(final Matrix source, final int sourceRowCount, final int sourceColumnCount) {
+	private final Matrix doParallelOp(final InspectableMatrix source, final int sourceRowCount, final int sourceColumnCount) {
 		Matrix target = getTarget(sourceRowCount, sourceColumnCount);
 		
 		if (sourceRowCount <= sourceColumnCount) {
@@ -55,7 +55,7 @@ public abstract class ParallelizableOperation3<R extends AbstractOperationByRowT
 		return doParallelOpByColumn(source, sourceColumnCount, target);
 	}
 
-	private Matrix doParallelOpByColumn(final Matrix m, final int targetColumnCount, final Matrix target) {
+	private Matrix doParallelOpByColumn(final InspectableMatrix m, final int targetColumnCount, final Matrix target) {
 		List<C> tasks = null;
 		try {
 			tasks = getOperationByColumnTaskPool().borrow(targetColumnCount);
@@ -75,7 +75,7 @@ public abstract class ParallelizableOperation3<R extends AbstractOperationByRowT
 		}
 	}
 
-	private Matrix doParallelOpByRow(final Matrix m, final int targetRowCount, final Matrix target) {
+	private Matrix doParallelOpByRow(final InspectableMatrix m, final int targetRowCount, final Matrix target) {
 		List<R> tasks = null;
 		try {
 			tasks = getOperationByRowTaskPool().borrow(targetRowCount);
@@ -95,19 +95,19 @@ public abstract class ParallelizableOperation3<R extends AbstractOperationByRowT
 		}
 	}
 
-	private void populateTask(R task, CountDownLatch taskGroup, Matrix m, Matrix target, int rowIndex) {
+	private void populateTask(R task, CountDownLatch taskGroup, InspectableMatrix m, Matrix target, int rowIndex) {
 		populateTask(task, taskGroup, m, null, null, target, null, rowIndex);
 	}
 
-	private void populateTask(C task, CountDownLatch taskGroup, Matrix m, Matrix target, int columnIndex) {
+	private void populateTask(C task, CountDownLatch taskGroup, InspectableMatrix m, Matrix target, int columnIndex) {
 		populateTask(task, taskGroup, m, null, null, target, null, columnIndex);
 	}
 
-	private String getByRowExceptionContext(Matrix m, int targetRowCount, Matrix target) {
+	private String getByRowExceptionContext(InspectableMatrix m, int targetRowCount, Matrix target) {
 		return toStringByRow(m, null, null, targetRowCount, target, null);
 	}
 
-	private String getByColumnExceptionContext(Matrix m, int targetColumnCount, Matrix target) {
+	private String getByColumnExceptionContext(InspectableMatrix m, int targetColumnCount, Matrix target) {
 		return toStringByColumn(m, null, null, targetColumnCount, target, null);
 	}
 

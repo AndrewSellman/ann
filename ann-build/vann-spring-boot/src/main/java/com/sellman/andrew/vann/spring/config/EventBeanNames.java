@@ -17,9 +17,11 @@ public class EventBeanNames {
 	public static final String RESET_BATCH_ERROR_LISTENER_ADAPTER_FACTORY = "resetBatchErrorListenerAdapterFactoryBean";
 	public static final String RESET_EPOCH_ERROR_LISTENER_ADAPTER_FACTORY = "resetEpochErrorListenerAdapterFactoryBean";
 	public static final String VALIDATION_ERROR_CHANGE_LISTENER_ADAPTER_FACTORY = "validationErrorChangeListenerAdapterFactoryBean";
-	public static final String VECTOR_CHANGE_LISTENER_ADAPTER_FACTORY = "vectorChangeListenerAdapterFactoryBean";
-	public static final String VECTOR_POLL_LISTENER_ADAPTER_FACTORY = "vectorPollListenerAdapterFactoryBean";
+	public static final String COLUMN_VECTOR_CHANGE_LISTENER_ADAPTER_FACTORY = "columnVectorChangeListenerAdapterFactoryBean";
+	public static final String COLUMN_VECTOR_POLL_LISTENER_ADAPTER_FACTORY = "columnVectorPollListenerAdapterFactoryBean";
 	public static final String NETWORK_LAYER_WEIGHTED_INPUT_LISTENER_ADAPTER_FACTORY = "networkLayerWeightedInputListenerAdapterFactoryBean";
 	public static final String NETWORK_LAYER_BIASED_WEIGHTED_INPUT_LISTENER_ADAPTER_FACTORY = "networkLayerBiasedWeightedInputListenerAdapterFactoryBean";
+	public static final String ROW_VECTOR_CHANGE_LISTENER_ADAPTER_FACTORY = "rowVectorChangeListenerAdapterFactoryBean";
+	public static final String ROW_VECTOR_POLL_LISTENER_ADAPTER_FACTORY = "rowVectorPollListenerAdapterFactoryBean";
 
 }

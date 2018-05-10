@@ -9,13 +9,15 @@ import com.sellman.andrew.vann.core.event.NetworkLayerOutputEvent;
 import com.sellman.andrew.vann.core.event.NetworkLayerWeightedInputEvent;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.RowVector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.function.Function;
 
 public class FeedForwardNetworkLayer {
 	private final FeedForwardNetworkLayerConfig config;
-	private Matrix input;
-	private Matrix output;
+	private InspectableMatrix input;
+	private InspectableMatrix output;
 	private Matrix biasedPrimeOutput;
 	private Matrix outputDelta;
 	private boolean training;
@@ -27,7 +29,7 @@ public class FeedForwardNetworkLayer {
 		this.config = config;
 	}
 
-	public Matrix evaluate(Matrix input) {
+	public Matrix evaluate(InspectableMatrix input) {
 		fireNetworkLayerInputEvent(input);
 		
 		Matrix weightedInput = multiply(input, config.getWeights());
@@ -70,7 +72,7 @@ public class FeedForwardNetworkLayer {
 		fire(event);
 	}
 
-	private void fireNetworkLayerInputEvent(Matrix input) {
+	private void fireNetworkLayerInputEvent(InspectableMatrix input) {
 		if (!isAnyListener(NetworkLayerInputEvent.class)) {
 			return;
 		}
@@ -79,7 +81,7 @@ public class FeedForwardNetworkLayer {
 		fire(event);
 	}
 	
-	private void fireNetworkLayerOutputEvent(Matrix output) {
+	private void fireNetworkLayerOutputEvent(InspectableMatrix output) {
 		if (!isAnyListener(NetworkLayerOutputEvent.class)) {
 			return;
 		}
@@ -106,7 +108,7 @@ public class FeedForwardNetworkLayer {
 	}
 
 
-	protected Matrix getOutput() {
+	protected InspectableMatrix getOutput() {
 		return output;
 	}
 
@@ -122,7 +124,7 @@ public class FeedForwardNetworkLayer {
 		getMatrixOps().update(weights, getWeights());
 	}
 
-	protected Matrix getInput() {
+	protected InspectableMatrix getInput() {
 		return input;
 	}
 
@@ -168,11 +170,11 @@ public class FeedForwardNetworkLayer {
 		}
 	}
 
-	protected Vector getBias() {
+	protected RowVector getBias() {
 		return config.getBias();
 	}
 	
-	protected void setBias(Vector bias) {
+	protected void setBias(RowVector bias) {
 		getMatrixOps().update(bias, getBias());
 	}
 
@@ -181,7 +183,7 @@ public class FeedForwardNetworkLayer {
 		return config.getMatrixOps();
 	}
 
-	private Matrix multiply(Matrix left, Matrix right) {
+	private Matrix multiply(InspectableMatrix left, InspectableMatrix right) {
 		return getMatrixOps().multiply(left, right);
 	}
 
@@ -189,7 +191,7 @@ public class FeedForwardNetworkLayer {
 		return getMatrixOps().add(a, b);
 	}
 
-	private Matrix add(Matrix m, Vector v) {
+	private Matrix add(Matrix m, RowVector v) {
 		return getMatrixOps().add(m, v);
 	}
 

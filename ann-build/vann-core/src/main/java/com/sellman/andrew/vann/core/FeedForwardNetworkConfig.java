@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.sellman.andrew.vann.core.event.Context;
 import com.sellman.andrew.vann.core.event.EventManager;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.RowVector;
 import com.sellman.andrew.vann.core.math.function.Function;
 
 public class FeedForwardNetworkConfig {
@@ -27,7 +28,7 @@ public class FeedForwardNetworkConfig {
 		return layers;
 	}
 
-	protected Matrix getOutput(int layerIndex) {
+	protected InspectableMatrix getOutput(int layerIndex) {
 		return layers.get(layerIndex).getOutput();
 	}
 
@@ -39,7 +40,7 @@ public class FeedForwardNetworkConfig {
 		return layers.get(layerIndex).getWeights();
 	}
 
-	protected Vector getBias(int layerIndex) {
+	protected RowVector getBias(int layerIndex) {
 		return layers.get(layerIndex).getBias();
 	}
 
@@ -59,7 +60,7 @@ public class FeedForwardNetworkConfig {
 		layers.get(layerIndex).setOutputDelta(outputDelta);
 	}
 
-	public Matrix getInput(int layerIndex) {
+	public InspectableMatrix getInput(int layerIndex) {
 		return layers.get(layerIndex).getInput();
 	}
 

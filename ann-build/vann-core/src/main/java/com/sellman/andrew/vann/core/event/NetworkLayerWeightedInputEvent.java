@@ -1,14 +1,15 @@
 package com.sellman.andrew.vann.core.event;
 
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.Matrix;
 
 public class NetworkLayerWeightedInputEvent extends MatrixEvent {
 
-	public NetworkLayerWeightedInputEvent(final Context context, final Matrix input) {
+	public NetworkLayerWeightedInputEvent(final Context context, final InspectableMatrix input) {
 		super(context, input);
 	}
 
-	public final Matrix getLayerWeightedInput() {
+	public final InspectableMatrix getLayerWeightedInput() {
 		return getEventMatrix();
 	}
 

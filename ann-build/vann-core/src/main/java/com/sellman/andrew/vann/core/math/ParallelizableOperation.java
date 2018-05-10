@@ -22,12 +22,12 @@ abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C e
 		this.opByColumnTaskPool = opByColumnTaskPool;
 	}
 
-	protected void populateTask(final R task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, Function f, Matrix matrixTarget, Vector vectorTarget, int rowIndex) {
+	protected void populateTask(final R task, final CountDownLatch taskGroup, final InspectableMatrix a, final InspectableMatrix b, Function f, Matrix matrixTarget, ColumnVector vectorTarget, int rowIndex) {
 		populateTask(task, taskGroup, a, b, f, matrixTarget, vectorTarget);
 		task.setRowIndex(rowIndex);
 	}
 
-	protected void populateTask(final C task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, Function f, Matrix matrixTarget, Vector vectorTarget, int columnIndex) {
+	protected void populateTask(final C task, final CountDownLatch taskGroup, final InspectableMatrix a, final InspectableMatrix b, Function f, Matrix matrixTarget, ColumnVector vectorTarget, int columnIndex) {
 		populateTask(task, taskGroup, a, b, f, matrixTarget, vectorTarget);
 		task.setColumnIndex(columnIndex);
 	}
@@ -41,7 +41,7 @@ abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C e
 		return target;
 	}
 
-	protected final Vector runTasksAndReturnTarget(final List<? extends AbstractOperationTask> tasks, final Vector target) {
+	protected final ColumnVector runTasksAndReturnTarget(final List<? extends AbstractOperationTask> tasks, final ColumnVector target) {
 		runTasks(tasks);
 		return target;
 	}
@@ -62,7 +62,7 @@ abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C e
 		System.out.println("Closed " + toString());
 	}
 
-	private final void populateTask(final AbstractOperationTask task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, Function f, Matrix matrixTarget, Vector vectorTarget) {
+	private final void populateTask(final AbstractOperationTask task, final CountDownLatch taskGroup, final InspectableMatrix a, final InspectableMatrix b, Function f, Matrix matrixTarget, ColumnVector vectorTarget) {
 		task.setTaskGroup(taskGroup);
 		task.setMatrixA(a);
 		task.setMatrixB(b);
@@ -71,21 +71,21 @@ abstract class ParallelizableOperation<R extends AbstractOperationByRowTask, C e
 		task.setVectorTarget(vectorTarget);
 	}
 
-	protected final String toStringByRow(Matrix a, Matrix b, Function f, int targetRowCount, Matrix matrixTarget, Vector vectorTarget) {
+	protected final String toStringByRow(InspectableMatrix a, InspectableMatrix b, Function f, int targetRowCount, Matrix matrixTarget, ColumnVector vectorTarget) {
 		StringBuilder sb = toString(a, b, f, matrixTarget, vectorTarget);
 		sb.append("targetRowCount=");
 		sb.append(targetRowCount);
 		return sb.toString();
 	}
 
-	protected final String toStringByColumn(Matrix a, Matrix b, Function f, int targetColumnCount, Matrix matrixTarget, Vector vectorTarget) {
+	protected final String toStringByColumn(InspectableMatrix a, InspectableMatrix b, Function f, int targetColumnCount, Matrix matrixTarget, ColumnVector vectorTarget) {
 		StringBuilder sb = toString(a, b, f, matrixTarget, vectorTarget);
 		sb.append("targetColumnCount=");
 		sb.append(targetColumnCount);
 		return sb.toString();
 	}
 
-	private StringBuilder toString(Matrix a, Matrix b, Function f, Matrix matrixTarget, Vector vectorTarget) {
+	private StringBuilder toString(InspectableMatrix a, InspectableMatrix b, Function f, Matrix matrixTarget, ColumnVector vectorTarget) {
 		StringBuilder sb = new StringBuilder();
 		if (a != null) {
 			sb.append("a=");

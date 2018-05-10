@@ -3,12 +3,12 @@ package com.sellman.andrew.vann.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.RowVector;
 
 public class Normalizer {
 
 	public List<TrainingItem> normalize(final List<TrainingItem> trainingItems) {
-		int countOfColumnsToBeNormalized = trainingItems.get(0).getInput().getRowCount();
+		int countOfColumnsToBeNormalized = trainingItems.get(0).getInput().getColumnCount();
 		List<TrainingItem> normedTrainingItems = getInitialNormedTrainingItems(trainingItems, countOfColumnsToBeNormalized);
 
 		for (int c = 0; c < countOfColumnsToBeNormalized; c++) {
@@ -53,7 +53,7 @@ public class Normalizer {
 	private List<TrainingItem> getInitialNormedTrainingItems(final List<TrainingItem> trainingItems, final int inputColumnCount) {
 		List<TrainingItem> normTrainingItems = new ArrayList<TrainingItem>(trainingItems.size());
 		for (TrainingItem item : trainingItems) {
-			normTrainingItems.add(new TrainingItem(new Vector(inputColumnCount), item.getExpectedOutput()));
+			normTrainingItems.add(new TrainingItem(new RowVector(inputColumnCount), item.getExpectedOutput()));
 		}
 
 		return normTrainingItems;

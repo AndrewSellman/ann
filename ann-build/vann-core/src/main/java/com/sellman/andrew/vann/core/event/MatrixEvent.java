@@ -1,16 +1,16 @@
 package com.sellman.andrew.vann.core.event;
 
-import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 
 abstract class MatrixEvent extends Event {
-	private final Matrix m;
+	private final InspectableMatrix m;
 
-	public MatrixEvent(final Context context, final Matrix m) {
+	public MatrixEvent(final Context context, final InspectableMatrix m) {
 		super(context);
 		this.m = m;
 	}
 
-	protected Matrix getEventMatrix() {
+	protected InspectableMatrix getEventMatrix() {
 		return m;
 	}
 	

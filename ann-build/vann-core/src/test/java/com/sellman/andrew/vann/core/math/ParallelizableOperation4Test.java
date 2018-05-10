@@ -25,7 +25,7 @@ import org.powermock.reflect.Whitebox;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation4;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTaskPool;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByRowTask;
@@ -54,7 +54,7 @@ public class ParallelizableOperation4Test {
 	private AbstractOperationByColumnTask columnTask;
 
 	private Matrix m;
-	private Vector v;
+	private ColumnVector v;
 
 	@Mock
 	private CountDownLatch taskGroup;
@@ -79,7 +79,7 @@ public class ParallelizableOperation4Test {
 
 	@Test
 	public void doVectorOperationAsSequential() throws Exception {
-		v = new Vector(1);
+		v = new ColumnVector(1);
 		doReturn(RESULT).when(op).doSequentialOp(eq(v.getMatrix()), eq(1), eq(1));
 
 		double result = op.doOperation(v);
@@ -103,7 +103,7 @@ public class ParallelizableOperation4Test {
 
 	@Test
 	public void doVectorOperationAsParallel() throws Exception {
-		v = new Vector(2);
+		v = new ColumnVector(2);
 		setOpAsParallel(true);
 		doReturn(RESULT).when(op).doSequentialOp(any(Matrix.class), eq(1), eq(1));
 
@@ -112,7 +112,7 @@ public class ParallelizableOperation4Test {
 		verify(byColumnTaskPool).borrow(1);
 		verify(byColumnTaskPool).recycle(columnTasks);
 		verifyZeroInteractions(byRowTaskPool);
-		verify(op).populateTask(eq(columnTask), any(CountDownLatch.class), eq(v.getMatrix()), eq(null), eq(null), eq(null), any(Vector.class), eq(0));
+		verify(op).populateTask(eq(columnTask), any(CountDownLatch.class), eq(v.getMatrix()), eq(null), eq(null), eq(null), any(ColumnVector.class), eq(0));
 		verify(taskService).runTasks(columnTasks);
 	}
 
@@ -127,7 +127,7 @@ public class ParallelizableOperation4Test {
 		verify(byColumnTaskPool).borrow(1);
 		verify(byColumnTaskPool).recycle(columnTasks);
 		verifyZeroInteractions(byRowTaskPool);
-		verify(op).populateTask(eq(columnTask), any(CountDownLatch.class), eq(m), eq(null), eq(null), eq(null), any(Vector.class), eq(0));
+		verify(op).populateTask(eq(columnTask), any(CountDownLatch.class), eq(m), eq(null), eq(null), eq(null), any(ColumnVector.class), eq(0));
 		verify(taskService).runTasks(columnTasks);
 	}
 
@@ -142,7 +142,7 @@ public class ParallelizableOperation4Test {
 		verify(byRowTaskPool).borrow(1);
 		verify(byRowTaskPool).recycle(rowTasks);
 		verifyZeroInteractions(byColumnTaskPool);
-		verify(op).populateTask(eq(rowTask), any(CountDownLatch.class), eq(m), eq(null), eq(null), eq(null), any(Vector.class), eq(0));
+		verify(op).populateTask(eq(rowTask), any(CountDownLatch.class), eq(m), eq(null), eq(null), eq(null), any(ColumnVector.class), eq(0));
 		verify(taskService).runTasks(rowTasks);
 	}
 

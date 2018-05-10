@@ -25,7 +25,7 @@ import org.powermock.reflect.Whitebox;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation3;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTaskPool;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByRowTask;
@@ -53,7 +53,7 @@ public class ParallelizableOperation3Test {
 	private AbstractOperationByColumnTask columnTask;
 
 	private Matrix m;
-	private Vector v;
+	private ColumnVector v;
 
 	@Mock
 	private CountDownLatch taskGroup;
@@ -81,7 +81,7 @@ public class ParallelizableOperation3Test {
 
 	@Test
 	public void doVectorOperationAsSequential() throws Exception {
-		v = new Vector(1);
+		v = new ColumnVector(1);
 		doReturn(matrixTarget).when(op).doSequentialOp(eq(v.getMatrix()), eq(1), eq(1));
 
 		Matrix result = op.doOperation(v);
@@ -105,7 +105,7 @@ public class ParallelizableOperation3Test {
 
 	@Test
 	public void doVectorOperationAsParallel() throws Exception {
-		v = new Vector(2);
+		v = new ColumnVector(2);
 		setOpAsParallel(true);
 		doReturn(matrixTarget).when(op).getTarget(2, 1);
 

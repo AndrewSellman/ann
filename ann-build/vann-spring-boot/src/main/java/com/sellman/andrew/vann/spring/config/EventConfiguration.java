@@ -9,6 +9,8 @@ import org.springframework.web.context.annotation.SessionScope;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.event.BatchErrorChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.BatchIndexChangeListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.ColumnVectorChangeListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.ColumnVectorPollListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EpochIndexChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EventListenerAdapterFactory;
@@ -23,9 +25,9 @@ import com.sellman.andrew.vann.core.event.NetworkLayerWeightedInputListenerAdapt
 import com.sellman.andrew.vann.core.event.NetworkOutputListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.ResetBatchErrorListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.ResetEpochErrorListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.RowVectorChangeListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.RowVectorPollListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.ValidationErrorChangeListenerAdapterFactory;
-import com.sellman.andrew.vann.core.event.VectorChangeListenerAdapterFactory;
-import com.sellman.andrew.vann.core.event.VectorPollListenerAdapterFactory;
 
 @Configuration
 public class EventConfiguration {
@@ -56,12 +58,12 @@ public class EventConfiguration {
 		factory.register(getResetBatchErrorListenerAdapterFactory());
 		factory.register(getResetEpochErrorListenerAdapterFactory());
 		factory.register(getValidationErrorChangeListenerAdapterFactory());
-		factory.register(getVectorChangeListenerAdapterFactory());
-		factory.register(getVectorPollListenerAdapterFactory());
-		
+		factory.register(getColumnVectorChangeListenerAdapterFactory());
+		factory.register(getColumnVectorPollListenerAdapterFactory());
 		factory.register(getNetworkLayerWeightedInputListenerAdapterFactory());
 		factory.register(getNetworkLayerBiasedWeightedInputListenerAdapterFactory());
-
+		factory.register(getRowVectorChangeListenerAdapterFactory());
+		factory.register(getRowVectorPollListenerAdapterFactory());
 		return factory;
 	}
 
@@ -130,14 +132,14 @@ public class EventConfiguration {
 		return new ValidationErrorChangeListenerAdapterFactory();
 	}
 
-	@Bean(name = EventBeanNames.VECTOR_CHANGE_LISTENER_ADAPTER_FACTORY)
-	public VectorChangeListenerAdapterFactory getVectorChangeListenerAdapterFactory() {
-		return new VectorChangeListenerAdapterFactory();
+	@Bean(name = EventBeanNames.COLUMN_VECTOR_CHANGE_LISTENER_ADAPTER_FACTORY)
+	public ColumnVectorChangeListenerAdapterFactory getColumnVectorChangeListenerAdapterFactory() {
+		return new ColumnVectorChangeListenerAdapterFactory();
 	}
 
-	@Bean(name = EventBeanNames.VECTOR_POLL_LISTENER_ADAPTER_FACTORY)
-	public VectorPollListenerAdapterFactory getVectorPollListenerAdapterFactory() {
-		return new VectorPollListenerAdapterFactory();
+	@Bean(name = EventBeanNames.COLUMN_VECTOR_POLL_LISTENER_ADAPTER_FACTORY)
+	public ColumnVectorPollListenerAdapterFactory getColumnVectorPollListenerAdapterFactory() {
+		return new ColumnVectorPollListenerAdapterFactory();
 	}
 
 	@Bean(name = EventBeanNames.NETWORK_LAYER_WEIGHTED_INPUT_LISTENER_ADAPTER_FACTORY)
@@ -148,6 +150,16 @@ public class EventConfiguration {
 	@Bean(name = EventBeanNames.NETWORK_LAYER_BIASED_WEIGHTED_INPUT_LISTENER_ADAPTER_FACTORY)
 	public NetworkLayerBiasedWeightedInputListenerAdapterFactory getNetworkLayerBiasedWeightedInputListenerAdapterFactory() {
 		return new NetworkLayerBiasedWeightedInputListenerAdapterFactory();
+	}
+
+	@Bean(name = EventBeanNames.ROW_VECTOR_CHANGE_LISTENER_ADAPTER_FACTORY)
+	public RowVectorChangeListenerAdapterFactory getRowVectorChangeListenerAdapterFactory() {
+		return new RowVectorChangeListenerAdapterFactory();
+	}
+
+	@Bean(name = EventBeanNames.ROW_VECTOR_POLL_LISTENER_ADAPTER_FACTORY)
+	public RowVectorPollListenerAdapterFactory getRowVectorPollListenerAdapterFactory() {
+		return new RowVectorPollListenerAdapterFactory();
 	}
 
 }

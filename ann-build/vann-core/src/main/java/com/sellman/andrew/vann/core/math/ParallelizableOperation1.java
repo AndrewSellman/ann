@@ -15,7 +15,7 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
 	}
 
-	public Matrix doOperation(final Matrix a, final Matrix b) {
+	public Matrix doOperation(final InspectableMatrix a, final InspectableMatrix b) {
 		if (doAsParallelOp(a, b)) {
 			return doParallelOp(a, b);
 		}
@@ -23,37 +23,37 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 		return doSequentialOp(a, b);
 	}
 
-	public Vector doOperation(final Vector a, final Vector b) {
-		return new Vector(doOperation(a.getMatrix(), b.getMatrix()));
+	public ColumnVector doOperation(final ColumnVector a, final ColumnVector b) {
+		return new ColumnVector(doOperation(a.getMatrix(), b.getMatrix()));
 	}
 
-	public Vector doOperation(final Matrix a, final Vector b) {
-		return new Vector(doOperation(a, b.getMatrix()));
+	public ColumnVector doOperation(final Matrix a, final ColumnVector b) {
+		return new ColumnVector(doOperation(a, b.getMatrix()));
 	}
 
-	public Matrix doOperation(final Vector a, final Matrix b) {
+	public Matrix doOperation(final ColumnVector a, final Matrix b) {
 		return doOperation(a.getMatrix(), b);
 	}
 
-	protected Matrix doParallelOp(final Matrix a, final Matrix b) {
+	protected Matrix doParallelOp(final InspectableMatrix a, final InspectableMatrix b) {
 		int targetRowCount = a.getRowCount();
 		int targetColumnCount = b.getColumnCount();
 		Matrix target = new Matrix(targetRowCount, targetColumnCount);
 		return doParallelOp(a, b, targetRowCount, targetColumnCount, target);
 	}
 
-	protected Matrix doSequentialOp(final Matrix a, final Matrix b) {
+	protected Matrix doSequentialOp(final InspectableMatrix a, final InspectableMatrix b) {
 		int targetRowCount = a.getRowCount();
 		int targetColumnCount = b.getColumnCount();
 		Matrix target = new Matrix(targetRowCount, targetColumnCount);
 		return doSequentialOp(a, b, targetRowCount, targetColumnCount, target);
 	}
 
-	protected abstract Matrix doSequentialOp(Matrix a, Matrix b, int targetRowCount, int targetColumnCount, Matrix target);
+	protected abstract Matrix doSequentialOp(InspectableMatrix a, InspectableMatrix b, int targetRowCount, int targetColumnCount, Matrix target);
 
-	protected abstract boolean doAsParallelOp(final Matrix a, final Matrix b);
+	protected abstract boolean doAsParallelOp(final InspectableMatrix a, final InspectableMatrix b);
 
-	private Matrix doParallelOp(final Matrix a, final Matrix b, final int targetRowCount, final int targetColumnCount, final Matrix target) {
+	private Matrix doParallelOp(final InspectableMatrix a, final InspectableMatrix b, final int targetRowCount, final int targetColumnCount, final Matrix target) {
 		if (targetRowCount <= targetColumnCount) {
 			return doParallelOpByRow(a, b, targetRowCount, target);
 		}
@@ -61,7 +61,7 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 		return doParallelOpByColumn(a, b, targetColumnCount, target);
 	}
 
-	private Matrix doParallelOpByColumn(final Matrix a, final Matrix b, final int targetColumnCount, final Matrix target) {
+	private Matrix doParallelOpByColumn(final InspectableMatrix a, final InspectableMatrix b, final int targetColumnCount, final Matrix target) {
 		List<C> tasks = null;
 		try {
 			tasks = getOperationByColumnTaskPool().borrow(targetColumnCount);
@@ -81,7 +81,7 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 		}
 	}
 
-	private Matrix doParallelOpByRow(final Matrix a, final Matrix b, final int targetRowCount, final Matrix target) {
+	private Matrix doParallelOpByRow(final InspectableMatrix a, final InspectableMatrix b, final int targetRowCount, final Matrix target) {
 		List<R> tasks = null;
 		try {
 			tasks = getOperationByRowTaskPool().borrow(targetRowCount);
@@ -101,19 +101,19 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 		}
 	}
 
-	private void populateTask(final R task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, final Matrix target, final int rowIndex) {
+	private void populateTask(final R task, final CountDownLatch taskGroup, final InspectableMatrix a, final InspectableMatrix b, final Matrix target, final int rowIndex) {
 		populateTask(task, taskGroup, a, b, null, target, null, rowIndex);
 	}
 
-	private void populateTask(final C task, final CountDownLatch taskGroup, final Matrix a, final Matrix b, final Matrix target, final int columnIndex) {
+	private void populateTask(final C task, final CountDownLatch taskGroup, final InspectableMatrix a, final InspectableMatrix b, final Matrix target, final int columnIndex) {
 		populateTask(task, taskGroup, a, b, null, target, null, columnIndex);
 	}
 
-	private String getByRowExceptionContext(Matrix a, Matrix b, int targetRowCount, Matrix target) {
+	private String getByRowExceptionContext(InspectableMatrix a, InspectableMatrix b, int targetRowCount, Matrix target) {
 		return toStringByRow(a, b, null, targetRowCount, target, null);
 	}
 
-	private String getByColumnExceptionContext(Matrix a, Matrix b, int targetColumnCount, Matrix target) {
+	private String getByColumnExceptionContext(InspectableMatrix a, InspectableMatrix b, int targetColumnCount, Matrix target) {
 		return toStringByColumn(a, b, null, targetColumnCount, target, null);
 	}
 

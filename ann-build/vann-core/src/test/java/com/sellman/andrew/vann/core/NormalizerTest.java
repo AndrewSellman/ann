@@ -9,9 +9,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sellman.andrew.vann.core.Normalizer;
-import com.sellman.andrew.vann.core.TrainingItem;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.RowVector;
 
 public class NormalizerTest {
 	private Normalizer normalizer;
@@ -22,20 +20,20 @@ public class NormalizerTest {
 		normalizer = new Normalizer();
 
 		trainingItems = new ArrayList<TrainingItem>();
-		Vector input = new Vector(new double[] { 35, 36 });
-		trainingItems.add(new TrainingItem(input, new Vector(1)));
+		RowVector input = new RowVector(new double[] { 35, 36 });
+		trainingItems.add(new TrainingItem(input, new RowVector(1)));
 
-		input = new Vector(new double[] { 36, 46 });
-		trainingItems.add(new TrainingItem(input, new Vector(1)));
+		input = new RowVector(new double[] { 36, 46 });
+		trainingItems.add(new TrainingItem(input, new RowVector(1)));
 
-		input = new Vector(new double[] { 46, 68 });
-		trainingItems.add(new TrainingItem(input, new Vector(1)));
+		input = new RowVector(new double[] { 46, 68 });
+		trainingItems.add(new TrainingItem(input, new RowVector(1)));
 
-		input = new Vector(new double[] { 68, 70 });
-		trainingItems.add(new TrainingItem(input, new Vector(1)));
+		input = new RowVector(new double[] { 68, 70 });
+		trainingItems.add(new TrainingItem(input, new RowVector(1)));
 
-		input = new Vector(new double[] { 70, 35 });
-		trainingItems.add(new TrainingItem(input, new Vector(1)));
+		input = new RowVector(new double[] { 70, 35 });
+		trainingItems.add(new TrainingItem(input, new RowVector(1)));
 	}
 
 	@Test

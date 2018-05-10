@@ -37,27 +37,27 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public Matrix multiply(final Matrix left, final Matrix right) {
+	public Matrix multiply(final InspectableMatrix left, final InspectableMatrix right) {
 		return standardMultiplication.doOperation(left, right);
 	}
 
 	@Override
-	public Vector multiply(final Matrix left, final Vector right) {
+	public ColumnVector multiply(final Matrix left, final ColumnVector right) {
 		return standardMultiplication.doOperation(left, right);
 	}
 
 	@Override
-	public Matrix multiply(final Vector left, final Matrix right) {
+	public Matrix multiply(final ColumnVector left, final Matrix right) {
 		return standardMultiplication.doOperation(left, right);
 	}
 
 	@Override
-	public Matrix hadamard(final Matrix a, final Matrix b) {
+	public Matrix hadamard(final InspectableMatrix a, final InspectableMatrix b) {
 		return hadamardMultiplication.doOperation(a, b);
 	}
 
 	@Override
-	public Vector hadamard(final Vector a, final Vector b) {
+	public ColumnVector hadamard(final ColumnVector a, final ColumnVector b) {
 		return hadamardMultiplication.doOperation(a, b);
 	}
 
@@ -67,12 +67,12 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public Vector add(final Vector a, final Vector b) {
+	public ColumnVector add(final ColumnVector a, final ColumnVector b) {
 		return addition.doOperation(a, b);
 	}
 
 	@Override
-	public Matrix add(final Matrix m, final Vector v) {
+	public Matrix add(final Matrix m, final ColumnVector v) {
 		//TOOD optimize...
 		Matrix result = new Matrix(m.getRowCount(), m.getColumnCount());
 		for (int r = 0; r < m.getRowCount(); r++) {
@@ -85,32 +85,71 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public Matrix subtract(final Matrix left, final Matrix right) {
+	public Matrix add(final Matrix m, final RowVector v) {
+		//TOOD optimize...
+		Matrix result = new Matrix(m.getRowCount(), m.getColumnCount());
+		for (int r = 0; r < m.getRowCount(); r++) {
+			for (int c = 0; c < m.getColumnCount(); c++) {
+				result.setValue(r, c, m.getValue(r, c) + v.getValue(c));
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public ColumnVector subtract(final ColumnVector v, final InspectableMatrix m) {
+		//TOOD optimize...
+		ColumnVector result = new ColumnVector(m.getRowCount());
+		for (int r = 0; r < m.getRowCount(); r++) {
+			for (int c = 0; c < m.getColumnCount(); c++) {
+				result.setValue(r, v.getValue(r) - m.getValue(r, c));
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public RowVector subtract(final RowVector v, final InspectableMatrix m) {
+		//TOOD optimize...
+		RowVector result = new RowVector(m.getColumnCount());
+		for (int r = 0; r < m.getRowCount(); r++) {
+			for (int c = 0; c < m.getColumnCount(); c++) {
+				result.setValue(c, v.getValue(c) - m.getValue(r, c));
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public Matrix subtract(final InspectableMatrix left, final InspectableMatrix right) {
 		return subtraction.doOperation(left, right);
 	}
 
 	@Override
-	public Vector subtract(final Vector left, final Vector right) {
+	public ColumnVector subtract(final ColumnVector left, final ColumnVector right) {
 		return subtraction.doOperation(left, right);
 	}
 
 	@Override
-	public Matrix scale(final Matrix m, final Function f) {
+	public Matrix scale(final InspectableMatrix m, final Function f) {
 		return scaler.doOperation(m, f);
 	}
 
 	@Override
-	public Vector scale(final Vector v, final Function f) {
+	public ColumnVector scale(final ColumnVector v, final Function f) {
 		return scaler.doOperation(v, f);
 	}
 
 	@Override
-	public Matrix transpose(final Matrix a) {
+	public Matrix transpose(final InspectableMatrix a) {
 		return transposition.doOperation(a);
 	}
 
 	@Override
-	public Matrix transpose(final Vector v) {
+	public Matrix transpose(final ColumnVector v) {
 		return transposition.doOperation(v);
 	}
 
@@ -120,17 +159,22 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public void update(final Vector source, final Vector target) {
+	public void update(final ColumnVector source, final ColumnVector target) {
 		updation.doOperation(source, target);
 	}
 
 	@Override
-	public double sum(final Matrix m) {
+	public void update(final RowVector source, final RowVector target) {
+		updation.doOperation(source, target);
+	}
+
+	@Override
+	public double sum(final InspectableMatrix m) {
 		return summation.doOperation(m);
 	}
 
 	@Override
-	public double sum(final Vector v) {
+	public double sum(final ColumnVector v) {
 		return summation.doOperation(v);
 	}
 
@@ -140,7 +184,7 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public Vector absolute(final Vector v) {
+	public ColumnVector absolute(final ColumnVector v) {
 		return scaler.doOperation(v, x -> Math.abs(x));
 	}
 

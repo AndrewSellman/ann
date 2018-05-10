@@ -1,9 +1,9 @@
 package com.sellman.andrew.vann.core.event;
 
-abstract class VectorValueEvent extends DoubleValueEvent {
+abstract class ColumnVectorValueEvent extends DoubleValueEvent {
 	private final int rowIndex;
 
-	public VectorValueEvent(final Context context, final int rowIndex, final double value) {
+	public ColumnVectorValueEvent(final Context context, final int rowIndex, final double value) {
 		super(context, value);
 		this.rowIndex = rowIndex;
 	}
@@ -17,7 +17,7 @@ abstract class VectorValueEvent extends DoubleValueEvent {
 	}
 	
 	public String toString() {
-		return "Vector value is " + getValue() + " for rowIndex " + getRowIndex() + " " + super.toString();
+		return "Column vector value is " + getValue() + " for rowIndex " + getRowIndex() + " " + super.toString();
 	}
 
 }

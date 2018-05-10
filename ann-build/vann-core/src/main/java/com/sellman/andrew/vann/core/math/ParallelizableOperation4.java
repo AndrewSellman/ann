@@ -15,7 +15,7 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 		super(taskService, opByRowTaskPool, opByColumnTaskPool);
 	}
 
-	public double doOperation(final Matrix m) {
+	public double doOperation(final InspectableMatrix m) {
 		if (doAsParallelOp(m)) {
 			return doParallelOp(m);
 		}
@@ -23,37 +23,37 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 		return doSequentialOp(m);
 	}
 
-	public double doOperation(final Vector v) {
+	public double doOperation(final ColumnVector v) {
 		return doOperation(v.getMatrix());
 	}
 
-	protected final double doParallelOp(final Matrix m) {
+	protected final double doParallelOp(final InspectableMatrix m) {
 		int rowCount = m.getRowCount();
 		int columnCount = m.getColumnCount();
 		return doParallelOp(m, rowCount, columnCount);
 	}
 
-	protected final double doSequentialOp(final Matrix m) {
+	protected final double doSequentialOp(final InspectableMatrix m) {
 		int targetRowCount = m.getRowCount();
 		int targetColumnCount = m.getColumnCount();
 		return doSequentialOp(m, targetRowCount, targetColumnCount);
 	}
 
-	protected abstract double doSequentialOp(Matrix m, int targetRowCount, int targetColumnCount);
+	protected abstract double doSequentialOp(InspectableMatrix m, int targetRowCount, int targetColumnCount);
 
-	protected abstract boolean doAsParallelOp(final Matrix m);
+	protected abstract boolean doAsParallelOp(final InspectableMatrix m);
 
-	private double doParallelOp(final Matrix m, final int rowCount, final int columnCount) {
+	private double doParallelOp(final InspectableMatrix m, final int rowCount, final int columnCount) {
 		if (rowCount <= columnCount) {
-			Vector target = new Vector(rowCount);
+			ColumnVector target = new ColumnVector(rowCount);
 			return doParallelOpByRow(m, rowCount, target);
 		}
 
-		Vector target = new Vector(columnCount);
+		ColumnVector target = new ColumnVector(columnCount);
 		return doParallelOpByColumn(m, columnCount, target);
 	}
 
-	private double doParallelOpByColumn(final Matrix m, final int targetColumnCount, final Vector target) {
+	private double doParallelOpByColumn(final InspectableMatrix m, final int targetColumnCount, final ColumnVector target) {
 		List<C> tasks = null;
 		try {
 			tasks = getOperationByColumnTaskPool().borrow(targetColumnCount);
@@ -74,7 +74,7 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 		}
 	}
 
-	private double doParallelOpByRow(final Matrix m, final int targetRowCount, final Vector target) {
+	private double doParallelOpByRow(final InspectableMatrix m, final int targetRowCount, final ColumnVector target) {
 		List<R> tasks = null;
 		try {
 			tasks = getOperationByRowTaskPool().borrow(targetRowCount);
@@ -95,20 +95,20 @@ public abstract class ParallelizableOperation4<R extends AbstractOperationByRowT
 		}
 	}
 
-	private final void populateTask(final R task, final CountDownLatch taskGroup, final Matrix m, Vector target, int rowIndex) {
+	private final void populateTask(final R task, final CountDownLatch taskGroup, final InspectableMatrix m, ColumnVector target, int rowIndex) {
 		populateTask(task, taskGroup, m, null, null, null, target, rowIndex);
 	}
 
-	private void populateTask(C task, CountDownLatch taskGroup, Matrix m, Vector target, int columnIndex) {
+	private void populateTask(C task, CountDownLatch taskGroup, InspectableMatrix m, ColumnVector target, int columnIndex) {
 		populateTask(task, taskGroup, m, null, null, null, target, columnIndex);
 	}
 
 
-	private String getByRowExceptionContext(Matrix m, int targetRowCount, Vector target) {
+	private String getByRowExceptionContext(InspectableMatrix m, int targetRowCount, ColumnVector target) {
 		return toStringByRow(m, null, null, targetRowCount, null, target);
 	}
 
-	private String getByColumnExceptionContext(Matrix m, int targetColumnCount, Vector target) {
+	private String getByColumnExceptionContext(InspectableMatrix m, int targetColumnCount, ColumnVector target) {
 		return toStringByColumn(m, null, null, targetColumnCount, null, target);
 	}
 

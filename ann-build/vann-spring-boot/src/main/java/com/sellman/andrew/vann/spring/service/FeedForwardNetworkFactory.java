@@ -15,19 +15,20 @@ import com.sellman.andrew.vann.core.FeedForwardNetworkLayerConfig;
 import com.sellman.andrew.vann.core.event.Context;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.Representation;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.RowVector;
 import com.sellman.andrew.vann.core.math.util.IntervalScale;
 import com.sellman.andrew.vann.spring.config.EventBeanNames;
-import com.sellman.andrew.vann.spring.config.MathOperationsBeanNames;
+import com.sellman.andrew.vann.spring.config.MathBeanNames;
 import com.sellman.andrew.vann.spring.controller.network.NetworkConfigRequest;
 
 @Service
 public class FeedForwardNetworkFactory {
 
 	@Autowired
-	@Qualifier(value = MathOperationsBeanNames.HIGH_PRIORITY_WAIT_FOR_COMPLETION)
+	@Qualifier(value = MathBeanNames.HIGH_PRIORITY_WAIT_FOR_COMPLETION)
 	private MathOperations mathOps;
 
 	@Autowired
@@ -52,7 +53,7 @@ public class FeedForwardNetworkFactory {
 		int nextLayerAttributeCount = getAttributeCountForNextLayer(request);
 
 		Matrix weights = getWeights(networkName, 0, nextLayerAttributeCount, currentLayerAttributeCount);
-		Vector bias = getBias(networkName, 0, nextLayerAttributeCount);
+		RowVector bias = getBias(networkName, 0, nextLayerAttributeCount);
 		Context context = new Context(networkName, 0);
 		FeedForwardNetworkLayerConfig config = new FeedForwardNetworkLayerConfig(context, eventManager, mathOps, request.getFunctionType(), weights, bias);
 		layers.add(new FeedForwardNetworkLayer(config));
@@ -111,9 +112,9 @@ public class FeedForwardNetworkFactory {
 		return new Context(networkName, layerIndex, Representation.WEIGHTS);
 	}
 
-	private Vector getBias(String networkName, int layerIndex, int rowCount) {
+	private RowVector getBias(String networkName, int layerIndex, int rowCount) {
 		Context context = getBiasContext(networkName, layerIndex);
-		return new Vector(rowCount, context, eventManager);
+		return new RowVector(rowCount, context, eventManager);
 	}
 
 	private Context getBiasContext(String networkName, int layerIndex) {

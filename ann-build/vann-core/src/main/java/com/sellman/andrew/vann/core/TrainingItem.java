@@ -1,21 +1,21 @@
 package com.sellman.andrew.vann.core;
 
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.RowVector;
 
 public class TrainingItem {
-	private final Vector input;
-	private final Vector expectedOutput;
+	private final RowVector input;
+	private final RowVector expectedOutput;
 
-	public TrainingItem(final Vector input, final Vector expectedOutput) {
+	public TrainingItem(final RowVector input, final RowVector expectedOutput) {
 		this.input = input;
 		this.expectedOutput = expectedOutput;
 	}
 
-	public Vector getInput() {
+	public RowVector getInput() {
 		return input;
 	}
 
-	public Vector getExpectedOutput() {
+	public RowVector getExpectedOutput() {
 		return expectedOutput;
 	}
 

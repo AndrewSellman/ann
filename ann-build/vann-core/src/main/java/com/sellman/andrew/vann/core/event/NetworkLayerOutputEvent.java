@@ -1,14 +1,14 @@
 package com.sellman.andrew.vann.core.event;
 
-import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 
 public class NetworkLayerOutputEvent extends MatrixEvent {
 
-	public NetworkLayerOutputEvent(final Context context, final Matrix output) {
+	public NetworkLayerOutputEvent(final Context context, final InspectableMatrix output) {
 		super(context, output);
 	}
 
-	public final Matrix getOutput() {
+	public final InspectableMatrix getOutput() {
 		return getEventMatrix();
 	}
 

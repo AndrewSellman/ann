@@ -1,21 +1,21 @@
 package com.sellman.andrew.vann.core;
 
-import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 
 public class TrainingBatch {
-	private final Matrix input;
-	private final Matrix expectedOutput;
+	private final InspectableMatrix input;
+	private final InspectableMatrix expectedOutput;
 
-	public TrainingBatch(final Matrix input, final Matrix expectedOutput) {
+	public TrainingBatch(final InspectableMatrix input, final InspectableMatrix expectedOutput) {
 		this.input = input;
 		this.expectedOutput = expectedOutput;
 	}
 
-	public Matrix getInput() {
+	public InspectableMatrix getInput() {
 		return input;
 	}
 
-	public Matrix getExpectedOutput() {
+	public InspectableMatrix getExpectedOutput() {
 		return expectedOutput;
 	}
 

@@ -17,7 +17,7 @@ import com.sellman.andrew.vann.core.math.ParallelizableOperation2;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation3;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation4;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation5;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.function.Function;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByRowTask;
@@ -29,9 +29,9 @@ public class MathOperationsImplTest {
 	private Matrix m1;
 	private Matrix m2;
 	private Matrix expectedMatrixResult;
-	private Vector v1;
-	private Vector v2;
-	private Vector expectedVectorResult;
+	private ColumnVector v1;
+	private ColumnVector v2;
+	private ColumnVector expectedVectorResult;
 
 	@Mock
 	private ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> standardMultiplication;
@@ -68,9 +68,9 @@ public class MathOperationsImplTest {
 		m2 = new Matrix(1, 1);
 		expectedMatrixResult = new Matrix(1, 1);
 
-		v1 = new Vector(1);
-		v2 = new Vector(1);
-		expectedVectorResult = new Vector(1);
+		v1 = new ColumnVector(1);
+		v2 = new ColumnVector(1);
+		expectedVectorResult = new ColumnVector(1);
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class MathOperationsImplTest {
 	public void scaleVectorWithFunction() {
 		when(scaler.doOperation(v1, f)).thenReturn(expectedVectorResult);
 
-		Vector actualResult = mathOps.scale(v1, f);
+		ColumnVector actualResult = mathOps.scale(v1, f);
 		assertEquals(expectedVectorResult, actualResult);
 	}
 
@@ -151,7 +151,7 @@ public class MathOperationsImplTest {
 	public void subtractVectorWithVector() {
 		when(subtraction.doOperation(v1, v2)).thenReturn(expectedVectorResult);
 
-		Vector actualResult = mathOps.subtract(v1, v2);
+		ColumnVector actualResult = mathOps.subtract(v1, v2);
 		assertEquals(expectedVectorResult, actualResult);
 	}
 
@@ -167,7 +167,7 @@ public class MathOperationsImplTest {
 	public void addVectorWithVector() {
 		when(addition.doOperation(v1, v2)).thenReturn(expectedVectorResult);
 
-		Vector actualResult = mathOps.add(v1, v2);
+		ColumnVector actualResult = mathOps.add(v1, v2);
 		assertEquals(expectedVectorResult, actualResult);
 	}
 
@@ -183,7 +183,7 @@ public class MathOperationsImplTest {
 	public void hadamardVectorWithVector() {
 		when(hadamardMultiplication.doOperation(v1, v2)).thenReturn(expectedVectorResult);
 
-		Vector actualResult = mathOps.hadamard(v1, v2);
+		ColumnVector actualResult = mathOps.hadamard(v1, v2);
 		assertEquals(expectedVectorResult, actualResult);
 	}
 
@@ -207,7 +207,7 @@ public class MathOperationsImplTest {
 	public void multiplyMatrixWithVector() {
 		when(standardMultiplication.doOperation(m1, v1)).thenReturn(expectedVectorResult);
 
-		Vector actualResult = mathOps.multiply(m1, v1);
+		ColumnVector actualResult = mathOps.multiply(m1, v1);
 		assertEquals(expectedVectorResult, actualResult);
 	}
 

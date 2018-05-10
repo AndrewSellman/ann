@@ -1,6 +1,7 @@
 package com.sellman.andrew.vann.core.math.transpose;
 
 import com.sellman.andrew.vann.core.concurrent.TaskService;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.advice.AdvisableParallelizableOperation3;
 import com.sellman.andrew.vann.core.math.advice.ParallelizableOperation3Advisor;
@@ -12,7 +13,7 @@ class Transposition extends AdvisableParallelizableOperation3<TranspositionByRow
 	}
 
 	@Override
-	protected final Matrix doSequentialOp(final Matrix source, final int sourceRowCount, final int sourceColumnCount) {
+	protected final Matrix doSequentialOp(final InspectableMatrix source, final int sourceRowCount, final int sourceColumnCount) {
 		Matrix target = getTarget(sourceRowCount, sourceColumnCount);
 
 		for (int rowIndex = 0; rowIndex < sourceRowCount; rowIndex++) {

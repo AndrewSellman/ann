@@ -1,14 +1,14 @@
 package com.sellman.andrew.vann.core.event;
 
-import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 
 public class NetworkInputEvent extends MatrixEvent {
 
-	public NetworkInputEvent(final Context context, final Matrix input) {
+	public NetworkInputEvent(final Context context, final InspectableMatrix input) {
 		super(context, input);
 	}
 
-	public final Matrix getInput() {
+	public final InspectableMatrix getInput() {
 		return getEventMatrix();
 	}
 

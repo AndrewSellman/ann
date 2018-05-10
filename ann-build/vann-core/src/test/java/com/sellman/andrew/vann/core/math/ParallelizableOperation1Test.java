@@ -25,7 +25,7 @@ import org.powermock.reflect.Whitebox;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation1;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTaskPool;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByRowTask;
@@ -54,8 +54,8 @@ public class ParallelizableOperation1Test {
 
 	private Matrix a;
 	private Matrix b;
-	private Vector x;
-	private Vector y;
+	private ColumnVector x;
+	private ColumnVector y;
 
 	@Mock
 	private CountDownLatch taskGroup;
@@ -83,7 +83,7 @@ public class ParallelizableOperation1Test {
 
 	@Test
 	public void doVectorWithMatrixOperationAsSequential() throws Exception {
-		x = new Vector(2);
+		x = new ColumnVector(2);
 		b = new Matrix(2, 1);
 		doReturn(matrixTarget).when(op).doSequentialOp(eq(x.getMatrix()), eq(b), eq(2), eq(1), any(Matrix.class));
 
@@ -97,10 +97,10 @@ public class ParallelizableOperation1Test {
 	@Test
 	public void doMatrixWithVectorOperationAsSequential() throws Exception {
 		a = new Matrix(2, 1);
-		y = new Vector(2);
+		y = new ColumnVector(2);
 		doReturn(matrixTarget).when(op).doSequentialOp(eq(a), eq(y.getMatrix()), eq(2), eq(1), any(Matrix.class));
 
-		Vector result = op.doOperation(a, y);
+		ColumnVector result = op.doOperation(a, y);
 		assertEquals(matrixTarget, result.getMatrix());
 		verifyZeroInteractions(byColumnTaskPool);
 		verifyZeroInteractions(byRowTaskPool);
@@ -122,7 +122,7 @@ public class ParallelizableOperation1Test {
 
 	@Test
 	public void doVectorWithMatrixOperationAsParallel() throws Exception {
-		x = new Vector(1);
+		x = new ColumnVector(1);
 		b = new Matrix(1, 1);
 		setOpAsParallel(true);
 
@@ -138,10 +138,10 @@ public class ParallelizableOperation1Test {
 	@Test
 	public void doMatrixWithVectorOperationAsParallel() throws Exception {
 		a = new Matrix(1, 1);
-		y = new Vector(1);
+		y = new ColumnVector(1);
 		setOpAsParallel(true);
 
-		Vector result = op.doOperation(a, y);
+		ColumnVector result = op.doOperation(a, y);
 		assertEquals(1, result.getRowCount());
 		verify(byRowTaskPool).borrow(1);
 		verify(byRowTaskPool).recycle(rowTasks);
@@ -152,11 +152,11 @@ public class ParallelizableOperation1Test {
 
 	@Test
 	public void doVectorWithVectorOperationAsParallel() throws Exception {
-		x = new Vector(1);
-		y = new Vector(1);
+		x = new ColumnVector(1);
+		y = new ColumnVector(1);
 		setOpAsParallel(true);
 
-		Vector result = op.doOperation(x, y);
+		ColumnVector result = op.doOperation(x, y);
 		assertEquals(1, result.getRowCount());
 		verify(byRowTaskPool).borrow(1);
 		verify(byRowTaskPool).recycle(rowTasks);

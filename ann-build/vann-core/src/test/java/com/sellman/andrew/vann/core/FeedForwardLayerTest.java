@@ -15,7 +15,7 @@ import com.sellman.andrew.vann.core.concurrent.TaskServiceBuilder;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.MathOperationsFactory;
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.add.AdditionFactory;
 import com.sellman.andrew.vann.core.math.advice.AdviceKey;
 import com.sellman.andrew.vann.core.math.advice.ParallelizableOperation1Advisor;
@@ -39,7 +39,7 @@ public class FeedForwardLayerTest {
 	// 3000, 4000 });
 	private static final Matrix INPUT = new Matrix(new double[][] { { 1, 2 } });
 	private static final Matrix M2X4 = new Matrix(new double[][] { { 3, 4, 5, 6 }, { 7, 8, 9, 10 } });
-	private static final Vector BIAS = new Vector(new double[] { 1000, 2000, 3000, 4000 });
+	private static final ColumnVector BIAS = new ColumnVector(new double[] { 1000, 2000, 3000, 4000 });
 	private AdditionFactory additionFactory;
 	private SummationFactory summationFactory;
 	private SubtractionFactory subtractionFactory;

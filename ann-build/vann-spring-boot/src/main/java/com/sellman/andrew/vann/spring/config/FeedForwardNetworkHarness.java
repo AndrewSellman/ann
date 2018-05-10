@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
-import com.sellman.andrew.vann.core.AbstractFeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.FeedForwardNetwork;
+import com.sellman.andrew.vann.core.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.GradientDescentType;
 import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainerConfig;
 
@@ -17,7 +17,7 @@ public class FeedForwardNetworkHarness {
 	private FeedForwardNetwork network;
 	private FeedForwardNetworkTrainerConfig trainerConfiguration;
 	private GradientDescentType trainerType;
-	private AbstractFeedForwardNetworkTrainer trainer;
+	private FeedForwardNetworkTrainer trainer;
 
 	public FeedForwardNetworkHarness() {
 		networkName = UUID.randomUUID().toString();
@@ -31,11 +31,11 @@ public class FeedForwardNetworkHarness {
 		this.network = network;
 	}
 
-	public AbstractFeedForwardNetworkTrainer getTrainer() {
+	public FeedForwardNetworkTrainer getTrainer() {
 		return trainer;
 	}
 
-	public void setTrainer(AbstractFeedForwardNetworkTrainer trainer) {
+	public void setTrainer(FeedForwardNetworkTrainer trainer) {
 		this.trainer = trainer;
 	}
 

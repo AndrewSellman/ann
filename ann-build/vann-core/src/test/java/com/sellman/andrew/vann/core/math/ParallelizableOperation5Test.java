@@ -25,7 +25,7 @@ import org.powermock.reflect.Whitebox;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation5;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTaskPool;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByRowTask;
@@ -54,8 +54,8 @@ public class ParallelizableOperation5Test {
 
 	private Matrix a;
 	private Matrix matrixTarget;
-	private Vector x;
-	private Vector vectorTarget;
+	private ColumnVector x;
+	private ColumnVector vectorTarget;
 
 	@Mock
 	private CountDownLatch taskGroup;
@@ -80,8 +80,8 @@ public class ParallelizableOperation5Test {
 
 	@Test
 	public void doVectorWithVectorOperationAsSequential() throws Exception {
-		x = new Vector(2);
-		vectorTarget = new Vector(2);
+		x = new ColumnVector(2);
+		vectorTarget = new ColumnVector(2);
 		doNothing().when(op).doSequentialOp(eq(x.getMatrix()), eq(2), eq(1), eq(vectorTarget.getMatrix()));
 
 		op.doOperation(x, vectorTarget);
@@ -104,8 +104,8 @@ public class ParallelizableOperation5Test {
 
 	@Test
 	public void doVectorWithVectorOperationAsParallel() throws Exception {
-		x = new Vector(1);
-		vectorTarget = new Vector(1);
+		x = new ColumnVector(1);
+		vectorTarget = new ColumnVector(1);
 		setOpAsParallel(true);
 
 		op.doOperation(x, vectorTarget);

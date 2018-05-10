@@ -1,7 +1,7 @@
 package com.sellman.andrew.vann.core.event;
 
 public class ConsoleListener implements BatchIndexChangeListener, BatchErrorChangeListener, EpochIndexChangeListener, EpochErrorChangeListener, MatrixChangeListener, MatrixPollListener,
-		NetworkInputListener, NetworkOutputListener, ResetBatchErrorListener, ValidationErrorChangeListener, VectorChangeListener, VectorPollListener {
+		NetworkInputListener, NetworkOutputListener, ResetBatchErrorListener, ValidationErrorChangeListener, ColumnVectorChangeListener, ColumnVectorPollListener, RowVectorChangeListener, RowVectorPollListener {
 
 	@Override
 	public void onEvent(BatchErrorChangeEvent event) {
@@ -9,12 +9,22 @@ public class ConsoleListener implements BatchIndexChangeListener, BatchErrorChan
 	}
 
 	@Override
-	public void onEvent(VectorPollEvent event) {
+	public void onEvent(ColumnVectorPollEvent event) {
 		onEvent(Event.class.cast(event));
 	}
 
 	@Override
-	public void onEvent(VectorChangeEvent event) {
+	public void onEvent(ColumnVectorChangeEvent event) {
+		onEvent(Event.class.cast(event));
+	}
+
+	@Override
+	public void onEvent(RowVectorPollEvent event) {
+		onEvent(Event.class.cast(event));
+	}
+
+	@Override
+	public void onEvent(RowVectorChangeEvent event) {
 		onEvent(Event.class.cast(event));
 	}
 

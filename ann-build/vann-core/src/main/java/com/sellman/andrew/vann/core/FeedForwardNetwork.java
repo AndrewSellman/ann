@@ -7,8 +7,9 @@ import com.sellman.andrew.vann.core.event.Event;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.NetworkInputEvent;
 import com.sellman.andrew.vann.core.event.NetworkOutputEvent;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.RowVector;
 import com.sellman.andrew.vann.core.math.function.Function;
 
 public class FeedForwardNetwork {
@@ -18,10 +19,10 @@ public class FeedForwardNetwork {
 		this.config = config;
 	}
 
-	public Matrix evaluate(final Matrix input) {
+	public InspectableMatrix evaluate(final InspectableMatrix input) {
 		fireNetworkInputEvent(input);
 
-		Matrix nextLayerInput = input;
+		InspectableMatrix nextLayerInput = input;
 		Matrix output = null;
 		for (FeedForwardNetworkLayer layer : getLayers()) {
 			output = layer.evaluate(nextLayerInput);
@@ -36,7 +37,7 @@ public class FeedForwardNetwork {
 		return config.getLayerCount();
 	}
 
-	protected Matrix getOutput(int layerIndex) {
+	protected InspectableMatrix getOutput(int layerIndex) {
 		return getLayers().get(layerIndex).getOutput();
 	}
 
@@ -52,11 +53,11 @@ public class FeedForwardNetwork {
 		getLayers().get(layerIndex).setWeights(weights);
 	}
 
-	protected Vector getBias(int layerIndex) {
+	protected RowVector getBias(int layerIndex) {
 		return getLayers().get(layerIndex).getBias();
 	}
 
-	protected void setBias(int layerIndex, Vector bias) {
+	protected void setBias(int layerIndex, RowVector bias) {
 		getLayers().get(layerIndex).setBias(bias);
 	}
 
@@ -88,7 +89,7 @@ public class FeedForwardNetwork {
 		}
 	}
 	
-	public Matrix getInput(int layerIndex) {
+	public InspectableMatrix getInput(int layerIndex) {
 		return getLayers().get(layerIndex).getInput();
 	}
 
@@ -98,7 +99,7 @@ public class FeedForwardNetwork {
 		}
 	}
 
-	private void fireNetworkInputEvent(Matrix input) {
+	private void fireNetworkInputEvent(InspectableMatrix input) {
 		if (!isAnyListener(NetworkInputEvent.class)) {
 			return;
 		}

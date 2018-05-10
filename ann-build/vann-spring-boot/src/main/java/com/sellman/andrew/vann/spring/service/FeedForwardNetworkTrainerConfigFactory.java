@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.sellman.andrew.vann.core.TrainingBatchFactory;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainerConfig;
+import com.sellman.andrew.vann.core.training.MeanSquaredErrorCalculator;
 import com.sellman.andrew.vann.core.training.evaluator.BoldDriverLearningRateEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.FixedLearningRateEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.LearningRateEvaluator;
@@ -19,8 +21,9 @@ import com.sellman.andrew.vann.core.training.evaluator.MinimumEpochErrorEvaluato
 import com.sellman.andrew.vann.core.training.evaluator.MinimumValidationErrorEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.TrainingEvaluator;
 import com.sellman.andrew.vann.spring.config.EventBeanNames;
-import com.sellman.andrew.vann.spring.config.MathOperationsBeanNames;
+import com.sellman.andrew.vann.spring.config.MathBeanNames;
 import com.sellman.andrew.vann.spring.config.TaskServiceBeanNames;
+import com.sellman.andrew.vann.spring.config.TrainingBeanNames;
 import com.sellman.andrew.vann.spring.controller.network.trainer.LearningRateEvaluatorRequest;
 import com.sellman.andrew.vann.spring.controller.network.trainer.NetworkTrainerConfigRequest;
 import com.sellman.andrew.vann.spring.controller.network.trainer.TrainingEvaluatorRequest;
@@ -33,8 +36,12 @@ public class FeedForwardNetworkTrainerConfigFactory {
 	private TaskService taskService;
 
 	@Autowired
-	@Qualifier(value = MathOperationsBeanNames.HIGH_PRIORITY_WAIT_FOR_COMPLETION)
+	@Qualifier(value = MathBeanNames.HIGH_PRIORITY_WAIT_FOR_COMPLETION)
 	private MathOperations mathOps;
+
+	@Autowired
+	@Qualifier(value = TrainingBeanNames.TRAINING_BATCH_FACTORY)
+	private TrainingBatchFactory trainingBatchFctory;
 
 	@Autowired
 	@Qualifier(value = EventBeanNames.EVENT_MANAGER)
@@ -43,7 +50,7 @@ public class FeedForwardNetworkTrainerConfigFactory {
 	public FeedForwardNetworkTrainerConfig create(NetworkTrainerConfigRequest request) {
 		List<TrainingEvaluator> trainingEvaluators = getTrainingEvaluators(request.getTrainingEvaluators());
 		LearningRateEvaluator learningRateEvaluator = getLearningRateEvaluator(request.getLearningRateEvaluator());
-		return new FeedForwardNetworkTrainerConfig(taskService, trainingEvaluators, mathOps, eventManager, learningRateEvaluator);
+		return new FeedForwardNetworkTrainerConfig(taskService, trainingEvaluators, mathOps, eventManager, learningRateEvaluator, trainingBatchFctory, new MeanSquaredErrorCalculator(mathOps));
 	}
 
 	private LearningRateEvaluator getLearningRateEvaluator(LearningRateEvaluatorRequest learningRateEvaluator) {

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sellman.andrew.vann.core.AbstractFeedForwardNetworkTrainer;
+import com.sellman.andrew.vann.core.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainerConfig;
 import com.sellman.andrew.vann.spring.config.FeedForwardNetworkHarness;
 import com.sellman.andrew.vann.spring.controller.Response;
@@ -38,7 +38,7 @@ public class NetworkTrainerConfigurationController {
 		harness.setTrainerConfiguration(config);
 
 		if (harness.getNetwork() != null) {
-			AbstractFeedForwardNetworkTrainer trainer = networkTrainerFactory.create(config, harness.getTrainerType(), harness.getNetwork());
+			FeedForwardNetworkTrainer trainer = networkTrainerFactory.create(config, harness.getTrainerType(), harness.getNetwork());
 			harness.setTrainer(trainer);
 		}
 

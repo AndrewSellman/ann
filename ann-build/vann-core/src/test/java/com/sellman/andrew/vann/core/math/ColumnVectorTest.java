@@ -17,12 +17,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.sellman.andrew.vann.core.event.Context;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.Representation;
-import com.sellman.andrew.vann.core.event.VectorChangeEvent;
-import com.sellman.andrew.vann.core.event.VectorPollEvent;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.event.ColumnVectorChangeEvent;
+import com.sellman.andrew.vann.core.event.ColumnVectorPollEvent;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 
 @RunWith(MockitoJUnitRunner.class)
-public class VectorTest {
+public class ColumnVectorTest {
 	private static final int LAYER_INDEX = 1;
 	private static final String NETWORK_NAME = "networkName";
 	private static final Representation REPRESENTS = Representation.BIAS;
@@ -41,7 +41,7 @@ public class VectorTest {
 
 	@Test
 	public void asString() {
-		Vector v = new Vector(1);
+		ColumnVector v = new ColumnVector(1);
 		v.setValue(0, newValue);
 		String asString = v.toString();
 		assertTrue(asString.contains("[1x1"));
@@ -50,14 +50,14 @@ public class VectorTest {
 
 	@Test
 	public void setValueShouldFireMatrixChangeEvent() {
-		ArgumentCaptor<VectorChangeEvent> eventCaptor = ArgumentCaptor.forClass(VectorChangeEvent.class);
-		doReturn(true).when(eventManager).isAnyRegisteredListenerFor(VectorChangeEvent.class);
+		ArgumentCaptor<ColumnVectorChangeEvent> eventCaptor = ArgumentCaptor.forClass(ColumnVectorChangeEvent.class);
+		doReturn(true).when(eventManager).isAnyRegisteredListenerFor(ColumnVectorChangeEvent.class);
 
-		Vector v = new Vector(ROW_COUNT, context, eventManager);
+		ColumnVector v = new ColumnVector(ROW_COUNT, context, eventManager);
 		v.setValue(1, newValue);
 
 		verify(eventManager).fire(eventCaptor.capture());
-		VectorChangeEvent event = eventCaptor.getValue();
+		ColumnVectorChangeEvent event = eventCaptor.getValue();
 		assertEquals(1, event.getRowIndex());
 		assertEquals(newValue, event.getValue(), 0.0);
 		assertEquals(NETWORK_NAME, event.getNetworkName());
@@ -67,16 +67,16 @@ public class VectorTest {
 
 	@Test
 	public void getValueShouldFireVectorPollEvent() {
-		ArgumentCaptor<VectorPollEvent> eventCaptor = ArgumentCaptor.forClass(VectorPollEvent.class);
-		doReturn(true).when(eventManager).isAnyRegisteredListenerFor(VectorPollEvent.class);
+		ArgumentCaptor<ColumnVectorPollEvent> eventCaptor = ArgumentCaptor.forClass(ColumnVectorPollEvent.class);
+		doReturn(true).when(eventManager).isAnyRegisteredListenerFor(ColumnVectorPollEvent.class);
 
-		Vector v = new Vector(ROW_COUNT, context, eventManager);
+		ColumnVector v = new ColumnVector(ROW_COUNT, context, eventManager);
 		v.setValue(1, newValue);
 		double fetchedValue = v.getValue(1);
 
 		assertEquals(newValue, fetchedValue, 0.0);
 		verify(eventManager).fire(eventCaptor.capture());
-		VectorPollEvent event = eventCaptor.getValue();
+		ColumnVectorPollEvent event = eventCaptor.getValue();
 		assertEquals(1, event.getRowIndex());
 		assertEquals(newValue, event.getValue(), 0.0);
 		assertEquals(NETWORK_NAME, event.getNetworkName());
@@ -87,23 +87,23 @@ public class VectorTest {
 	@Test
 	public void constructorWithData() {
 		double[] data = new double[ROW_COUNT];
-		Vector v = new Vector(data);
+		ColumnVector v = new ColumnVector(data);
 		assertVector(v, ROW_COUNT);
 	}
 
 	@Test
 	public void constructorWithDimension() {
-		Vector v = new Vector(ROW_COUNT);
+		ColumnVector v = new ColumnVector(ROW_COUNT);
 		assertVector(v, ROW_COUNT);
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void invalidRowReference() {
-		Vector v = new Vector(ROW_COUNT);
+		ColumnVector v = new ColumnVector(ROW_COUNT);
 		v.getValue(ROW_COUNT);
 	}
 
-	private void assertVector(Vector v, int expectedRowCount) {
+	private void assertVector(ColumnVector v, int expectedRowCount) {
 		assertEquals(expectedRowCount, v.getRowCount());
 
 		assertVector(v, 0.0);
@@ -111,13 +111,13 @@ public class VectorTest {
 		assertVector(v, newValue);
 	}
 
-	private void assertVector(Vector v, double exepctedValue) {
+	private void assertVector(ColumnVector v, double exepctedValue) {
 		for (int rowIndex = 0; rowIndex < v.getRowCount(); rowIndex++) {
 			assertEquals(exepctedValue, v.getValue(rowIndex), 0.0);
 		}
 	}
 
-	private void updateVector(Vector v) {
+	private void updateVector(ColumnVector v) {
 		for (int rowIndex = 0; rowIndex < v.getRowCount(); rowIndex++) {
 			v.setValue(rowIndex, newValue);
 		}

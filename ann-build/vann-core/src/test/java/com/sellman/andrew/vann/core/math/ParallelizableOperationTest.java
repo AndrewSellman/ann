@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.function.FixedValueFunction;
 import com.sellman.andrew.vann.core.math.function.Function;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTask;
@@ -51,23 +51,18 @@ public class ParallelizableOperationTest {
 	@Mock(answer = Answers.CALLS_REAL_METHODS)
 	private AbstractOperationByColumnTask columnTask;
 
-	@Mock
 	private Function f;
 
-	@Mock
 	private Matrix a;
 
-	@Mock
 	private Matrix b;
 
 	@Mock
 	private CountDownLatch taskGroup;
 
-	@Mock
 	private Matrix matrixTarget;
 
-	@Mock
-	private Vector vectorTarget;
+	private ColumnVector vectorTarget;
 
 	@Before
 	public void prepareTest() {
@@ -106,6 +101,7 @@ public class ParallelizableOperationTest {
 		b = new Matrix(2, 1);
 		f = new FixedValueFunction();
 		matrixTarget = null;
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByColumn(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByColumnString(s, 42);
@@ -117,7 +113,7 @@ public class ParallelizableOperationTest {
 		b = new Matrix(2, 1);
 		f = new FixedValueFunction();
 		matrixTarget = null;
-		vectorTarget = new Vector(5);
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByRow(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByRowString(s, 42);
@@ -129,7 +125,7 @@ public class ParallelizableOperationTest {
 		b = new Matrix(2, 1);
 		f = null;
 		matrixTarget = new Matrix(2, 3);
-		vectorTarget = new Vector(5);
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByColumn(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByColumnString(s, 42);
@@ -141,7 +137,7 @@ public class ParallelizableOperationTest {
 		b = new Matrix(2, 1);
 		f = null;
 		matrixTarget = new Matrix(2, 3);
-		vectorTarget = new Vector(5);
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByRow(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByRowString(s, 42);
@@ -153,7 +149,7 @@ public class ParallelizableOperationTest {
 		b = null;
 		f = new FixedValueFunction();
 		matrixTarget = new Matrix(2, 3);
-		vectorTarget = new Vector(5);
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByColumn(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByColumnString(s, 42);
@@ -165,7 +161,7 @@ public class ParallelizableOperationTest {
 		b = null;
 		f = new FixedValueFunction();
 		matrixTarget = new Matrix(2, 3);
-		vectorTarget = new Vector(5);
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByRow(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByRowString(s, 42);
@@ -177,7 +173,7 @@ public class ParallelizableOperationTest {
 		b = new Matrix(2, 1);
 		f = new FixedValueFunction();
 		matrixTarget = new Matrix(2, 3);
-		vectorTarget = new Vector(5);
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByColumn(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByColumnString(s, 42);
@@ -189,7 +185,7 @@ public class ParallelizableOperationTest {
 		b = new Matrix(2, 1);
 		f = new FixedValueFunction();
 		matrixTarget = new Matrix(2, 3);
-		vectorTarget = new Vector(5);
+		vectorTarget = new ColumnVector(5);
 
 		String s = op.toStringByRow(a, b, f, 42, matrixTarget, vectorTarget);
 		assertByRowString(s, 42);
@@ -216,7 +212,7 @@ public class ParallelizableOperationTest {
 	public void runTasksAndGetVectorTarget() {
 		List<AbstractOperationTask> tasks = Arrays.asList(rowTask, columnTask);
 
-		Vector target = op.runTasksAndReturnTarget(tasks, vectorTarget);
+		ColumnVector target = op.runTasksAndReturnTarget(tasks, vectorTarget);
 		verify(taskService).runTasks(tasks);
 		assertEquals(vectorTarget, target);
 	}

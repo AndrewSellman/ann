@@ -4,44 +4,52 @@ import com.sellman.andrew.vann.core.math.function.Function;
 
 public interface MathOperations {
 	
-	public Matrix multiply(final Matrix left, final Matrix right);
+	public Matrix multiply(final InspectableMatrix left, final InspectableMatrix right);
 	
-	public Vector multiply(final Matrix left, final Vector right);
+	public ColumnVector multiply(final Matrix left, final ColumnVector right);
 	
-	public Matrix multiply(final Vector left, final Matrix right);
+	public Matrix multiply(final ColumnVector left, final Matrix right);
 	
-	public Matrix hadamard(final Matrix a, final Matrix b);
+	public Matrix hadamard(final InspectableMatrix a, final InspectableMatrix b);
 	
-	public Vector hadamard(final Vector a, final Vector b);
+	public ColumnVector hadamard(final ColumnVector a, final ColumnVector b);
 	
 	public Matrix add(final Matrix a, final Matrix b);
 	
-	public Vector add(final Vector a, final Vector b);
+	public ColumnVector add(final ColumnVector a, final ColumnVector b);
 	
-	public Matrix add(final Matrix m, final Vector v);
+	public Matrix add(final Matrix m, final ColumnVector v);
 	
-	public Matrix subtract(final Matrix left, final Matrix right);
+	public Matrix add(final Matrix m, final RowVector v);
 	
-	public Vector subtract(final Vector left, final Vector right);
+	public Matrix subtract(final InspectableMatrix left, final InspectableMatrix right);
+	
+	public ColumnVector subtract(final ColumnVector left, final ColumnVector right);
+	
+	public ColumnVector subtract(final ColumnVector left, final InspectableMatrix right);
 
-	public Matrix scale(final Matrix m, final Function f);
+	public RowVector subtract(final RowVector left, final InspectableMatrix right);
+	
+	public Matrix scale(final InspectableMatrix m, final Function f);
 
-	public Vector scale(final Vector v, final Function f);
+	public ColumnVector scale(final ColumnVector v, final Function f);
 	
-	public Matrix transpose(final Matrix m);
+	public Matrix transpose(final InspectableMatrix m);
 	
-	public Matrix transpose(final Vector v);
+	public Matrix transpose(final ColumnVector v);
 
 	public void update(final Matrix source, final Matrix target);
 	
-	public void update(final Vector source, final Vector target);
+	public void update(final ColumnVector source, final ColumnVector target);
 	
-	public double sum(final Matrix m);
+	public void update(final RowVector source, final RowVector target);
 	
-	public double sum(final Vector v);
+	public double sum(final InspectableMatrix m);
+	
+	public double sum(final ColumnVector v);
 	
 	public Matrix absolute(final Matrix m);
 	
-	public Vector absolute(final Vector v);
+	public ColumnVector absolute(final ColumnVector v);
 	
 }

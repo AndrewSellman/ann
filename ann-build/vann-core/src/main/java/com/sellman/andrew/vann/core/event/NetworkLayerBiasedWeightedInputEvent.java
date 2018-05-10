@@ -1,14 +1,14 @@
 package com.sellman.andrew.vann.core.event;
 
-import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 
 public class NetworkLayerBiasedWeightedInputEvent extends MatrixEvent {
 
-	public NetworkLayerBiasedWeightedInputEvent(final Context context, final Matrix input) {
+	public NetworkLayerBiasedWeightedInputEvent(final Context context, final InspectableMatrix input) {
 		super(context, input);
 	}
 
-	public final Matrix getLayerBiasedWeightedInput() {
+	public final InspectableMatrix getLayerBiasedWeightedInput() {
 		return getEventMatrix();
 	}
 

@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.sellman.andrew.vann.core.math.Matrix;
-import com.sellman.andrew.vann.core.math.Vector;
+import com.sellman.andrew.vann.core.math.ColumnVector;
 import com.sellman.andrew.vann.core.math.sum.SummationByRowTask;
 
 public class SummationByRowTaskTest {
@@ -24,7 +24,7 @@ public class SummationByRowTaskTest {
 
 	@Test
 	public void sum() {
-		Vector target = new Vector(2);
+		ColumnVector target = new ColumnVector(2);
 		task.setVectorTarget(target);
 
 		task.execute();

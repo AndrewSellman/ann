@@ -6,7 +6,7 @@ import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.MatrixChangeEvent;
 import com.sellman.andrew.vann.core.event.MatrixPollEvent;
 
-public class Matrix {
+public class Matrix implements InspectableMatrix {
 	private final double[][] data;
 	private final long cellCount;
 	private final Context context;
@@ -54,6 +54,14 @@ public class Matrix {
 		fireChangeEvent(rowIndex, columnIndex, value);
 	}
 
+	protected void setRowValues(int rowIndex, double[] data) {
+		this.data[rowIndex] = data;
+	}
+	
+	protected double[] getRowValues(int rowIndex) {
+		return this.data[rowIndex];
+	}
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder("[");
 		sb.append(getRowCount());
@@ -88,8 +96,8 @@ public class Matrix {
 		fire(event);
 	}
 
-	private boolean isAnyListener(Class<? extends Event> eventType) {
-		return eventManager != null && eventManager.isAnyRegisteredListenerFor(eventType);
+	private boolean isAnyListener(Class<? extends Event> eventClass) {
+		return eventManager != null && eventManager.isAnyRegisteredListenerFor(eventClass);
 	}
 
 	private void fire(Event event) {

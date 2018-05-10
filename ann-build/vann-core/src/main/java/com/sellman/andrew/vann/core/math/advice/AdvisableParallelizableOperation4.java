@@ -1,7 +1,7 @@
 package com.sellman.andrew.vann.core.math.advice;
 
 import com.sellman.andrew.vann.core.concurrent.TaskService;
-import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.ParallelizableOperation4;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTask;
 import com.sellman.andrew.vann.core.math.task.AbstractOperationByColumnTaskPool;
@@ -16,20 +16,20 @@ public abstract class AdvisableParallelizableOperation4<R extends AbstractOperat
 		this.advisor = advisor;
 	}
 
-	public long getSequentialOpNanos(final Matrix m) {
+	public long getSequentialOpNanos(final InspectableMatrix m) {
 		long start = System.nanoTime();
 		doSequentialOp(m);
 		return System.nanoTime() - start;
 	}
 
-	public long getParallelOpNanos(final Matrix m) {
+	public long getParallelOpNanos(final InspectableMatrix m) {
 		long start = System.nanoTime();
 		doParallelOp(m);
 		return System.nanoTime() - start;
 	}
 
 	@Override
-	protected final boolean doAsParallelOp(final Matrix m) {
+	protected final boolean doAsParallelOp(final InspectableMatrix m) {
 		return advisor.doAsParrallelOp(this, m.getRowCount(), m.getColumnCount());
 	}
 

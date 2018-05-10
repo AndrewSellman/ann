@@ -2,6 +2,7 @@ package com.sellman.andrew.vann.core.training;
 
 import java.util.List;
 
+import com.sellman.andrew.vann.core.TrainingBatchFactory;
 import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.math.MathOperations;
@@ -18,8 +19,10 @@ public class FeedForwardNetworkTrainerConfig {
 	private int batchSize = 1;
 	private double percentTrainingDataForValidation;
 	private final LearningRateEvaluator learningRateEvaluator;
+	private final TrainingBatchFactory trainingBatchFactory;
+	private final ErrorCalculator errorCalculator;
 
-	public FeedForwardNetworkTrainerConfig(final TaskService taskService, final List<TrainingEvaluator> trainingEvaluators, final MathOperations mathOperations, final EventManager eventManager, LearningRateEvaluator learningRateEvaluator) {
+	public FeedForwardNetworkTrainerConfig(final TaskService taskService, final List<TrainingEvaluator> trainingEvaluators, final MathOperations mathOperations, final EventManager eventManager, final LearningRateEvaluator learningRateEvaluator, final TrainingBatchFactory trainingBatchFactory, final ErrorCalculator errorCalculator) {
 		this.trainingEvaluators = trainingEvaluators;
 		this.mathOps = mathOperations;
 		this.batchSize = DEFAULT_BATCH_SIZE;
@@ -27,10 +30,20 @@ public class FeedForwardNetworkTrainerConfig {
 		this.eventManager = eventManager;
 		this.taskService = taskService;
 		this.learningRateEvaluator = learningRateEvaluator;
+		this.trainingBatchFactory = trainingBatchFactory;
+		this.errorCalculator = errorCalculator;
 	}
 
 	public LearningRateEvaluator getLearningRateEvaluator() {
 		return learningRateEvaluator;
+	}
+	
+	public TrainingBatchFactory getTrainingBatchFactory() {
+		return trainingBatchFactory;
+	}
+	
+	public ErrorCalculator getErrorCalculator() {
+		return errorCalculator;
 	}
 	
 	public int getBatchSize() {
