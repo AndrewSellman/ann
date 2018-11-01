@@ -35,6 +35,13 @@ public class RowVector extends Vector implements InspectableRowVector {
 		populate(data);
 	}
 
+	public RowVector(RowVector v) {
+		this(v.getColumnCount());
+		for (int c = 0; c < v.getColumnCount(); c++) {
+			this.setValue(c, v.getValue(c));
+		}
+	}
+
 	public int getColumnCount() {
 		return getMatrix().getColumnCount();
 	}

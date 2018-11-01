@@ -16,7 +16,7 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	private final ParallelizableOperation2<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> scaler;
 	private final ParallelizableOperation3<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> transposition;
 	private final ParallelizableOperation5<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> updation;
-
+	
 	public MathOperationsImpl(final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> standardMultiplier,
 			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> hadamardMultiplier,
 			final ParallelizableOperation1<? extends AbstractOperationByRowTask, ? extends AbstractOperationByColumnTask> addition,
@@ -62,7 +62,7 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public Matrix add(final Matrix a, final Matrix b) {
+	public Matrix add(final InspectableMatrix a, final InspectableMatrix b) {
 		return addition.doOperation(a, b);
 	}
 
@@ -72,55 +72,8 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public Matrix add(final Matrix m, final ColumnVector v) {
-		//TOOD optimize...
-		Matrix result = new Matrix(m.getRowCount(), m.getColumnCount());
-		for (int r = 0; r < m.getRowCount(); r++) {
-			for (int c = 0; r < m.getColumnCount(); c++) {
-				result.setValue(r, c, m.getValue(r, c) + v.getValue(r));
-			}
-		}
-		
-		return result;
-	}
-
-	@Override
-	public Matrix add(final Matrix m, final RowVector v) {
-		//TOOD optimize...
-		Matrix result = new Matrix(m.getRowCount(), m.getColumnCount());
-		for (int r = 0; r < m.getRowCount(); r++) {
-			for (int c = 0; c < m.getColumnCount(); c++) {
-				result.setValue(r, c, m.getValue(r, c) + v.getValue(c));
-			}
-		}
-		
-		return result;
-	}
-
-	@Override
-	public ColumnVector subtract(final ColumnVector v, final InspectableMatrix m) {
-		//TOOD optimize...
-		ColumnVector result = new ColumnVector(m.getRowCount());
-		for (int r = 0; r < m.getRowCount(); r++) {
-			for (int c = 0; c < m.getColumnCount(); c++) {
-				result.setValue(r, v.getValue(r) - m.getValue(r, c));
-			}
-		}
-		
-		return result;
-	}
-
-	@Override
-	public RowVector subtract(final RowVector v, final InspectableMatrix m) {
-		//TOOD optimize...
-		RowVector result = new RowVector(m.getColumnCount());
-		for (int r = 0; r < m.getRowCount(); r++) {
-			for (int c = 0; c < m.getColumnCount(); c++) {
-				result.setValue(c, v.getValue(c) - m.getValue(r, c));
-			}
-		}
-		
-		return result;
+	public RowVector add(final RowVector a, final RowVector b) {
+		return addition.doOperation(a, b);
 	}
 
 	@Override
@@ -129,7 +82,7 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 	}
 
 	@Override
-	public ColumnVector subtract(final ColumnVector left, final ColumnVector right) {
+	public RowVector subtract(final RowVector left, final RowVector right) {
 		return subtraction.doOperation(left, right);
 	}
 
@@ -140,6 +93,11 @@ class MathOperationsImpl implements MathOperations, AutoCloseable {
 
 	@Override
 	public ColumnVector scale(final ColumnVector v, final Function f) {
+		return scaler.doOperation(v, f);
+	}
+
+	@Override
+	public RowVector scale(final RowVector v, final Function f) {
 		return scaler.doOperation(v, f);
 	}
 

@@ -26,11 +26,20 @@ public class Matrix implements InspectableMatrix {
 	public Matrix(int rowCount, int columnCount, Context context, EventManager eventManager) {
 		this(new double[rowCount][columnCount], context, eventManager);
 	}
-	
+
 	public Matrix(int rowCount, int columnCount) {
 		this(new double[rowCount][columnCount]);
 	}
-	
+
+	public Matrix(Matrix m) {
+		this(m.getRowCount(), m.getColumnCount());
+		for (int r = 0; r < m.getRowCount(); r++) {
+			for (int c = 0; c < m.getColumnCount(); c++) {
+				this.setValue(r, c, m.getValue(r, c));
+			}
+		}
+	}
+
 	public int getRowCount() {
 		return data.length;
 	}
@@ -57,7 +66,7 @@ public class Matrix implements InspectableMatrix {
 	protected void setRowValues(int rowIndex, double[] data) {
 		this.data[rowIndex] = data;
 	}
-	
+
 	protected double[] getRowValues(int rowIndex) {
 		return this.data[rowIndex];
 	}

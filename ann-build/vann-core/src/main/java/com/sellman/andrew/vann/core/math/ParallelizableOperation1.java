@@ -23,6 +23,10 @@ public abstract class ParallelizableOperation1<R extends AbstractOperationByRowT
 		return doSequentialOp(a, b);
 	}
 
+	public RowVector doOperation(final RowVector a, final RowVector b) {
+		return new RowVector(doOperation(a.getMatrix(), b.getMatrix()));
+	}
+
 	public ColumnVector doOperation(final ColumnVector a, final ColumnVector b) {
 		return new ColumnVector(doOperation(a.getMatrix(), b.getMatrix()));
 	}

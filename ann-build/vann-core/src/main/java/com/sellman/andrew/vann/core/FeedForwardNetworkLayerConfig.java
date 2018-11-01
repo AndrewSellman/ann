@@ -2,6 +2,7 @@ package com.sellman.andrew.vann.core;
 
 import com.sellman.andrew.vann.core.event.Context;
 import com.sellman.andrew.vann.core.event.EventManager;
+import com.sellman.andrew.vann.core.math.InspectableMatrixFactory;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.RowVector;
@@ -11,18 +12,20 @@ import com.sellman.andrew.vann.core.math.function.FunctionGroup;
 public class FeedForwardNetworkLayerConfig {
 	private final Context context;
 	private final EventManager eventManager;
-	private final MathOperations matrixOps;
+	private final MathOperations mathOps;
 	private final FunctionGroup functionGroup;
 	private final Matrix weights;
 	private final RowVector bias;
+	private final InspectableMatrixFactory matrixFactory;
 	
-	public FeedForwardNetworkLayerConfig(final Context context, final EventManager eventManager, final MathOperations matrixOps, final FunctionGroup functionGroup, final Matrix weights, final RowVector bias) {
+	public FeedForwardNetworkLayerConfig(final Context context, final EventManager eventManager, final MathOperations mathOps, final FunctionGroup functionGroup, final Matrix weights, final RowVector bias, InspectableMatrixFactory matrixFactory) {
 		this.context = context;
 		this.eventManager = eventManager;
-		this.matrixOps = matrixOps;
+		this.mathOps = mathOps;
 		this.weights = weights;
 		this.bias = bias;
 		this.functionGroup = functionGroup;
+		this.matrixFactory = matrixFactory;
 	}
 
 	protected Matrix getWeights() {
@@ -41,8 +44,8 @@ public class FeedForwardNetworkLayerConfig {
 		return functionGroup.getPrime();
 	}
 
-	protected MathOperations getMatrixOps() {
-		return matrixOps;
+	protected MathOperations getMathOps() {
+		return mathOps;
 	}
 
 	protected EventManager getEventManager() {
@@ -51,6 +54,10 @@ public class FeedForwardNetworkLayerConfig {
 
 	protected Context getContext() {
 		return context;
+	}
+	
+	protected InspectableMatrixFactory getMatrixFactory() {
+		return matrixFactory;
 	}
 
 }

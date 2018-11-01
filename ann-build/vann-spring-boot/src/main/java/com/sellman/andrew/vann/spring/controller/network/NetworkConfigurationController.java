@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sellman.andrew.vann.core.FeedForwardNetwork;
-import com.sellman.andrew.vann.core.FeedForwardNetworkTrainer;
+import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.spring.config.FeedForwardNetworkHarness;
 import com.sellman.andrew.vann.spring.controller.Response;
 import com.sellman.andrew.vann.spring.service.FeedForwardNetworkFactory;

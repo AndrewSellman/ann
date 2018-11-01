@@ -7,6 +7,8 @@ public class LearningRateEvaluatorRequest {
 	private double learningRate;
 	private double increaseByPercent;
 	private double decreaseByPercent;
+	private int epochRollbackCount;
+	private int consecutiveUndesirableSituationsToRollback;
 
 	public LearningRateEvaluatorType getType() {
 		return type;
@@ -38,6 +40,22 @@ public class LearningRateEvaluatorRequest {
 
 	public void setDecreaseByPercent(double decreaseByPercent) {
 		this.decreaseByPercent = decreaseByPercent;
+	}
+
+	public int getEpochRollbackCount() {
+		return epochRollbackCount;
+	}
+
+	public void setEpochRollbackCount(int epochRollbackCount) {
+		this.epochRollbackCount = epochRollbackCount;
+	}
+
+	public int getConsecutiveUndesirableSituationsToRollback() {
+		return consecutiveUndesirableSituationsToRollback;
+	}
+
+	public void setConsecutiveUndesirableSituationsToRollback(int consecutiveUndesirableSituationsToRollback) {
+		this.consecutiveUndesirableSituationsToRollback = consecutiveUndesirableSituationsToRollback;
 	}
 
 }

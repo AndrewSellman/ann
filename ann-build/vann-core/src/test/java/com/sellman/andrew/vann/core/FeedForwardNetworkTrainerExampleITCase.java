@@ -26,6 +26,7 @@ import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.MathOperationsFactory;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.RowVector;
+import com.sellman.andrew.vann.core.math.RowVectorFactory;
 import com.sellman.andrew.vann.core.math.add.AdditionFactory;
 import com.sellman.andrew.vann.core.math.advice.AdviceKey;
 import com.sellman.andrew.vann.core.math.advice.ParallelizableOperation1Advisor;
@@ -41,15 +42,28 @@ import com.sellman.andrew.vann.core.math.subtract.SubtractionFactory;
 import com.sellman.andrew.vann.core.math.sum.SummationFactory;
 import com.sellman.andrew.vann.core.math.transpose.TranspositionFactory;
 import com.sellman.andrew.vann.core.math.update.UpdationFactory;
+import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainerConfig;
+import com.sellman.andrew.vann.core.training.FullTrainingBatchProvider;
+import com.sellman.andrew.vann.core.training.HoldOutTrainingSplitter;
 import com.sellman.andrew.vann.core.training.MeanSquaredErrorCalculator;
+import com.sellman.andrew.vann.core.training.StochasticTrainingBatchProvider;
+import com.sellman.andrew.vann.core.training.TrainingBatchFactory;
+import com.sellman.andrew.vann.core.training.TrainingBatchProvider;
+import com.sellman.andrew.vann.core.training.TrainingExample;
+import com.sellman.andrew.vann.core.training.TrainingExamplesSplitter;
 import com.sellman.andrew.vann.core.training.evaluator.FixedLearningRateEvaluator;
+import com.sellman.andrew.vann.core.training.evaluator.FixedMomentumEvaluator;
+import com.sellman.andrew.vann.core.training.evaluator.IncreasingValidationErrorRollbackEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.LearningRateEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.MaximumEpochsEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.MinimumEpochErrorEvaluator;
+import com.sellman.andrew.vann.core.training.evaluator.MomentumEvaluator;
+import com.sellman.andrew.vann.core.training.evaluator.RollbackEvaluator;
 import com.sellman.andrew.vann.core.training.evaluator.TrainingEvaluator;
 
 public class FeedForwardNetworkTrainerExampleITCase {
+	private static final int SAVE_POINT_DEPTH = 5;
 	private AdditionFactory additionFactory;
 	private SummationFactory summationFactory;
 	private SubtractionFactory subtractionFactory;
@@ -68,12 +82,19 @@ public class FeedForwardNetworkTrainerExampleITCase {
 	private FeedForwardNetwork network;
 	private List<TrainingEvaluator> trainingEvaluators;
 	private FeedForwardNetworkTrainerConfig config;
-	private List<TrainingItem> trainingData;
+	private List<TrainingExample> trainingData;
 	private EventManager eventManager;
 	private List<Double> epochErrors;
 	private LearningRateEvaluator learningRateEvaluator;
 	private Cache<AdviceKey, Boolean> cache;
 	private AtomicBoolean keepRoutingEvents;
+	private InspectableMatrixFactory matrixFactory;
+	private RowVectorFactory rowVectorFactory;
+	private MomentumEvaluator momentumEvaluator;
+	private TrainingBatchProvider trainingBatchProvider;
+	private TrainingBatchProvider validationBatchProvider;
+	private List<RollbackEvaluator> rollbackEvaluators;
+	private TrainingExamplesSplitter trainingSplitter;
 
 	@Before
 	public void prepareTest() {
@@ -102,11 +123,24 @@ public class FeedForwardNetworkTrainerExampleITCase {
 		trainingEvaluators = new ArrayList<TrainingEvaluator>();
 		trainingEvaluators.add(new MaximumEpochsEvaluator(100000));
 		trainingEvaluators.add(new MinimumEpochErrorEvaluator(0.000001));
+		
+		rollbackEvaluators = new ArrayList<>();
+		rollbackEvaluators.add(new IncreasingValidationErrorRollbackEvaluator(10, 2));
 
 		learningRateEvaluator = new FixedLearningRateEvaluator(0.25);
 		
-		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, ops, eventManager, learningRateEvaluator, new TrainingBatchFactory(new InspectableMatrixFactory()), new MeanSquaredErrorCalculator(ops));
-		config.setBatchSize(1);
+		matrixFactory = new InspectableMatrixFactory();
+		rowVectorFactory = new RowVectorFactory();
+		
+		momentumEvaluator = new FixedMomentumEvaluator(0.01);
+		
+		TrainingBatchFactory trainingBatchFactory = new TrainingBatchFactory(matrixFactory);
+		trainingBatchProvider = new StochasticTrainingBatchProvider(trainingBatchFactory);
+		validationBatchProvider = new FullTrainingBatchProvider(trainingBatchFactory);
+		
+		trainingSplitter = new HoldOutTrainingSplitter(015, true, true);
+
+		config = new FeedForwardNetworkTrainerConfig(highPriorityTaskService, trainingEvaluators, ops, eventManager, learningRateEvaluator, new MeanSquaredErrorCalculator(ops), matrixFactory, rowVectorFactory, momentumEvaluator, trainingBatchProvider, validationBatchProvider, SAVE_POINT_DEPTH, rollbackEvaluators, trainingSplitter);
 
 		buildTrainingAndValidationData();
 	}
@@ -125,14 +159,14 @@ public class FeedForwardNetworkTrainerExampleITCase {
 		Context context0 = new Context("test", 0);
 		Matrix weights0 = new Matrix(new double[][] { { 0.15, 0.2 }, { 0.25, 0.3 } }, context0, eventManager);
 		RowVector bias0 = new RowVector(new double[] { 0.35,  0.35 });
-		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(context0, eventManager, ops, FunctionType.LOGISTIC, weights0, bias0);
+		FeedForwardNetworkLayerConfig layer0Config = new FeedForwardNetworkLayerConfig(context0, eventManager, ops, FunctionType.LOGISTIC, weights0, bias0, matrixFactory);
 		layer0 = new FeedForwardNetworkLayer(layer0Config);
 		layers.add(layer0);
 
 		Context context1 = new Context("test", 1);
 		Matrix weights1 = new Matrix(new double[][] { { 0.4, 0.45 }, { 0.5, 0.55 } }, context1, eventManager);
 		RowVector bias1 = new RowVector(new double[] { 0.6, 0.6 });
-		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(context1, eventManager, ops, FunctionType.LOGISTIC, weights1, bias1);
+		FeedForwardNetworkLayerConfig layer1Config = new FeedForwardNetworkLayerConfig(context1, eventManager, ops, FunctionType.LOGISTIC, weights1, bias1, matrixFactory);
 		layer1 = new FeedForwardNetworkLayer(layer1Config);
 		layers.add(layer1);
 
@@ -148,11 +182,11 @@ public class FeedForwardNetworkTrainerExampleITCase {
 	}
 
 	private void buildTrainingAndValidationData() {
-		trainingData = new ArrayList<TrainingItem>();
+		trainingData = new ArrayList<TrainingExample>();
 
 		RowVector input = new RowVector(new double[] { 0.05, .10 });
 		RowVector expectedOutput = new RowVector(new double[] { 0.01, .99 });
-		TrainingItem example = new TrainingItem(input, expectedOutput);
+		TrainingExample example = new TrainingExample(null, null, input, expectedOutput);
 		trainingData.add(example);
 	}
 

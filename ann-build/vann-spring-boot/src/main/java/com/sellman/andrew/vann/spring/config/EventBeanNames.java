@@ -4,6 +4,8 @@ public class EventBeanNames {
 
 	public static final String EVENT_MANAGER = "eventManagerBean";
 	public static final String EVENT_LISTENER_ADAPATER_FACTORY = "eventListenerAdapterFactoryBean";
+	public static final String LEARNING_RATE_CHANGE_LISTENER_ADAPTER_FACTORY = "learningRateChangeListenerAdapterFactoryBean";
+	public static final String MOMENTUM_CHANGE_LISTENER_ADAPTER_FACTORY = "momentumChangeListenerAdapterFactoryBean";
 	public static final String BATCH_CHANGE_LISTENER_ADAPTER_FACTORY = "batchChangeListenerAdapterFactoryBean";
 	public static final String BATCH_ERROR_CHANGE_LISTENER_ADAPTER_FACTORY = "batchErrorChangeListenerAdapterFactoryBean";
 	public static final String EPOCH_CHANGE_LISTENER_ADAPTER_FACTORY = "epochChangeListenerAdapterFactoryBean";

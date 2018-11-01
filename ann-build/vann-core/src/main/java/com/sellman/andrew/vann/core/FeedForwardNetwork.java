@@ -33,31 +33,23 @@ public class FeedForwardNetwork {
 		return output;
 	}
 
-	protected int getLayerCount() {
+	public int getLayerCount() {
 		return config.getLayerCount();
 	}
 
-	protected InspectableMatrix getOutput(int layerIndex) {
-		return getLayers().get(layerIndex).getOutput();
-	}
-
-	protected Matrix getBiasedPrimeOutput(int layerIndex) {
-		return getLayers().get(layerIndex).getBiasedPrimeOutput();
-	}
-
-	protected Matrix getWeights(int layerIndex) {
+	public Matrix getWeights(int layerIndex) {
 		return getLayers().get(layerIndex).getWeights();
 	}
 
-	protected void setWeights(int layerIndex, Matrix weights) {
+	public void setWeights(int layerIndex, Matrix weights) {
 		getLayers().get(layerIndex).setWeights(weights);
 	}
 
-	protected RowVector getBias(int layerIndex) {
+	public RowVector getBias(int layerIndex) {
 		return getLayers().get(layerIndex).getBias();
 	}
 
-	protected void setBias(int layerIndex, RowVector bias) {
+	public void setBias(int layerIndex, RowVector bias) {
 		getLayers().get(layerIndex).setBias(bias);
 	}
 
@@ -65,38 +57,8 @@ public class FeedForwardNetwork {
 		return getLayers().get(layerIndex).getActivationFunction();
 	}
 
-	protected Function getActivationPrimeFunction(int layerIndex) {
+	public Function getActivationPrimeFunction(int layerIndex) {
 		return getLayers().get(layerIndex).getActivationPrimeFunction();
-	}
-
-	protected Matrix getOutputDelta(int layerIndex) {
-		return getLayers().get(layerIndex).getOutputDelta();
-	}
-
-	protected void setOutputDelta(int layerIndex, Matrix outputDelta) {
-		getLayers().get(layerIndex).setOutputDelta(outputDelta);
-	}
-
-	protected void setAccumulateDuringTraining(boolean accumulateDuringTraining) {
-		for (FeedForwardNetworkLayer layer : getLayers()) {
-			layer.setAccumulateDuringTraining(accumulateDuringTraining);
-		}
-	}
-
-	protected void resetAccumulationDuringTraining() {
-		for (FeedForwardNetworkLayer layer : getLayers()) {
-			layer.resetAccumulationDuringTraining();
-		}
-	}
-	
-	public InspectableMatrix getInput(int layerIndex) {
-		return getLayers().get(layerIndex).getInput();
-	}
-
-	public void setTraining(boolean isTraining) {
-		for (FeedForwardNetworkLayer layer : getLayers()) {
-			layer.setTraining(isTraining);
-		}
 	}
 
 	private void fireNetworkInputEvent(InspectableMatrix input) {
@@ -125,7 +87,7 @@ public class FeedForwardNetwork {
 		return getEventManager().isAnyRegisteredListenerFor(eventType);
 	}
 	
-	protected Context getContext() {
+	public Context getContext() {
 		return config.getContext();
 	}
 	

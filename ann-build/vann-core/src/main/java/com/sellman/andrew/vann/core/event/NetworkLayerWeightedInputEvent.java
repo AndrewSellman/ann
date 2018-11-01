@@ -1,7 +1,6 @@
 package com.sellman.andrew.vann.core.event;
 
 import com.sellman.andrew.vann.core.math.InspectableMatrix;
-import com.sellman.andrew.vann.core.math.Matrix;
 
 public class NetworkLayerWeightedInputEvent extends MatrixEvent {
 
@@ -9,7 +8,7 @@ public class NetworkLayerWeightedInputEvent extends MatrixEvent {
 		super(context, input);
 	}
 
-	public final InspectableMatrix getLayerWeightedInput() {
+	public final InspectableMatrix getWeightedInput() {
 		return getEventMatrix();
 	}
 

@@ -8,7 +8,7 @@ public class NetworkLayerBiasedWeightedInputEvent extends MatrixEvent {
 		super(context, input);
 	}
 
-	public final InspectableMatrix getLayerBiasedWeightedInput() {
+	public final InspectableMatrix getBiasedWeightedInput() {
 		return getEventMatrix();
 	}
 

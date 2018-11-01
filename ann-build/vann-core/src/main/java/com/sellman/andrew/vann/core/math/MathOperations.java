@@ -14,25 +14,21 @@ public interface MathOperations {
 	
 	public ColumnVector hadamard(final ColumnVector a, final ColumnVector b);
 	
-	public Matrix add(final Matrix a, final Matrix b);
+	public Matrix add(final InspectableMatrix a, final InspectableMatrix b);
 	
 	public ColumnVector add(final ColumnVector a, final ColumnVector b);
 	
-	public Matrix add(final Matrix m, final ColumnVector v);
-	
-	public Matrix add(final Matrix m, final RowVector v);
+	public RowVector add(final RowVector a, final RowVector b);
 	
 	public Matrix subtract(final InspectableMatrix left, final InspectableMatrix right);
 	
-	public ColumnVector subtract(final ColumnVector left, final ColumnVector right);
-	
-	public ColumnVector subtract(final ColumnVector left, final InspectableMatrix right);
-
-	public RowVector subtract(final RowVector left, final InspectableMatrix right);
+	public RowVector subtract(final RowVector left, final RowVector right);
 	
 	public Matrix scale(final InspectableMatrix m, final Function f);
 
 	public ColumnVector scale(final ColumnVector v, final Function f);
+	
+	public RowVector scale(final RowVector v, final Function f);
 	
 	public Matrix transpose(final InspectableMatrix m);
 	

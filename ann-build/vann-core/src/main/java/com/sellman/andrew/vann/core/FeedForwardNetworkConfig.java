@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.sellman.andrew.vann.core.event.Context;
 import com.sellman.andrew.vann.core.event.EventManager;
-import com.sellman.andrew.vann.core.math.InspectableMatrix;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.RowVector;
 import com.sellman.andrew.vann.core.math.function.Function;
@@ -28,14 +27,6 @@ public class FeedForwardNetworkConfig {
 		return layers;
 	}
 
-	protected InspectableMatrix getOutput(int layerIndex) {
-		return layers.get(layerIndex).getOutput();
-	}
-
-	protected Matrix getBiasedPrimeOutput(int layerIndex) {
-		return layers.get(layerIndex).getBiasedPrimeOutput();
-	}
-
 	protected Matrix getWeights(int layerIndex) {
 		return layers.get(layerIndex).getWeights();
 	}
@@ -50,24 +41,6 @@ public class FeedForwardNetworkConfig {
 
 	protected Function getActivationPrimeFunction(int layerIndex) {
 		return layers.get(layerIndex).getActivationPrimeFunction();
-	}
-
-	protected Matrix getOutputDelta(int layerIndex) {
-		return layers.get(layerIndex).getOutputDelta();
-	}
-
-	protected void setOutputDelta(int layerIndex, Matrix outputDelta) {
-		layers.get(layerIndex).setOutputDelta(outputDelta);
-	}
-
-	public InspectableMatrix getInput(int layerIndex) {
-		return layers.get(layerIndex).getInput();
-	}
-
-	public void setTraining(boolean isTraining) {
-		for (FeedForwardNetworkLayer layer : layers) {
-			layer.setTraining(isTraining);
-		}
 	}
 
 	protected Context getContext() {

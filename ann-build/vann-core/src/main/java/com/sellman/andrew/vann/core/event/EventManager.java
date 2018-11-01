@@ -18,23 +18,25 @@ public class EventManager implements AutoCloseable {
 	private final Map<Class<? extends Event>, List<EventListenerAdapter>> dispatchedEventListenerAdapters;
 	private final Queue<Event> pendingEvents;
 	private final Semaphore arbitrator;
-	private final AtomicBoolean keepRunning;
+	private final AtomicBoolean keepDispatchingEvents;
+	private final AtomicBoolean keepRunningDispatcher;
 	private final EventDispatcher eventDispatcher;
-	private final Object lock;
 	private final EventListenerAdapterFactory eventListenerAdapterFactory;
+	private final Object lock;
 
 	public EventManager(TaskService taskService, EventListenerAdapterFactory eventListenerAdaptorFactory) {
 		this.eventListenerAdapterFactory = eventListenerAdaptorFactory;
 		immediatelyNotifiedEventListenerAdapters = new ConcurrentHashMap<>();
 		dispatchedEventListenerAdapters = new ConcurrentHashMap<>();
 		pendingEvents = new ConcurrentLinkedQueue<>();
-		keepRunning = new AtomicBoolean(true);
+		keepDispatchingEvents = new AtomicBoolean(true);
+		keepRunningDispatcher = new AtomicBoolean(true);
 		arbitrator = new Semaphore(0);
 		lock = new Object();
-		eventDispatcher = new EventDispatcher(dispatchedEventListenerAdapters, pendingEvents, keepRunning, arbitrator);
+		eventDispatcher = new EventDispatcher(dispatchedEventListenerAdapters, pendingEvents, keepRunningDispatcher, arbitrator);
 		taskService.runTask(eventDispatcher);
 	}
-
+	
 	public boolean fire(final Event event) {
 		return fireNow(event) | fireLater(event);
 	}
@@ -57,10 +59,17 @@ public class EventManager implements AutoCloseable {
 
 	@PreDestroy
 	@Override
-	public void close() {
+	public void close() throws InterruptedException {
 		System.out.println("Destroying EventManager " + toString() + "...");
-		keepRunning.set(false);
+		keepDispatchingEvents.set(false);
 		arbitrator.release();
+		int attempt = 0;
+		while (attempt < 10 && !pendingEvents.isEmpty()) {
+			System.out.println("Waiting for pending events to be processed " + toString() + "...");
+			Thread.sleep(1000);
+			attempt++;
+		}
+		keepRunningDispatcher.set(false);
 		System.out.println("Destroyed EventManager " + toString());
 	}
 
@@ -110,16 +119,20 @@ public class EventManager implements AutoCloseable {
 	}
 
 	private boolean fireLater(Event event) {
-		if (!isAnyRegisteredDispatchedListenerAdaptersFor(event.getClass())) {
+		if (!keepDispatchingEvents.get()) {
 			return false;
 		}
 
+		if (!isAnyRegisteredDispatchedListenerAdaptersFor(event.getClass())) {
+			return false;
+		}
+		
 		pendingEvents.add(event);
 		arbitrator.release();
 		return true;
 	}
 
-	public boolean register(final Listener listener, final Class<? extends Event> eventClass, List<EventListenerAdapter> alreadyRegisteredEventListenerAdapaters) {
+	private boolean register(final Listener listener, final Class<? extends Event> eventClass, List<EventListenerAdapter> alreadyRegisteredEventListenerAdapaters) {
 		synchronized (alreadyRegisteredEventListenerAdapaters) {
 			for (EventListenerAdapter alreadyRegisteredEventListenerAdapter : alreadyRegisteredEventListenerAdapaters) {
 				if (alreadyRegisteredEventListenerAdapter.getListenerClass().equals(listener.getClass())) {

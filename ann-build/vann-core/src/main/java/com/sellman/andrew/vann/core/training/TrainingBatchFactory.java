@@ -1,4 +1,4 @@
-package com.sellman.andrew.vann.core;
+package com.sellman.andrew.vann.core.training;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class TrainingBatchFactory {
 		this.matrixFactory = matrixFactory;
 	}
 
-	public TrainingBatch createFor(List<TrainingItem> trainingItems) {
+	public TrainingBatch createFor(List<TrainingExample> trainingItems) {
 		List<RowVector> inputs = getInputs(trainingItems);
 		InspectableMatrix input = matrixFactory.createFor(inputs);
 
@@ -24,19 +24,19 @@ public class TrainingBatchFactory {
 		return new TrainingBatch(input, expectedOutput);
 	}
 
-	private List<RowVector> getExpectedOutputs(List<TrainingItem> trainingItems) {
+	private List<RowVector> getExpectedOutputs(List<TrainingExample> trainingItems) {
 		List<RowVector> expectedOutputs = new ArrayList<>(trainingItems.size());
-		for (TrainingItem trainingItem : trainingItems) {
+		for (TrainingExample trainingItem : trainingItems) {
 			expectedOutputs.add(trainingItem.getExpectedOutput());
 		}
 
 		return expectedOutputs;
 	}
 
-	private List<RowVector> getInputs(List<TrainingItem> trainingItems) {
+	private List<RowVector> getInputs(List<TrainingExample> trainingItems) {
 		List<RowVector> inputs = new ArrayList<>(trainingItems.size());
-		for (TrainingItem trainingItem : trainingItems) {
-			inputs.add(trainingItem.getInput());
+		for (TrainingExample trainingItem : trainingItems) {
+			inputs.add(trainingItem.getNormalizedInput());
 		}
 		
 		return inputs;

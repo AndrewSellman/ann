@@ -1,4 +1,4 @@
-package com.sellman.andrew.vann.core;
+package com.sellman.andrew.vann.core.training;
 
 import com.sellman.andrew.vann.core.math.InspectableMatrix;
 

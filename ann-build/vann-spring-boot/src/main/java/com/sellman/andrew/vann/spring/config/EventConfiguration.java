@@ -15,8 +15,10 @@ import com.sellman.andrew.vann.core.event.EpochErrorChangeListenerAdapterFactory
 import com.sellman.andrew.vann.core.event.EpochIndexChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EventListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.EventManager;
+import com.sellman.andrew.vann.core.event.LearningRateChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.MatrixChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.MatrixPollListenerAdapterFactory;
+import com.sellman.andrew.vann.core.event.MomentumChangeListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.NetworkInputListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.NetworkLayerBiasedWeightedInputListenerAdapterFactory;
 import com.sellman.andrew.vann.core.event.NetworkLayerInputListenerAdapterFactory;
@@ -64,7 +66,19 @@ public class EventConfiguration {
 		factory.register(getNetworkLayerBiasedWeightedInputListenerAdapterFactory());
 		factory.register(getRowVectorChangeListenerAdapterFactory());
 		factory.register(getRowVectorPollListenerAdapterFactory());
+		factory.register(getLearningRateChangeListenerAdapterFactory());
+		factory.register(getMomentumChangeListenerAdapterFactory());
 		return factory;
+	}
+
+	@Bean(name = EventBeanNames.MOMENTUM_CHANGE_LISTENER_ADAPTER_FACTORY)
+	public MomentumChangeListenerAdapterFactory getMomentumChangeListenerAdapterFactory() {
+		return new MomentumChangeListenerAdapterFactory();
+	}
+
+	@Bean(name = EventBeanNames.LEARNING_RATE_CHANGE_LISTENER_ADAPTER_FACTORY)
+	public LearningRateChangeListenerAdapterFactory getLearningRateChangeListenerAdapterFactory() {
+		return new LearningRateChangeListenerAdapterFactory();
 	}
 
 	@Bean(name = EventBeanNames.BATCH_CHANGE_LISTENER_ADAPTER_FACTORY)

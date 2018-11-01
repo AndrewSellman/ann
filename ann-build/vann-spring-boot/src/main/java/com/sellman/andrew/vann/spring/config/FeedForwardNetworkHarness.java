@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
 import com.sellman.andrew.vann.core.FeedForwardNetwork;
-import com.sellman.andrew.vann.core.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.GradientDescentType;
+import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainerConfig;
 
 @Component

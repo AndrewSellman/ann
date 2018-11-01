@@ -1,30 +1,55 @@
 package com.sellman.andrew.vann.core.training;
 
-import com.sellman.andrew.vann.core.event.BatchIndexChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sellman.andrew.vann.core.event.BatchErrorChangeEvent;
+import com.sellman.andrew.vann.core.event.BatchIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.Context;
-import com.sellman.andrew.vann.core.event.EpochIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.EpochErrorChangeEvent;
+import com.sellman.andrew.vann.core.event.EpochIndexChangeEvent;
 import com.sellman.andrew.vann.core.event.Event;
 import com.sellman.andrew.vann.core.event.EventManager;
+import com.sellman.andrew.vann.core.event.LearningRateChangeEvent;
+import com.sellman.andrew.vann.core.event.MomentumChangeEvent;
 import com.sellman.andrew.vann.core.event.ResetBatchErrorEvent;
 import com.sellman.andrew.vann.core.event.ResetEpochErrorEvent;
 import com.sellman.andrew.vann.core.event.ValidationErrorChangeEvent;
+import com.sellman.andrew.vann.core.math.InspectableMatrix;
+import com.sellman.andrew.vann.core.math.Matrix;
+import com.sellman.andrew.vann.core.math.RowVector;
 
 public class TrainingProgress {
 	private final Context context;
 	private final EventManager eventManager;
-	private final int batchCount;
+	private final int nthEpochSavePoint;
 	private int epochIndex;
+	private int batchCount;
 	private int batchIndex;
 	private double epochError;
 	private double lastEpochError;
 	private double batchError;
 	private double validationError;
-	
-	public TrainingProgress(final Context context, final EventManager eventManager, int batchCount) {
+	private double lastValidationError;
+	private final List<TrainingLayerProgress> trainingLayers;
+	private double learningRate;
+	private double momentum;
+	private boolean rollingBackEpoch;
+
+	public TrainingProgress(final Context context, final EventManager eventManager, int layerCount, int nthEpochSavePoint, int savePointDepth) {
 		this.context = context;
 		this.eventManager = eventManager;
+		this.nthEpochSavePoint = nthEpochSavePoint;
+
+		trainingLayers = new ArrayList<TrainingLayerProgress>(layerCount);
+		for (int i = 0; i < layerCount; i++) {
+			trainingLayers.add(new TrainingLayerProgress(savePointDepth));
+		}
+
+		validationError = Double.MAX_VALUE;
+	}
+
+	public void setBatchCount(final int batchCount) {
 		this.batchCount = batchCount;
 	}
 
@@ -94,15 +119,16 @@ public class TrainingProgress {
 	}
 
 	public void setValidationError(double validationError) {
+		lastValidationError = this.validationError;
 		this.validationError = validationError;
 		fireValidationErrorChange();
 	}
 
-	public void resetValidationError() {
-		double originalValidationError = validationError;
-		validationError = 0;
-//		fireResetEpochError(originalEpochError);
-	}
+	// public void resetValidationError() {
+	// double originalValidationError = validationError;
+	// validationError = 0;
+	// // fireResetEpochError(originalEpochError);
+	// }
 
 	private void fireEpochChange() {
 		if (!isAnyListener(EpochIndexChangeEvent.class)) {
@@ -167,6 +193,24 @@ public class TrainingProgress {
 		fire(event);
 	}
 
+	private void fireLearningRateChangeEvent() {
+		if (!isAnyListener(LearningRateChangeEvent.class)) {
+			return;
+		}
+
+		Event event = new LearningRateChangeEvent(context, learningRate);
+		fire(event);
+	}
+
+	private void fireMomentumChangeEvent() {
+		if (!isAnyListener(MomentumChangeEvent.class)) {
+			return;
+		}
+
+		Event event = new MomentumChangeEvent(context, momentum);
+		fire(event);
+	}
+
 	private void fire(Event event) {
 		eventManager.fire(event);
 	}
@@ -175,8 +219,126 @@ public class TrainingProgress {
 		return eventManager.isAnyRegisteredListenerFor(eventType);
 	}
 
+	public double getLastValidationError() {
+		return lastValidationError;
+	}
+
 	public double getValidationError() {
 		return validationError;
+	}
+
+	protected void setInput(InspectableMatrix input, int layerIndex) {
+		trainingLayers.get(layerIndex).setInput(input);
+	}
+
+	protected InspectableMatrix getInput(int layerIndex) {
+		return trainingLayers.get(layerIndex).getInput();
+	}
+
+	protected void setOutput(InspectableMatrix output, int layerIndex) {
+		trainingLayers.get(layerIndex).setOutput(output);
+	}
+
+	protected InspectableMatrix getOutput(int layerIndex) {
+		return trainingLayers.get(layerIndex).getOutput();
+	}
+
+	protected void setBiasedWeightedInput(InspectableMatrix biasedWeightedInput, int layerIndex) {
+		trainingLayers.get(layerIndex).setBiasedWeightedInput(biasedWeightedInput);
+	}
+
+	protected InspectableMatrix getBiasedWeightedInput(int layerIndex) {
+		return trainingLayers.get(layerIndex).getBiasedWeightedInput();
+	}
+
+	protected void setBiasedWeightedPrimeOutput(InspectableMatrix biasedWeightedPrimeOutput, int layerIndex) {
+		trainingLayers.get(layerIndex).setBiasedWeightedPrimeOutput(biasedWeightedPrimeOutput);
+	}
+
+	protected InspectableMatrix getBiasedWeightedPrimeOutput(int layerIndex) {
+		return trainingLayers.get(layerIndex).getBiasedWeightedPrimeOutput();
+	}
+
+	protected void setOutputDelta(int layerIndex, InspectableMatrix outputDelta) {
+		trainingLayers.get(layerIndex).setOutputDelta(outputDelta);
+	}
+
+	protected InspectableMatrix getOutputDelta(int layerIndex) {
+		return trainingLayers.get(layerIndex).getOutputDelta();
+	}
+
+	public void setLastWeightDelta(int layerIndex, InspectableMatrix weightDelta) {
+		trainingLayers.get(layerIndex).setLastWeightDelta(weightDelta);
+	}
+
+	public InspectableMatrix getLastWeightDelta(int layerIndex) {
+		return trainingLayers.get(layerIndex).getLastWeightDelta();
+	}
+
+	public void setLastBiasDelta(int layerIndex, RowVector biasDelta) {
+		trainingLayers.get(layerIndex).setLastBiasDelta(biasDelta);
+	}
+
+	public RowVector getLastBiasDelta(int layerIndex) {
+		return trainingLayers.get(layerIndex).getLastBiasDelta();
+	}
+
+	public double getLearningRate() {
+		return learningRate;
+	}
+
+	public void setLearningRate(double learningRate) {
+		if (this.learningRate == learningRate) {
+			return;
+		}
+
+		this.learningRate = learningRate;
+		fireLearningRateChangeEvent();
+	}
+
+	public double getMomentum() {
+		return momentum;
+	}
+
+	public void setMomentum(double momentum) {
+		if (this.momentum == momentum) {
+			return;
+		}
+
+		this.momentum = momentum;
+		fireMomentumChangeEvent();
+	}
+
+	public boolean isEpochSavePoint() {
+		if (nthEpochSavePoint == Integer.MAX_VALUE) {
+			return false;
+		}
+
+		return epochIndex / nthEpochSavePoint == 1.0 * epochIndex / nthEpochSavePoint;
+	}
+
+	public void setWeightsSavePoint(int layerIndex, Matrix weights) {
+		trainingLayers.get(layerIndex).setWeightsSavePoint(weights);
+	}
+
+	public Matrix getWeightsSavePoint(int layerIndex) {
+		return trainingLayers.get(layerIndex).getWeightsSavePoint();
+	}
+
+	public void setBiasSavePoint(int layerIndex, RowVector bias) {
+		trainingLayers.get(layerIndex).setBiasSavePoint(bias);
+	}
+
+	public RowVector getBiasSavePoint(int layerIndex) {
+		return trainingLayers.get(layerIndex).getBiasSavePoint();
+	}
+
+	public boolean isRollingBackEpoch() {
+		return rollingBackEpoch;
+	}
+
+	public void setRollingBackEpoch(boolean rollingBackEpoch) {
+		this.rollingBackEpoch = rollingBackEpoch;
 	}
 
 }

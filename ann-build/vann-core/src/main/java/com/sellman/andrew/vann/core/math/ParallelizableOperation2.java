@@ -28,6 +28,10 @@ public abstract class ParallelizableOperation2<R extends AbstractOperationByRowT
 		return new ColumnVector(doOperation(v.getMatrix(), f));
 	}
 
+	public RowVector doOperation(final RowVector v, final Function f) {
+		return new RowVector(doOperation(v.getMatrix(), f));
+	}
+
 	protected Matrix doSequentialOp(InspectableMatrix m, Function f) {
 		int targetRowCount = m.getRowCount();
 		int targetColumnCount = m.getColumnCount();

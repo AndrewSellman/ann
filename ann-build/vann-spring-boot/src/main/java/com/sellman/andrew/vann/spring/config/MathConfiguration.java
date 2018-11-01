@@ -9,6 +9,7 @@ import com.sellman.andrew.vann.core.concurrent.TaskService;
 import com.sellman.andrew.vann.core.math.InspectableMatrixFactory;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.MathOperationsFactory;
+import com.sellman.andrew.vann.core.math.RowVectorFactory;
 import com.sellman.andrew.vann.core.math.add.AdditionFactory;
 import com.sellman.andrew.vann.core.math.advice.AdviceKey;
 import com.sellman.andrew.vann.core.math.advice.ParallelizableOperation1Advisor;
@@ -122,6 +123,11 @@ public class MathConfiguration {
 	@Bean(name = MathBeanNames.INSPECTABLE_MATRIX_FACTORY)
 	public InspectableMatrixFactory getInspectableMatrixFactory() {
 		return new InspectableMatrixFactory();
+	}
+
+	@Bean(name = MathBeanNames.ROW_VECTOR_FACTORY)
+	public RowVectorFactory getRowVectorFactory() {
+		return new RowVectorFactory();
 	}
 
 }

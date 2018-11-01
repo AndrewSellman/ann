@@ -147,13 +147,13 @@ public class MathOperationsImplTest {
 		assertEquals(expectedMatrixResult, actualResult);
 	}
 
-	@Test
-	public void subtractVectorWithVector() {
-		when(subtraction.doOperation(v1, v2)).thenReturn(expectedVectorResult);
-
-		ColumnVector actualResult = mathOps.subtract(v1, v2);
-		assertEquals(expectedVectorResult, actualResult);
-	}
+//	@Test
+//	public void subtractVectorWithVector() {
+//		when(subtraction.doOperation(v1, v2)).thenReturn(expectedVectorResult);
+//
+//		ColumnVector actualResult = mathOps.subtract(v1, v2);
+//		assertEquals(expectedVectorResult, actualResult);
+//	}
 
 	@Test
 	public void subtractMatrixWithMatrix() {

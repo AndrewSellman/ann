@@ -8,7 +8,7 @@ public class NetworkLayerInputEvent extends MatrixEvent {
 		super(context, input);
 	}
 
-	public final InspectableMatrix getLayerInput() {
+	public final InspectableMatrix getInput() {
 		return getEventMatrix();
 	}
 

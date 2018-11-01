@@ -15,7 +15,7 @@ import com.sellman.andrew.vann.core.FeedForwardNetworkLayerConfig;
 import com.sellman.andrew.vann.core.event.Context;
 import com.sellman.andrew.vann.core.event.EventManager;
 import com.sellman.andrew.vann.core.event.Representation;
-import com.sellman.andrew.vann.core.math.ColumnVector;
+import com.sellman.andrew.vann.core.math.InspectableMatrixFactory;
 import com.sellman.andrew.vann.core.math.MathOperations;
 import com.sellman.andrew.vann.core.math.Matrix;
 import com.sellman.andrew.vann.core.math.RowVector;
@@ -32,9 +32,13 @@ public class FeedForwardNetworkFactory {
 	private MathOperations mathOps;
 
 	@Autowired
+	@Qualifier(value = MathBeanNames.INSPECTABLE_MATRIX_FACTORY)
+	private InspectableMatrixFactory matrixFactory;
+	
+	@Autowired
 	@Qualifier(value = EventBeanNames.EVENT_MANAGER)
 	private EventManager eventManager;
-
+	
 	public FeedForwardNetwork create(NetworkConfigRequest request, String networkName) {
 		FeedForwardNetworkConfig config = getNetworkConfiguration(request, networkName);
 		return new FeedForwardNetwork(config);
@@ -55,7 +59,7 @@ public class FeedForwardNetworkFactory {
 		Matrix weights = getWeights(networkName, 0, nextLayerAttributeCount, currentLayerAttributeCount);
 		RowVector bias = getBias(networkName, 0, nextLayerAttributeCount);
 		Context context = new Context(networkName, 0);
-		FeedForwardNetworkLayerConfig config = new FeedForwardNetworkLayerConfig(context, eventManager, mathOps, request.getFunctionType(), weights, bias);
+		FeedForwardNetworkLayerConfig config = new FeedForwardNetworkLayerConfig(context, eventManager, mathOps, request.getFunctionType(), weights, bias, matrixFactory);
 		layers.add(new FeedForwardNetworkLayer(config));
 
 		for (int h = 0; h < request.getHiddenLayerAttributeCounts().size(); h++) {
@@ -66,7 +70,7 @@ public class FeedForwardNetworkFactory {
 			weights = getWeights(networkName, layerIndex, nextLayerAttributeCount, currentLayerAttributeCount);
 			bias = getBias(networkName, layerIndex, nextLayerAttributeCount);
 			context = new Context(networkName, layerIndex);
-			config = new FeedForwardNetworkLayerConfig(context, eventManager, mathOps, request.getFunctionType(), weights, bias);
+			config = new FeedForwardNetworkLayerConfig(context, eventManager, mathOps, request.getFunctionType(), weights, bias, matrixFactory);
 			layers.add(new FeedForwardNetworkLayer(config));
 		}
 

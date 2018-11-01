@@ -2,36 +2,33 @@ package com.sellman.andrew.vann.core.training.evaluator;
 
 import com.sellman.andrew.vann.core.training.TrainingProgress;
 
-public class BoldDriverLearningRateEvaluator extends LearningRateEvaluator {
-	private double learningRate;
+public class BoldDriverLearningRateEvaluator extends AdapativeLearningRateEvaluator {
 	private final double increaseByPercent;
 	private final double decreaseByPercent;
-	
-	public BoldDriverLearningRateEvaluator(double initalLearningRate, double increaseByPercent, double decreaseByPercent) {
-		learningRate = initalLearningRate;
+
+	public BoldDriverLearningRateEvaluator(final double initalLearningRate, final double increaseByPercent, final double decreaseByPercent) {
+		super(initalLearningRate);
 		this.increaseByPercent = increaseByPercent;
 		this.decreaseByPercent = decreaseByPercent;
 	}
 
-	public LearningRateRecommendation getRecommendation(TrainingProgress progress) {
-		if (progress.getEpochIndex() == 0) {
-			return new LearningRateRecommendation(learningRate);
+	@Override
+	protected double getNextLearningRate(TrainingProgress progress) {
+		double learningRate = getLearningRate();
+
+		if (learningRate < 1.0) {
+			learningRate = learningRate + (learningRate * increaseByPercent);
 		}
-		
-		boolean rollback = false;
-		if (progress.getEpochError() > progress.getLastEpochError()) {
-			rollback = true;
-			learningRate = learningRate - (learningRate * decreaseByPercent);
-		} else {
-			if (learningRate < 1.0) {
-				learningRate = learningRate + (learningRate * increaseByPercent);	
-			}
-			if (learningRate > 1.0) {
-				learningRate = 1.0;
-			}
+
+		if (learningRate > 1.0) {
+			learningRate = 1.0;
 		}
-		
-		return new LearningRateRecommendation(learningRate, rollback);
+
+		return learningRate;
 	}
 
+	@Override
+	protected double getRollbackLearningRate(TrainingProgress progress) {
+		return getLearningRate() - (getLearningRate() * decreaseByPercent);
+	}
 }

@@ -3,8 +3,8 @@ package com.sellman.andrew.vann.spring.service;
 import org.springframework.stereotype.Service;
 
 import com.sellman.andrew.vann.core.FeedForwardNetwork;
-import com.sellman.andrew.vann.core.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.GradientDescentType;
+import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainer;
 import com.sellman.andrew.vann.core.training.FeedForwardNetworkTrainerConfig;
 
 @Service

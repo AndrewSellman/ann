@@ -17,9 +17,8 @@ public class NetworkTrainerConfigRequest {
 	@NotNull(message = "Learning rate evaluator is required.")
 	private LearningRateEvaluatorRequest learningRateEvaluator;
 
-//	public NetworkTrainerConfigRequest() {
-//		setTrainingEvaluators(new ArrayList<>());
-//	}
+	private int batchSize;
+	private int savePointDepth;
 
 	public List<TrainingEvaluatorRequest> getTrainingEvaluators() {
 		return trainingEvaluators;
@@ -43,6 +42,22 @@ public class NetworkTrainerConfigRequest {
 
 	public void setTrainerType(GradientDescentType trainerType) {
 		this.trainerType = trainerType;
+	}
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
+	}
+
+	public int getSavePointDepth() {
+		return savePointDepth;
+	}
+
+	public void setSavePointDepth(int savePointDepth) {
+		this.savePointDepth = savePointDepth;
 	}
 
 }
